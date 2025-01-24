@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 
 function Header() {
-  const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems,isCartOpen, setIsCartOpen } = useContext(GlobalContext);
+  const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen } = useContext(GlobalContext);
   const router = useRouter()
 
 
