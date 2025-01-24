@@ -29,7 +29,7 @@ const OurMenu = () => {
         catalogCategoryAndItem, setCatalogCategoryAndItem, catalogCategory,
         setCatalogCategory, catalogCategoryTab, setCatalogCategoryTab,
         activeMenu, setActiveMenu, setIsOrderUpdate, orderDetails,
-        updateLineItem, setUpdateLineItem, setIsOrdered,
+        updateLineItem, setUpdateLineItem, setIsOrdered, setGlobalLoading
     } = useContext(GlobalContext);
 
     const [isItemAdded, setIsItemAdded] = useState(false);
@@ -136,10 +136,10 @@ const OurMenu = () => {
     }, []);
 
     const orderCreate = async () => {
-
+        setGlobalLoading(true)
         const body: OrderCreateBody = {
             order: {
-                location_id: 'LC1BQTNRBNPKQ',
+                location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 line_items: lineItems,
                 modifiers: modifierIds,
                 pricing_options: {
@@ -153,7 +153,7 @@ const OurMenu = () => {
         }
         try {
             const response = await orderCreateApi(body);
-
+            setGlobalLoading(false)
             if (response?.status === 200) {
                 setIsOrderUpdate('created');
                 setOrderDetails(response?.data?.order);
@@ -161,19 +161,21 @@ const OurMenu = () => {
                 setDataInLocalStorage('OrderId', response?.data?.order?.id);
                 setIsOrdered(true);
 
+
             };
 
         } catch (error) {
+            setGlobalLoading(false)
             console.log('Error', error);
         };
     };
 
     const orderUpdate = async () => {
-
+        setGlobalLoading(true)
         const body: OrderUpdateBodyAdd = {
             fields_to_clear: fieldToClear,
             order: {
-                location_id: 'LC1BQTNRBNPKQ',
+                location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 line_items: updateLineItem,
 
                 pricing_options: {
@@ -185,16 +187,18 @@ const OurMenu = () => {
         }
         try {
             const response = await orderUpdateApi(body, orderDetails?.id)
-
+            setGlobalLoading(false)
             if (response?.status === 200) {
                 setIsOrdered(true);
                 setOrderDetails(response?.data?.order);
                 setLineItems(response?.data?.order?.line_items || []);
                 setIsOrderUpdate('updated');
+                setUpdateLineItem([])
 
             }
 
         } catch (error) {
+            setGlobalLoading(false)
             console.log('Error', error);
         }
     };
@@ -606,7 +610,7 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
                                 </div>
                             ))}
 
-                            <div className='w-full flex justify-end mt-4'  onClick={() => setIsModalOpen(false)}>
+                            <div className='w-full flex justify-end mt-4' onClick={() => setIsModalOpen(false)}>
                                 <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
                             </div>
                         </div>

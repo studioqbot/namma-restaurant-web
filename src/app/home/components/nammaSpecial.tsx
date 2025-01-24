@@ -25,8 +25,8 @@ const NammaSpecials = () => {
 
 
 
-  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem,
-    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered } = useContext(GlobalContext);
+  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem,setUpdateLineItem,
+    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, setGlobalLoading } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
 
@@ -39,7 +39,7 @@ const NammaSpecials = () => {
         custom_attribute_filters: [
           {
             bool_filter: true,
-            custom_attribute_definition_id: "MOY2QZ3ECH5SURG6SRQB3UEJ"
+            custom_attribute_definition_id: "P6DTBZV62JU2X2AXJQL34JH6"
           }
         ]
       }
@@ -93,12 +93,13 @@ const NammaSpecials = () => {
     }
   };
 
+console.log('processss',process.env.NEXT_PUBLIC_LOCATION_ID,);
 
   const orderCreate = async () => {
-
+    setGlobalLoading(true)
     const body = {
       order: {
-        location_id: 'LC1BQTNRBNPKQ',
+        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
         line_items: lineItems,
         pricing_options: {
           auto_apply_taxes: true,
@@ -108,7 +109,7 @@ const NammaSpecials = () => {
     }
     try {
       const response = await orderCreateApi(body)
-
+      setGlobalLoading(false)
       if (response?.status === 200) {
         setOrderDetails(response?.data?.order);
         setLineItems(response?.data?.order?.line_items);
@@ -119,15 +120,18 @@ const NammaSpecials = () => {
 
 
     } catch (error) {
+      setGlobalLoading(false)
       console.log('Error', error);
     }
   }
 
+  console.log('updateLineItem',updateLineItem);
+  
   const orderUpdate = async () => {
-
+    setGlobalLoading(true)
     const body: OrderUpdateBodyAdd = {
       order: {
-        location_id: 'LC1BQTNRBNPKQ',
+        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
         line_items: updateLineItem,
         pricing_options: {
           auto_apply_taxes: true,
@@ -138,16 +142,18 @@ const NammaSpecials = () => {
     }
     try {
       const response = await orderUpdateApi(body, orderDetails?.id)
-
+      setGlobalLoading(false)
       if (response?.status === 200) {
 
         setOrderDetails(response?.data?.order);
         setLineItems(response?.data?.order?.line_items);
+        setUpdateLineItem([])
         setIsOrderUpdate('updated');
         setIsOrdered(true);
       }
 
     } catch (error) {
+      setGlobalLoading(false)
       console.log('Error', error);
     }
   };
@@ -506,7 +512,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
             <div className='w-full flex justify-end mt-4' onClick={() => {
               if (selectedOption) {
                 setIsModalOpen(false)
-              } }}>
+              }
+            }}>
               <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
             </div>
 

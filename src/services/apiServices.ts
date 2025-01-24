@@ -10,8 +10,8 @@ export const nammaSpecialItems = (body: CatelogFilterBody) => {
     return axiosInstance.post(`${API_ENDPOINTS.catlogFilterItems}`, body);
 }
 
-export const catalogItems = (body: { types: string }) => {
-    return axiosInstance.post(`${API_ENDPOINTS.catlogList}`, body);
+export const catalogItems = (paramsData: { types: string }) => {
+    return axiosInstance.get(`${API_ENDPOINTS.catlogList}`, {params : paramsData });
 }
 
 export const orderCreateApi = (body: OrderCreateBody) => {

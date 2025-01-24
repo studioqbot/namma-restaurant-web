@@ -38,6 +38,8 @@ interface GlobalContextType {
     setIsOrdered:React.Dispatch<React.SetStateAction<boolean>>;
     isCartOpen: boolean;
     setIsCartOpen:React.Dispatch<React.SetStateAction<boolean>>;
+    globalLoading: boolean;
+    setGlobalLoading:React.Dispatch<React.SetStateAction<boolean>>;
 
 
 }
@@ -74,6 +76,8 @@ const GlobalContext = createContext<GlobalContextType>({
     setIsOrdered: () => { },
     isCartOpen: false, 
     setIsCartOpen: () => { },
+    globalLoading: false, 
+    setGlobalLoading: () => { },
 
 });
 
@@ -95,6 +99,7 @@ const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
     const [isOrdered, setIsOrdered] = useState<boolean>(false);
     const [fieldToClear, setFieldToClear] = useState<string[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [globalLoading, setGlobalLoading] = useState(false);
 
     const contextValue = useMemo(() => {
         return {
@@ -106,11 +111,12 @@ const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
             nammaSpecialItemsData, setNammaSpecialItemsData,
             catalogCategoryTab, setCatalogCategoryTab, activeMenu, setActiveMenu,
             updateLineItem, setUpdateLineItem, isCountDecreased, setIsCountDecreased,
-             fieldToClear, setFieldToClear, isOrdered, setIsOrdered,isCartOpen, setIsCartOpen
+             fieldToClear, setFieldToClear, isOrdered, setIsOrdered,isCartOpen, setIsCartOpen,
+             globalLoading, setGlobalLoading
         }
     }, [cartItemCount, isOrderUpdate, orderDetails, lineItems, catalogCategoryAndItem,
         catalogCategory, activeMenu, nammaSpecialItemsData, imageData, catalogCategoryTab,
-        updateLineItem, isCountDecreased, fieldToClear,isOrdered, isCartOpen])
+        updateLineItem, isCountDecreased, fieldToClear,isOrdered, isCartOpen,globalLoading])
 
     return <GlobalContext.Provider value={contextValue}>{children}</GlobalContext.Provider>
 }

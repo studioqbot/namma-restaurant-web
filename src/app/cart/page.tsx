@@ -80,7 +80,7 @@ function CartScreen() {
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
         setUpdateLineItem, updateLineItem, setIsOrderUpdate, isCountDecreased,
-        fieldToClear, setFieldToClear, isOrdered
+        fieldToClear, setFieldToClear, isOrdered, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
 
@@ -137,7 +137,7 @@ function CartScreen() {
             const body = {
                 source_id: tokenData?.token,
                 idempotency_key: window.crypto.randomUUID(),
-                location_id: "LC1BQTNRBNPKQ",
+                location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 amount_money: {
                     amount: orderDetails?.total_money?.amount,
                     currency: "USD"
@@ -178,7 +178,7 @@ function CartScreen() {
                 body = {
                     fields_to_clear: [`line_items[${uid}]`],
                     order: {
-                        location_id: 'LC1BQTNRBNPKQ',
+                        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                         version: orderDetails?.version
                     }
                 };
@@ -186,7 +186,7 @@ function CartScreen() {
                 body = {
                     fields_to_clear: clear,
                     order: {
-                        location_id: "LC1BQTNRBNPKQ",
+                        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                         line_items: [
                             {
                                 quantity: count,
@@ -214,6 +214,9 @@ function CartScreen() {
                 const totalBasePrice = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + (item.base_price_money.amount * parseInt(item?.quantity)), 0);
                 setAmount(totalBasePrice);
                 setLoading(false);
+                if (!globalLoading && !response?.data?.order?.line_items) {
+                    route.push('/our-menu')
+                }
             }
         } catch (error) {
             console.log('Error', error);
@@ -333,14 +336,14 @@ function CartScreen() {
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
                                                     />
-                                                )) :
-                                                    <tr>
-                                                        <td colSpan={3} >
-                                                            <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
-                                                                <Image className='h-[100px] w-[100px] ' src={LoadingGif} alt="Loading..." />
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                )) : globalLoading &&
+                                                <tr>
+                                                    <td colSpan={3} >
+                                                        <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
+                                                            <Image className='h-[100px] w-[100px] ' src={LoadingGif} alt="Loading..." />
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             }
                                         </tbody>
                                     </table>
@@ -441,7 +444,7 @@ function CartScreen() {
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_discount_money?.amount || 0)}</span>
                                         </div>
 
-                                        <div className="flex items-center justify-between py-2 relative">
+                                        <div className="flex items-center justify-between py-2 relative" onClick={() => setIsModalOpen(true)}>
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] pr-[25px] relative z-1">Total Amount</span>
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_money?.amount || 0)}</span>
@@ -506,7 +509,7 @@ function CartScreen() {
 
                                 <PaymentForm
 
-                                    applicationId="sandbox-sq0idb-CdrXsMRXd9_VI-MO3QiAHQ"
+                                    applicationId={process.env.NEXT_PUBLIC_SQUIRE_APP_ID}
                                     cardTokenizeResponseReceived={(token: TokenData) => {
                                         if (fieldToClear?.length > 0) {
                                             // orderUpdate(token)
@@ -516,7 +519,7 @@ function CartScreen() {
 
                                     }}
 
-                                    locationId="LC1BQTNRBNPKQ"
+                                    locationId={process.env.NEXT_PUBLIC_LOCATION_ID}
                                 >
                                     <CreditCard render={(Button: ButtonComponent) => <Button style={button}>
 
@@ -544,12 +547,12 @@ function CartScreen() {
                     >
                         <div className="flex flex-col items-center justify-center max-w-lg mx-auto p-6 text-center">
                             <div className='absolute top-[-150px]'>
-                                {/* <Image
+                                <Image
                                     src="/assets/images/thanks-img.svg"
                                     alt="Del"
                                     width={320}
                                     height={320}
-                                /> */}
+                                />
                             </div>
 
                             {/* Heading */}
@@ -558,6 +561,9 @@ function CartScreen() {
                                 <br />
                                 Your Order!
                             </h1>
+                            <h3 className="text-[#28272C] text-[15px] font-semibold leading-[26px] font-unbounded mb-[13px]">
+                                Order ID: {orderDetails?.id}
+                            </h3>
 
                             {/* Success Message */}
                             <div className="mb-6">
@@ -728,65 +734,7 @@ const CartChild = (props: CartProps) => {
                 >
                     +
                 </button>
-                {isModalOpen && (
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-                        onClick={() => setIsModalOpen(false)}
-                    >
-                        <div
-                            className="bg-white rounded-lg w-[330px] p-[30px] relative"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="w-full flex flex-col items-start justify-center">
-                                <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-                                {modifierListData && modifierListData?.length && modifierListData.map((modifier: ModifierType) => (
-                                    <div
-                                        key={modifier?.id}
-                                        className="flex items-center justify-between w-full py-[10px] relative"
-                                    >
-                                        <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                                        <span className=" bg-white min-w-[100px] relative z-[2]">{modifier?.modifier_data?.name}</span>
-                                        <div className="bg-white relative z-[2] flex pl-[10px]">
 
-                                            <input
-                                                type='radio'
-                                                id={modifier?.modifier_data?.name}
-                                                name="customization"
-                                                value={modifier?.modifier_data?.name}
-                                                checked={(selectedOption || lineItem?.modifiers[0]?.name) === modifier?.modifier_data?.name}
-                                                onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id, modifier)}
-                                                className="hidden peer"
-                                            />
-
-                                            <label
-                                                htmlFor={modifier?.modifier_data?.name}
-                                                className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
-                                            >
-                                                <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                                            </label>
-                                        </div>
-
-                                        {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
-                                    
-                                    </span> */}
-
-                                    </div>
-                                ))}
-
-                                <div className='w-full flex justify-end mt-4' onClick={() => {
-                                    setIsModalOpen(false);
-                                    if (modifierId) {
-                                        orderUpdate(String(quantity), lineItem?.catalog_object_id, lineItem?.uid, modifierId, lineItem?.modifiers[0]?.uid)
-                                    }
-
-
-                                }}>
-                                    <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
         </td>
         <td className="text-[#222A4A] text-[15px] font-semibold text-center">${lineItem?.base_price_money?.amount * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
@@ -802,6 +750,65 @@ const CartChild = (props: CartProps) => {
                     height={17}
                 />
             </button>
+            {isModalOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <div
+                        className="bg-white rounded-lg w-[330px] p-[30px] relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="w-full flex flex-col items-start justify-center">
+                            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
+                            {modifierListData && modifierListData?.length && modifierListData.map((modifier: ModifierType) => (
+                                <div
+                                    key={modifier?.id}
+                                    className="flex items-center justify-between w-full py-[10px] relative"
+                                >
+                                    <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
+                                    <span className=" bg-white min-w-[100px] relative z-[2]">{modifier?.modifier_data?.name}</span>
+                                    <div className="bg-white relative z-[2] flex pl-[10px]">
+
+                                        <input
+                                            type='radio'
+                                            id={modifier?.modifier_data?.name}
+                                            name="customization"
+                                            value={modifier?.modifier_data?.name}
+                                            checked={(selectedOption || lineItem?.modifiers[0]?.name) === modifier?.modifier_data?.name}
+                                            onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id, modifier)}
+                                            className="hidden peer"
+                                        />
+
+                                        <label
+                                            htmlFor={modifier?.modifier_data?.name}
+                                            className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
+                                        >
+                                            <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
+                                        </label>
+                                    </div>
+
+                                    {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
+                                    
+                                    </span> */}
+
+                                </div>
+                            ))}
+
+                            <div className='w-full flex justify-end mt-4' onClick={() => {
+                                setIsModalOpen(false);
+                                if (modifierId) {
+                                    orderUpdate(String(quantity), lineItem?.catalog_object_id, lineItem?.uid, modifierId, lineItem?.modifiers[0]?.uid)
+                                }
+
+
+                            }}>
+                                <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </td>
 
     </tr>

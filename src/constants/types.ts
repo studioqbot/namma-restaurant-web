@@ -280,8 +280,8 @@ export const CatalogItemsValue = {
 
 export type OrderCreateBody = {
     order: {
-        location_id: string,
-        line_items: LineItems[],
+        location_id: string|undefined;
+        line_items: LineItems[];
         pricing_options?: {
             auto_apply_taxes: boolean;
             auto_apply_discounts: boolean;
@@ -294,7 +294,7 @@ export type OrderCreateBody = {
 export type OrderUpdateBodyAdd = {
     fields_to_clear?: string[];
     order: {
-        location_id: string;
+        location_id: string|undefined;
         line_items?: LineItems[];
 
         pricing_options?: {
@@ -336,7 +336,7 @@ export type LineItemType = {
 export interface PaymentBodyType {
     source_id: string;
     idempotency_key: string;
-    location_id: string;
+    location_id: string|undefined;
     amount_money: {
         amount: number;
         currency: string;
