@@ -535,7 +535,7 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[-1]' />
             <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">{data?.item_data?.name}</span>
             <div className="flex items-center bg-[#eee1d1] gap-4 pl-[11px]">
-                <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount}</span>
+                <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount/100}</span>
                 {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center min-w-[100px] border border-[#A02621] rounded-[100px] overflow-hidden text-[#A02621] text-[12px]">
                     <button
                         onClick={() => handleQuantityDecrement(matchedItem?.quantity)}

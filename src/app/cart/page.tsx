@@ -139,7 +139,7 @@ function CartScreen() {
                 idempotency_key: window.crypto.randomUUID(),
                 location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 amount_money: {
-                    amount: orderDetails?.total_money?.amount,
+                    amount: orderDetails?.total_money?.amount/100,
                     currency: "USD"
                 },
                 order_id: orderDetails?.id,
@@ -211,7 +211,7 @@ function CartScreen() {
             if (response?.status === 200) {
                 setOrderDetails(response?.data?.order);
                 setLineItems(response?.data?.order?.line_items || []);
-                const totalBasePrice = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + (item.base_price_money.amount * parseInt(item?.quantity)), 0);
+                const totalBasePrice = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + ((item.base_price_money.amount/100) * parseInt(item?.quantity)), 0);
                 setAmount(totalBasePrice);
                 setLoading(false);
                 if (!globalLoading && !response?.data?.order?.line_items) {
@@ -435,19 +435,19 @@ function CartScreen() {
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Tax</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_tax_money?.amount || 0)}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_tax_money?.amount/100) || 0}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Discount</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_discount_money?.amount || 0)}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${orderDetails?.total_discount_money?.amount/100 || 0}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative" onClick={() => setIsModalOpen(true)}>
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] pr-[25px] relative z-1">Total Amount</span>
-                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_money?.amount || 0)}</span>
+                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_money?.amount/100 || 0)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -737,7 +737,7 @@ const CartChild = (props: CartProps) => {
 
             </div>
         </td>
-        <td className="text-[#222A4A] text-[15px] font-semibold text-center">${lineItem?.base_price_money?.amount * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
+        <td className="text-[#222A4A] text-[15px] font-semibold text-center">${(lineItem?.base_price_money?.amount/100) * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
         <td className="text-right">
             <button className="text-red-600 hover:text-red-700 px-[15px]" onClick={() => {
                 setCartItemCount(cartItemCount - quantity)

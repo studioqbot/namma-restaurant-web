@@ -8,6 +8,8 @@ import { getDataFromLocalStorage, isEmptyObj, setDataInLocalStorage } from '@/ut
 import { LineItems, ModifierDataType, ModifierType, OrderDetailsType, OrderUpdateBodyAdd } from '@/constants/types';
 import { useRouter } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
+import placeHolder from '../../../../public/assets/images/place-holder.png'
+import Image from 'next/image';
 
 
 interface NammaSpecialCardProps {
@@ -429,12 +431,13 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
-      <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />
+      {image?.image_data?.url ? <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />:
+      <Image src={placeHolder} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
 
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
     <div className="flex flex-col items-center justify-between mt-auto">
-      <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount}</span>
+      <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount/100}</span>
 
 
       {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">

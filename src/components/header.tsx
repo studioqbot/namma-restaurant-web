@@ -72,13 +72,13 @@ function Header() {
     <header className='w-full py-[22px]'>
       <div className='container'>
         <nav className="flex justify-between items-center">
-          <div className="flex items-center">
+          <button className="flex items-center" onClick={() => router.push('/home')}>
             <img src="/assets/images/Logo.svg" alt="Logo" className="h-[60px]" />
-          </div>
+          </button>
           <div className="flex items-center gap-[45px] text-[14px] text-[#222A4A]">
             <Link href="/" >Home</Link>
             <Link href="/our-menu" >Our Menu</Link>
-            <Link href="/location" >Location</Link>
+            <Link href="https://www.google.com/maps?q=181+Ranch+Dr,+Milpitas+95035" target='_blank'>Location</Link>
             <Link href="/contact-us" >Contact us</Link>
             {true && <button disabled={lineItems?.length === 0 ? true : false} className="bg-[#FFC300] px-[28px] py-[7px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative" onClick={() => {
 
