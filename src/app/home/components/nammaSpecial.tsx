@@ -504,7 +504,9 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
               </div>
             ))}
             <div className='w-full flex justify-end mt-4' onClick={() => {
-              selectedOption&&setIsModalOpen(false)}}>
+              if (selectedOption) {
+                setIsModalOpen(false)
+              } }}>
               <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
             </div>
 
