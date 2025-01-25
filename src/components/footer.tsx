@@ -3,6 +3,8 @@ import Link from 'next/link';
 import React from 'react';
 
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
 
     <>
@@ -33,11 +35,11 @@ function Footer() {
                   reachusnamma@gmail.com
                 </a>
                 <span>|</span>
-                <span>408-649-3417 & 408-649-3418</span>
+                <span><Link href="tel:+14086493417">408-649-3417</Link> &  <Link href="tel:+14086493418">408-649-3418</Link></span>
               </div>
             </div>
             <div className='flex flex-col text-[14px] text-[#222A4A] text-right'>
-            <span>Copyright © 2024 Namma Restaurant. All rights reserved.</span>
+            <span>Copyright © {currentYear} Namma Restaurant. All rights reserved.</span>
             <div className="flex flex-wrap gap-[3px] justify-end">
               <a href="/privacy-policy" className="hover:underline">
                 Privacy Policy
@@ -47,7 +49,7 @@ function Footer() {
                 Terms and Conditions
               </a>
               <span >|</span>
-              <Link target='_blank' href="https://studioq.co.in/" className="hover:underline flex items-center gap-1">
+              <Link href="https://studioq.co.in/" className="hover:underline flex items-center gap-1">
                 Built by <Image
                             src="/assets/images/SQ.svg" 
                             alt="Google logo"

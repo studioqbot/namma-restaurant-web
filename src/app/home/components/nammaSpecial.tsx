@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import placeHolder from '../../../../public/assets/images/place-holder.png'
 import Image from 'next/image';
-
+import Skeleton from 'react-loading-skeleton';
+import "react-loading-skeleton/dist/skeleton.css";
 
 interface NammaSpecialCardProps {
   data: NammaSpecialItems
@@ -30,14 +31,15 @@ const NammaSpecials = () => {
   const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem,
     setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, setGlobalLoading } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
+  const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
-
+  const dataLimit = 6;
   const router = useRouter()
 
   const getNammaSpeacialDatas = async () => {
     try {
       const body: CatelogFilterBody = {
-        limit: 6,
+        limit: dataLimit,
         custom_attribute_filters: [
           {
             bool_filter: true,
@@ -46,6 +48,7 @@ const NammaSpecials = () => {
         ]
       }
       const response = await nammaSpecialItems(body);
+      setLoad(false)
       if (response?.status === 200) {
         setNammaSpecialItemsData(response?.data?.items);
         setDataInLocalStorage('NammaSpecialItemsData', response?.data?.items);
@@ -67,6 +70,8 @@ const NammaSpecials = () => {
     try {
       const params = { types: 'IMAGE' }
       const response = await catalogItems(params);
+      setLoad(false)
+
       if (response?.status === 200) {
         setImageData(response?.data?.objects);
         setDataInLocalStorage('ImageData', response?.data?.objects);
@@ -83,6 +88,8 @@ const NammaSpecials = () => {
     try {
       const params = { types: 'MODIFIER_LIST' };
       const response = await catalogItems(params);
+      setLoad(false);
+
       if (response?.status === 200) {
         setDataInLocalStorage('ModifierListData', response?.data?.objects);
         setMofierList(response?.data?.objects);
@@ -183,6 +190,7 @@ const NammaSpecials = () => {
     getNammaSpeacialDataFromLocal();
     const dateData: Dayjs | null = getDataFromLocalStorage('DateHome');
     if (((dayjs(dateData).isSame() || dayjs(dateData).isBefore()) || !dateData)) {
+      setLoad(true)
       getNammaSpeacialDatas();
       getNammaSpeacialItemsImage();
       getModifierListData();
@@ -212,7 +220,18 @@ const NammaSpecials = () => {
 
 
       <>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
+        {(load || nammaSpecialItemsData?.length === 0) ? <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
+          {Array(6).fill(0).map((_, index) => (
+            <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: '30px' }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
+                <Skeleton height={150} width={150} style={{ borderRadius: "12px", marginBottom: '20px' }} />
+                <Skeleton height={14} width={100} style={{ marginBottom: "6px" }} />
+                <Skeleton height={14} width={70} style={{ marginBottom: "15px" }} />
+                <Skeleton height={34} width={100} style={{ marginBottom: "6px", borderRadius: '100px' }} />
+              </div>
+            </div>
+          ))}
+        </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
           {nammaSpecialItemsData?.length > 0 && nammaSpecialItemsData?.map((data) => {
 
             const image: ImageType | undefined = imageData?.find((img) => {
@@ -235,7 +254,9 @@ const NammaSpecials = () => {
           }
 
           )}
-        </div>
+        </div>}
+
+
 
         <div className="text-center relative z-10">
           <button
@@ -409,8 +430,6 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
   const handleCheckboxChange = (modifierName: string, modifierId: string) => {
     setSelectedOption(modifierName);
-
-
 
     setLineItems((prevData: LineItems[]) => {
       const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);

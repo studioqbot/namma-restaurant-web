@@ -16,7 +16,7 @@ const ImageSlider = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    // autoplay: true,
+    autoplay: true,
     autoplaySpeed: 3000,
     arrows: false,
     fade: true,    
@@ -24,8 +24,8 @@ const ImageSlider = () => {
 
   const images = [
     "/assets/images/hero-slider1.svg",
-    "/assets/images/hero-slider1.svg",
-    "/assets/images/hero-slider1.svg",
+    "/assets/images/hero-slider2.svg",
+    "/assets/images/hero-slider3.svg",
   ];
 
   return (

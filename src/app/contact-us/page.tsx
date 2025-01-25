@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
 const OurMenu = () => {
@@ -55,10 +56,10 @@ const OurMenu = () => {
                                             </ul>
 
                                             <div className='w-full flex flex-row items-center text-[13px] text-[#222A4A] leading-[21px] mt-[20px] gap-[3px]'>
-                                                <span className=' font-semibold'>Call us now:</span> <span className='text-[#A02621]'>408-649-3417</span> and <span className='text-[#A02621]'>408-649-3418</span>
+                                                <span className=' font-semibold'>Call us now:</span> <span className='text-[#A02621]'><Link href="tel:+14086493417">408-649-3417</Link></span> and <Link className='text-[#A02621]' href="tel:+14086493418">408-649-3418</Link>
                                             </div>
                                             <div className='w-full flex flex-row items-center text-[13px] text-[#222A4A] leading-[21px] mb-[10px] gap-[3px]'>
-                                                <span className=' font-semibold'>Email:</span> <span className='text-[#A02621]'>reachusnamma@gmail.com</span>
+                                                <span className=' font-semibold'>Email:</span> <Link  href="mailto:reachusnamma@gmail.com" className='text-[#A02621]'>reachusnamma@gmail.com</Link>
                                             </div>
                                         </div>
                                     </div>

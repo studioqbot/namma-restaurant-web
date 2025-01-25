@@ -76,16 +76,16 @@ function CartScreen() {
         mobile: ''
     });
     const [yourDetails, setYourDetails] = useState<YourDetailsType>({
-        name:'',
-        mobile:'',
-        email:'',
-        note:''
+        name: '',
+        mobile: '',
+        email: '',
+        note: ''
 
     });
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
-        setUpdateLineItem, updateLineItem, setIsOrderUpdate, 
+        setUpdateLineItem, updateLineItem, setIsOrderUpdate,
         fieldToClear, setFieldToClear, isOrdered, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
@@ -135,7 +135,7 @@ function CartScreen() {
                 idempotency_key: window.crypto.randomUUID(),
                 location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 amount_money: {
-                    amount: orderDetails?.total_money?.amount/100,
+                    amount: orderDetails?.total_money?.amount / 100,
                     currency: "USD"
                 },
                 order_id: orderDetails?.id,
@@ -315,7 +315,7 @@ function CartScreen() {
                                                 (orderDetails?.line_items && orderDetails?.line_items?.length > 0) && orderDetails?.line_items?.map((lineItem: LineItemType) => (
                                                     <CartChild
                                                         key={lineItem?.uid}
-                   
+
                                                         lineItem={lineItem}
                                                         setCartItemCount={setCartItemCount}
                                                         cartItemCount={cartItemCount}
@@ -325,14 +325,14 @@ function CartScreen() {
                                                         setUpdateLineItem={setUpdateLineItem}
                                                         updateLineItem={updateLineItem}
                                                         setIsOrderUpdate={setIsOrderUpdate}
-                      
+
                                                         modifierList={modifierList}
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
                                                     />
-                                                )) 
+                                                ))
                                             }
-                                           { globalLoading &&
+                                            {globalLoading &&
                                                 <tr>
                                                     <td colSpan={3} >
                                                         <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
@@ -401,7 +401,9 @@ function CartScreen() {
                                             </ul>
 
                                             <div className='w-full flex flex-row items-center text-[13px] text-[#222A4A] leading-[21px] mt-[20px] gap-[3px]'>
-                                                <span className=' font-semibold'>Call us now:</span> <Link href="tel:+14086493417" className='text-[#A02621]'>408-649-3417</Link> and <span className='text-[#A02621]'>408-649-3418</span>
+                                                <span className=' font-semibold'>Call us now:</span>
+                                                <Link href="tel:+14086493417" className='text-[#A02621]'>408-649-3417</Link>
+                                                and <Link href="tel:+14086493418" className='text-[#A02621]'>408-649-3418</Link>
                                             </div>
                                         </div>
                                     </div>
@@ -409,7 +411,7 @@ function CartScreen() {
                             </div>
                         </div>
                         <div className='col-span-5'>
-                            <div className="w-full  p-[23px] overflow-hidden relative bg-cover bg-no-repeat " style={{ backgroundImage: `url('/assets/images/pattern-bg.svg')` ,minHeight:'730px'}}>
+                            <div className="w-full  p-[23px] overflow-hidden relative bg-cover bg-no-repeat " style={{ backgroundImage: `url('/assets/images/pattern-bg.svg')`, minHeight: '730px' }}>
                                 {/* Order Details Section */}
                                 <div className="w-full mb-[30px]">
                                     <h2 className="text-[#A02621] text-[15px] font-bold mb-[12px]">Order Details</h2>
@@ -424,25 +426,25 @@ function CartScreen() {
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Amount</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${parseFloat((((orderDetails?.total_money?.amount/100)+(orderDetails?.total_discount_money?.amount/100))-(orderDetails?.total_tax_money?.amount/100)).toFixed(2))}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${parseFloat((((orderDetails?.total_money?.amount / 100) + (orderDetails?.total_discount_money?.amount / 100)) - (orderDetails?.total_tax_money?.amount / 100)).toFixed(2))}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Tax</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_tax_money?.amount/100) || 0}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_tax_money?.amount / 100) || 0}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Discount</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${orderDetails?.total_discount_money?.amount/100 || 0}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${orderDetails?.total_discount_money?.amount / 100 || 0}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] pr-[25px] relative z-1">Total Amount</span>
-                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_money?.amount/100) || 0}</span>
+                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_money?.amount / 100) || 0}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -456,7 +458,7 @@ function CartScreen() {
                                             <input
                                                 type="text"
                                                 name='name'
-                                                value={yourDetails?.name }
+                                                value={yourDetails?.name}
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
@@ -468,7 +470,7 @@ function CartScreen() {
                                             <input
                                                 type="email"
                                                 name='email'
-                                                value={yourDetails?.email }
+                                                value={yourDetails?.email}
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                             />
@@ -487,7 +489,7 @@ function CartScreen() {
                                                         event.preventDefault();
                                                     }
                                                 }}
-                                                
+
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
                                             {errors.mobile && <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>}
@@ -498,7 +500,7 @@ function CartScreen() {
                                             <input
                                                 type="text"
                                                 name='note'
-                                                value={yourDetails?.note }
+                                                value={yourDetails?.note}
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
@@ -524,7 +526,7 @@ function CartScreen() {
                                 >
                                     <CreditCard render={(Button: ButtonComponent) => <Button style={button}>
 
-                                        <span>Securely Pay {orderDetails?.total_money?.amount/100}</span>
+                                        <span>Securely Pay {orderDetails?.total_money?.amount / 100}</span>
 
                                     </Button>} />
                                 </PaymentForm>
@@ -738,7 +740,7 @@ const CartChild = (props: CartProps) => {
 
             </div>
         </td>
-        <td className="text-[#222A4A] text-[15px] font-semibold text-center">${(lineItem?.base_price_money?.amount/100) * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
+        <td className="text-[#222A4A] text-[15px] font-semibold text-center">${(lineItem?.base_price_money?.amount / 100) * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
         <td className="text-right">
             <button className="text-red-600 hover:text-red-700 px-[15px]" onClick={() => {
                 setCartItemCount(cartItemCount - quantity);
