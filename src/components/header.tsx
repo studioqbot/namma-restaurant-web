@@ -41,9 +41,7 @@ function Header() {
   };
   useEffect(() => {
     const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-    console.log('isMobileDevice',isMobileDevice);
-    
-    if (!isMobileDevice) { 
+    if (isMobileDevice) { 
       window.location.href = 'https://studioq.co.in/';
 
     }
