@@ -75,7 +75,13 @@ function CartScreen() {
         name: '',
         mobile: ''
     });
-    const [yourDetails, setYourDetails] = useState<YourDetailsType>();
+    const [yourDetails, setYourDetails] = useState<YourDetailsType>({
+        name:'',
+        mobile:'',
+        email:'',
+        note:''
+
+    });
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
@@ -318,7 +324,7 @@ function CartScreen() {
                                         </thead>
                                         <tbody>
                                             {
-                                                (orderDetails?.line_items && orderDetails?.line_items?.length > 0) ? orderDetails?.line_items?.map((lineItem: LineItemType) => (
+                                                (orderDetails?.line_items && orderDetails?.line_items?.length > 0) && orderDetails?.line_items?.map((lineItem: LineItemType) => (
                                                     <CartChild
                                                         key={lineItem?.uid}
                                                         getOrderDetails={getOrderDetails}
@@ -336,15 +342,16 @@ function CartScreen() {
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
                                                     />
-                                                )) : globalLoading &&
+                                                )) 
+                                            }
+                                           { globalLoading &&
                                                 <tr>
                                                     <td colSpan={3} >
                                                         <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
                                                             <Image className='h-[100px] w-[100px] ' src={LoadingGif} alt="Loading..." />
                                                         </div>
                                                     </td>
-                                                </tr>
-                                            }
+                                                </tr>}
                                         </tbody>
                                     </table>
                                 </div>
@@ -406,7 +413,7 @@ function CartScreen() {
                                             </ul>
 
                                             <div className='w-full flex flex-row items-center text-[13px] text-[#222A4A] leading-[21px] mt-[20px] gap-[3px]'>
-                                                <span className=' font-semibold'>Call us now:</span> <span className='text-[#A02621]'>408-649-3417</span> and <span className='text-[#A02621]'>408-649-3418</span>
+                                                <span className=' font-semibold'>Call us now:</span> <Link href="tel:+14086493417" className='text-[#A02621]'>408-649-3417</Link> and <span className='text-[#A02621]'>408-649-3418</span>
                                             </div>
                                         </div>
                                     </div>
@@ -414,7 +421,7 @@ function CartScreen() {
                             </div>
                         </div>
                         <div className='col-span-5'>
-                            <div className="w-full  p-[23px] overflow-hidden relative bg-cover bg-no-repeat " style={{ backgroundImage: `url('/assets/images/pattern-bg.svg')` }}>
+                            <div className="w-full  p-[23px] overflow-hidden relative bg-cover bg-no-repeat " style={{ backgroundImage: `url('/assets/images/pattern-bg.svg')` ,minHeight:'730px'}}>
                                 {/* Order Details Section */}
                                 <div className="w-full mb-[30px]">
                                     <h2 className="text-[#A02621] text-[15px] font-bold mb-[12px]">Order Details</h2>
@@ -429,7 +436,7 @@ function CartScreen() {
                                         <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] pr-[25px] relative z-1">Amount</span>
-                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${amount}</span>
+                                            <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${parseFloat((((orderDetails?.total_money?.amount/100)+(orderDetails?.total_discount_money?.amount/100))-(orderDetails?.total_tax_money?.amount/100)).toFixed(2))}</span>
                                         </div>
 
                                         <div className="flex items-center justify-between py-2 relative">
@@ -447,7 +454,7 @@ function CartScreen() {
                                         <div className="flex items-center justify-between py-2 relative" onClick={() => setIsModalOpen(true)}>
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] pr-[25px] relative z-1">Total Amount</span>
-                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${Math.round(orderDetails?.total_money?.amount/100 || 0)}</span>
+                                            <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_money?.amount/100) || 0}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -461,7 +468,7 @@ function CartScreen() {
                                             <input
                                                 type="text"
                                                 name='name'
-                                                value={yourDetails?.name || ''}
+                                                value={yourDetails?.name }
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
@@ -473,7 +480,7 @@ function CartScreen() {
                                             <input
                                                 type="email"
                                                 name='email'
-                                                value={yourDetails?.email || ''}
+                                                value={yourDetails?.email }
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                             />
@@ -483,10 +490,16 @@ function CartScreen() {
                                         <div className="gap-[18px] mb-[20]">
                                             <label className="text-[14px] text-[#222A4A] font-medium">Mobile</label>
                                             <input
-                                                type='number'
+                                                type='tel'
                                                 name='mobile'
                                                 value={yourDetails?.mobile}
                                                 onChange={(event) => handleYourDetailsChange(event)}
+                                                onKeyPress={(event) => {
+                                                    if (!/[0-9]/.test(event.key)) {
+                                                        event.preventDefault();
+                                                    }
+                                                }}
+                                                
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
                                             {errors.mobile && <p className="text-red-500 text-sm mt-1">{errors.mobile}</p>}
@@ -497,7 +510,7 @@ function CartScreen() {
                                             <input
                                                 type="text"
                                                 name='note'
-                                                value={yourDetails?.note || ''}
+                                                value={yourDetails?.note }
                                                 onChange={(event) => handleYourDetailsChange(event)}
                                                 className="w-full py-2 text-[14px] text-[#222A4A] border-b border-[#BEB6AC] outline-0"
                                             />
@@ -523,7 +536,7 @@ function CartScreen() {
                                 >
                                     <CreditCard render={(Button: ButtonComponent) => <Button style={button}>
 
-                                        <span>Securely Pay ${2328.50}</span>
+                                        <span>Securely Pay {orderDetails?.total_money?.amount/100}</span>
 
                                     </Button>} />
                                 </PaymentForm>
@@ -644,7 +657,7 @@ const CartChild = (props: CartProps) => {
     }
 
     const handleQuantityDecrement = (quantityVal: number) => {
-        console.log('lineItem?.quantity', lineItem?.quantity);
+
         setIsItemAdded(true)
         const countIncrease = quantityVal - 1;
 
@@ -667,7 +680,7 @@ const CartChild = (props: CartProps) => {
         if (lineItem?.catalog_object_id) {
 
             setLoading(true)
-            console.log('modifierList---------', modifierList, lineItem?.modifiers[0]?.uid);
+
             try {
 
                 const response = await getCatalogObject(lineItem?.modifiers[0]?.catalog_object_id);
@@ -709,7 +722,7 @@ const CartChild = (props: CartProps) => {
     return <tr className="border-b border-gray-100" >
         <td className="py-4 px-2">
             <h3 className="text-[#222A4A] text-[15px] font-medium">
-                {lineItem?.name}
+                {lineItem?.name}&nbsp;&nbsp;
                 {lineItem?.modifiers?.length > 0 && <button className="text-[#A07E21] text-[14px] font-normal" onClick={changeModifier}> (Change)</button>}
             </h3>
         </td>
@@ -740,8 +753,8 @@ const CartChild = (props: CartProps) => {
         <td className="text-[#222A4A] text-[15px] font-semibold text-center">${(lineItem?.base_price_money?.amount/100) * (isItemAdded ? quantity : parseInt(lineItem?.quantity))}</td>
         <td className="text-right">
             <button className="text-red-600 hover:text-red-700 px-[15px]" onClick={() => {
-                setCartItemCount(cartItemCount - quantity)
-                orderUpdate('0', lineItem?.catalog_object_id, lineItem?.uid, '', '')
+                setCartItemCount(cartItemCount - quantity);
+                orderUpdate('0', lineItem?.catalog_object_id, lineItem?.uid, '', '');
             }}>
                 <img
                     src="/assets/images/del.svg"
@@ -767,7 +780,7 @@ const CartChild = (props: CartProps) => {
                                     className="flex items-center justify-between w-full py-[10px] relative"
                                 >
                                     <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                                    <span className=" bg-white min-w-[100px] relative z-[2]">{modifier?.modifier_data?.name}</span>
+                                    <span className=" bg-white min-w-[100px] relative z-[2] text-left">{modifier?.modifier_data?.name}</span>
                                     <div className="bg-white relative z-[2] flex pl-[10px]">
 
                                         <input

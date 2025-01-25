@@ -240,7 +240,7 @@ const OurMenu = () => {
                                 setActiveMenu("All")
                             }}
                         >
-                            All
+                            All &nbsp;
                             <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px]">|</span>
                         </button>
 
@@ -264,7 +264,7 @@ const OurMenu = () => {
                 <div className="grid grid-cols-12 gap-[40px]">
                     <div className="col-span-6">
                         <div className="p-6">
-                            {catalogCategory?.slice(0, Math.ceil(catalogCategory?.length / 2))?.map((category) => {
+                            {catalogCategory.filter((_, index) => index % 2 === 0)?.map((category) => {
                                 const catalogItems = catalogCategoryAndItem?.filter((itemData: CatalogItemsType) => {
                                     return itemData?.item_data?.category_id === category?.id;
                                 });
@@ -300,7 +300,7 @@ const OurMenu = () => {
 
                     <div className="col-span-6">
                         <div className="p-6">
-                            {catalogCategory?.slice(Math.ceil(catalogCategory?.length / 2))?.map((category) => {
+                            {catalogCategory?.filter((_, index) => index % 2 !== 0)?.map((category) => {
                                 const catalogItems = catalogCategoryAndItem?.filter((itemData: CatalogItemsType) => {
                                     return itemData?.item_data?.category_id === category?.id;
                                 });
@@ -582,7 +582,7 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
                                     className="flex items-center justify-between w-full py-[10px] relative"
                                 >
                                     <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                                    <span className=" bg-white min-w-[100px] relative z-[2]">{modifier?.modifier_data?.name}</span>
+                                    <span className=" bg-white min-w-[100px] relative z-[2] ">{modifier?.modifier_data?.name}</span>
                                     <div className="bg-white relative z-[2] flex pl-[10px]">
 
                                         <input

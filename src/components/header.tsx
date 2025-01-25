@@ -10,7 +10,13 @@ function Header() {
   const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen } = useContext(GlobalContext);
   const router = useRouter()
 
-
+  const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+  console.log('isMobileDevice',isMobileDevice);
+  
+  if (isMobileDevice) {
+    window.location.href = 'https://studioq.co.in/';
+    return null;
+  }
 
   const operationalHours: { [key: string]: { open: string; close: string }[] } = {
     Mon: [

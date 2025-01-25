@@ -27,7 +27,7 @@ const NammaSpecials = () => {
 
 
 
-  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem,setUpdateLineItem,
+  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem,
     setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, setGlobalLoading } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
@@ -95,7 +95,7 @@ const NammaSpecials = () => {
     }
   };
 
-console.log('processss',process.env.NEXT_PUBLIC_LOCATION_ID,);
+
 
   const orderCreate = async () => {
     setGlobalLoading(true)
@@ -127,8 +127,9 @@ console.log('processss',process.env.NEXT_PUBLIC_LOCATION_ID,);
     }
   }
 
-  console.log('updateLineItem',updateLineItem);
-  
+  console.log('updateLineItem', updateLineItem);
+
+
   const orderUpdate = async () => {
     setGlobalLoading(true)
     const body: OrderUpdateBodyAdd = {
@@ -409,35 +410,43 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const handleCheckboxChange = (modifierName: string, modifierId: string) => {
     setSelectedOption(modifierName);
 
-    setLineItems((prevData) =>
-      prevData.map((item: LineItems) => {
-        const existingModifiers = item?.modifiers || [];
-        const isDuplicate = existingModifiers.some(
-          (modifier) => modifier.catalog_object_id === modifierId
-        );
-        return {
-          ...item,
-          modifiers: isDuplicate
-            ? existingModifiers
-            : [{ catalog_object_id: modifierId }],
-        };
-      })
+
+
+    setLineItems((prevData: LineItems[]) => {
+      const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+      if (addModifier) {
+        addModifier.modifiers = [{ catalog_object_id: modifierId }]
+      }
+      return prevData
+    }
+
     );
+
+    if (isOrderUpdate && isOrderUpdate !== 'create') {
+      setUpdateLineItem((prevData: LineItems[]) => {
+        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (addModifier) {
+          addModifier.modifiers = [{ catalog_object_id: modifierId }]
+        }
+        return prevData
+      }
+
+      );
+    }
 
 
   };
 
 
-
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
-      {image?.image_data?.url ? <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />:
-      <Image src={placeHolder} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
+      {image?.image_data?.url ? <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
+        <Image src={placeHolder} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
 
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
     <div className="flex flex-col items-center justify-between mt-auto">
-      <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount/100}</span>
+      <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
 
       {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
@@ -485,7 +494,12 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
                 className="flex items-center justify-between w-full py-[10px] relative"
               >
                 <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                <span className=" bg-white min-w-[100px] relative z-[2]">{modifier?.modifier_data?.name}</span>
+                <span
+                  className="bg-white min-w-[100px] relative z-[2] text-left"
+                >
+                  {modifier?.modifier_data?.name}
+                </span>
+
                 <div className="bg-white relative z-[2] flex pl-[10px]">
 
                   <input

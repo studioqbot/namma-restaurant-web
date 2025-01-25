@@ -47,14 +47,14 @@ function Footer() {
                 Terms and Conditions
               </a>
               <span >|</span>
-              <a href="https://studioq.co.in/" className="hover:underline flex items-center gap-1">
+              <Link target='_blank' href="https://studioq.co.in/" className="hover:underline flex items-center gap-1">
                 Built by <Image
                             src="/assets/images/SQ.svg" 
                             alt="Google logo"
                             width={20}
                             height={20}
                           />
-              </a>
+              </Link>
             </div>
             </div>
           </div>
