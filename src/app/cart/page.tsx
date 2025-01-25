@@ -36,7 +36,7 @@ export type OrderUpdateBody = {
 type ButtonComponent = React.ComponentType<{ children: React.ReactNode, style: React.CSSProperties }>;
 
 type CartProps = {
-    getOrderDetails: () => void;
+
     lineItem: LineItemType;
     setCartItemCount: React.Dispatch<React.SetStateAction<number>>;
     cartItemCount: number;
@@ -46,7 +46,7 @@ type CartProps = {
     setUpdateLineItem: React.Dispatch<React.SetStateAction<LineItems[]>>;
     updateLineItem: LineItems[];
     setIsOrderUpdate: React.Dispatch<React.SetStateAction<string>>;
-    setAmount: React.Dispatch<React.SetStateAction<string | number>>;
+
     modifierList: ModifierDataType[] | undefined;
     orderUpdate: (count: string, objectId: string, uid: string, modifierId: string, modifierUid: string) => Promise<void>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -69,7 +69,7 @@ type YourDetailsType = {
 
 function CartScreen() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [amount, setAmount] = useState<string | number>('');
+
     const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<Errors>({
         name: '',
@@ -85,7 +85,7 @@ function CartScreen() {
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
-        setUpdateLineItem, updateLineItem, setIsOrderUpdate, isCountDecreased,
+        setUpdateLineItem, updateLineItem, setIsOrderUpdate, 
         fieldToClear, setFieldToClear, isOrdered, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
@@ -95,18 +95,8 @@ function CartScreen() {
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
-    const getOrderDetails = async () => {
-        const totalBasePrice = orderDetails?.line_items?.reduce((sum: number, item: LineItemType) => sum + (item.base_price_money.amount * parseInt(item?.quantity)), 0);
-        setAmount(totalBasePrice);
 
-    };
 
-    useEffect(() => {
-
-        if (orderDetails?.id && !isCountDecreased) {
-            getOrderDetails();
-        }
-    }, [orderDetails?.id]);
 
     const getModifierListData = async () => {
         try {
@@ -217,8 +207,6 @@ function CartScreen() {
             if (response?.status === 200) {
                 setOrderDetails(response?.data?.order);
                 setLineItems(response?.data?.order?.line_items || []);
-                const totalBasePrice = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + ((item.base_price_money.amount/100) * parseInt(item?.quantity)), 0);
-                setAmount(totalBasePrice);
                 setLoading(false);
                 if (!globalLoading && !response?.data?.order?.line_items) {
                     route.push('/our-menu')
@@ -327,7 +315,7 @@ function CartScreen() {
                                                 (orderDetails?.line_items && orderDetails?.line_items?.length > 0) && orderDetails?.line_items?.map((lineItem: LineItemType) => (
                                                     <CartChild
                                                         key={lineItem?.uid}
-                                                        getOrderDetails={getOrderDetails}
+                   
                                                         lineItem={lineItem}
                                                         setCartItemCount={setCartItemCount}
                                                         cartItemCount={cartItemCount}
@@ -337,7 +325,7 @@ function CartScreen() {
                                                         setUpdateLineItem={setUpdateLineItem}
                                                         updateLineItem={updateLineItem}
                                                         setIsOrderUpdate={setIsOrderUpdate}
-                                                        setAmount={setAmount}
+                      
                                                         modifierList={modifierList}
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
@@ -451,7 +439,7 @@ function CartScreen() {
                                             <span className="bg-[#fff] text-[14px] text-[#222A4A] relative z-1 min-w-[71px] text-right">${orderDetails?.total_discount_money?.amount/100 || 0}</span>
                                         </div>
 
-                                        <div className="flex items-center justify-between py-2 relative" onClick={() => setIsModalOpen(true)}>
+                                        <div className="flex items-center justify-between py-2 relative">
                                             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-0' />
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] pr-[25px] relative z-1">Total Amount</span>
                                             <span className="bg-[#fff] text-[16px] font-semibold text-[#222A4A] relative z-1 min-w-[71px] text-right">${(orderDetails?.total_money?.amount/100) || 0}</span>
@@ -615,7 +603,7 @@ function CartScreen() {
                                 setIsModalOpen(false)
                                 setFieldToClear([])
                                 setUpdateLineItem([]);
-                                setAmount(0);
+
                                 setIsOrderUpdate('')
                                 route.push('/our-menu')
                             }} >
