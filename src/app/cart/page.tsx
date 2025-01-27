@@ -166,7 +166,7 @@ function CartScreen() {
 
     const orderUpdate = async (count: string, objectId: string, uid: string, modifierId: string, modifierUid: string) => {
         setLoading(true)
-        const modifier = modifierId ? [{ catalog_object_id: "RLHKSMEUT6NFNX5IYWV6ESWZ" }] : [];
+        const modifier = modifierId ? [{ catalog_object_id: modifierId }] : [];
         const clear = modifierUid ? [`line_items[${uid}].modifiers[${modifierUid}]`] : [];
         try {
             let body: OrderUpdateBodyAdd;
@@ -678,7 +678,7 @@ const CartChild = (props: CartProps) => {
                 if (response?.status === 200) {
                     setIsModalOpen(true);
                     const modifierData = modifierList?.find((modifier) => modifier?.id === response?.data?.object?.modifier_data?.modifier_list_id)
-                    console.log('modifierData', modifierData, response?.data?.object?.modifier_data?.modifier_list_id);
+              
 
                     setModifierListData(modifierData?.modifier_list_data?.modifiers)
                 }
