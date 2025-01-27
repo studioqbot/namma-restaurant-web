@@ -135,7 +135,7 @@ function CartScreen() {
                 idempotency_key: window.crypto.randomUUID(),
                 location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
                 amount_money: {
-                    amount: orderDetails?.total_money?.amount / 100,
+                    amount: orderDetails?.total_money?.amount,
                     currency: "USD"
                 },
                 order_id: orderDetails?.id,
