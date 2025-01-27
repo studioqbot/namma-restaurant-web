@@ -193,7 +193,8 @@ const OurMenu = () => {
                 setOrderDetails(response?.data?.order);
                 setLineItems(response?.data?.order?.line_items || []);
                 setIsOrderUpdate('updated');
-                setUpdateLineItem([])
+                setUpdateLineItem([]);
+                setFieldToClear([])
 
             }
 

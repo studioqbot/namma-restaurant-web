@@ -7,9 +7,8 @@ import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 
 function Header() {
-  const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen } = useContext(GlobalContext);
+  const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen ,isCartOpen} = useContext(GlobalContext);
   const router = useRouter()
-
 
 
   const operationalHours: { [key: string]: { open: string; close: string }[] } = {
@@ -23,11 +22,11 @@ function Header() {
       { open: "17:30", close: "22:00" },
     ],
     Thu: [
-      { open: "10:30", close: "18:00" },
+      { open: "10:30", close: "15:00" },
       { open: "17:30", close: "22:00" },
     ],
     Fri: [
-      { open: "09:30", close: "15:00" },
+      { open: "11:30", close: "15:00" },
       { open: "17:30", close: "22:00" },
     ],
     Sat: [
@@ -39,10 +38,11 @@ function Header() {
       { open: "17:30", close: "22:00" },
     ],
   };
+
   useEffect(() => {
     const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
     if (isMobileDevice) { 
-      // window.location.href = 'https://studioq.co.in/';
+      window.location.href = 'https://namma-restaurant-mobile-sjsf.vercel.app/';
 
     }
 
@@ -86,7 +86,7 @@ function Header() {
             <Link href="/our-menu" >Our Menu</Link>
             <Link href="https://www.google.com/maps?q=181+Ranch+Dr,+Milpitas+95035" target='_blank'>Location</Link>
             <Link href="/contact-us" >Contact us</Link>
-            {true && <button disabled={lineItems?.length === 0 ? true : false} className="bg-[#FFC300] px-[28px] py-[7px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative" onClick={() => {
+            {isCartOpen && <button disabled={lineItems?.length === 0 ? true : false} className="bg-[#FFC300] px-[28px] py-[7px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative" onClick={() => {
 
               if (!isOrderUpdate) {
                 setIsOrderUpdate('create');

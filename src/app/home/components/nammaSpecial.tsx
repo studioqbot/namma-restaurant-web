@@ -28,8 +28,8 @@ const NammaSpecials = () => {
 
 
 
-  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem,
-    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, setGlobalLoading } = useContext(GlobalContext);
+  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem,setFieldToClear,
+    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered,fieldToClear, setGlobalLoading } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
@@ -135,39 +135,41 @@ const NammaSpecials = () => {
     }
   }
 
-  console.log('updateLineItem', updateLineItem);
 
 
   const orderUpdate = async () => {
     setGlobalLoading(true)
     const body: OrderUpdateBodyAdd = {
-      order: {
-        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-        line_items: updateLineItem,
-        pricing_options: {
-          auto_apply_taxes: true,
-          auto_apply_discounts: true,
-        },
-        version: orderDetails?.version
-      }
+        fields_to_clear: fieldToClear,
+        order: {
+            location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
+            line_items: updateLineItem,
+
+            pricing_options: {
+                auto_apply_taxes: true,
+                auto_apply_discounts: true,
+            },
+            version: orderDetails?.version
+        }
     }
     try {
-      const response = await orderUpdateApi(body, orderDetails?.id)
-      setGlobalLoading(false)
-      if (response?.status === 200) {
+        const response = await orderUpdateApi(body, orderDetails?.id)
+        setGlobalLoading(false)
+        if (response?.status === 200) {
+            setIsOrdered(true);
+            setOrderDetails(response?.data?.order);
+            setLineItems(response?.data?.order?.line_items || []);
+            setIsOrderUpdate('updated');
+            setUpdateLineItem([]);
+            setFieldToClear([])
 
-        setOrderDetails(response?.data?.order);
-        setLineItems(response?.data?.order?.line_items);
-        setUpdateLineItem([])
-        setIsOrderUpdate('updated');
-        setIsOrdered(true);
-      }
+        }
 
     } catch (error) {
-      setGlobalLoading(false)
-      console.log('Error', error);
+        setGlobalLoading(false)
+        console.log('Error', error);
     }
-  };
+};
 
   const getNammaSpeacialDataFromLocal = () => {
     const imageDatas: ImageType[] | null = getDataFromLocalStorage('ImageData');
@@ -277,7 +279,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
   const [quantity, setQuantity] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem, updateLineItem, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
+  const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
   const [selectedOption, setSelectedOption] = useState<string>('');
@@ -287,112 +289,6 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       (dataItem: LineItems) => dataItem?.catalog_object_id === data?.item_data?.variations[0]?.id
     );
   }, [lineItems, data]);
-
-
-  const handleCountIncrement = async (quantityVal: string | undefined) => {
-    setIsItemAdded(true)
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-
-    setQuantity(count + 1);
-    setCartItemCount(cartItemCount + 1);
-    setLineItems((prevData: LineItems[]) => {
-      const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-      if (items) {
-        items.quantity = String(count + 1);
-        return prevData;
-      }
-      return prevData
-    });
-    if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-      setUpdateLineItem((prevData: LineItems[]) => {
-        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-
-        if (!items) {
-          return [...prevData, {
-            quantity: String(count + 1),
-            uid: updateItem?.uid,
-            catalog_object_id: data?.item_data?.variations[0]?.id
-          }]
-        } else {
-          items.quantity = String(count + 1);
-          items.uid = updateItem?.uid;
-          return prevData;
-        }
-      });
-    }
-  }
-
-
-
-
-
-
-  const handleQuantityDecrement = (quantityVal: string | undefined) => {
-
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-    setCartItemCount(cartItemCount - 1);
-    if (count == 1) {
-      setIsCountDecreased(true)
-      setIsItemAdded(false)
-      setIsAdded(false);
-
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-      const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-      setLineItems(removeLineItem);
-
-
-      const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setUpdateLineItem(removeUpdateLineItem);
-
-      const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setOrderDetails((prevData: OrderDetailsType) => {
-        return { ...prevData, line_items: removeLineItemUpdate };
-      });
-
-    } else {
-      setIsItemAdded(true);
-
-      setLineItems((prevData: LineItems[]) => {
-        const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (item) {
-          item.quantity = String(count - 1);
-          return prevData;
-        }
-        return prevData;
-      });
-
-      if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
-
-        setUpdateLineItem((prevData: LineItems[]) => {
-          const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-          if (!items) {
-            return [...prevData, {
-              quantity: String(count - 1),
-              uid: updateItem?.uid,
-              catalog_object_id: data?.item_data?.variations[0]?.id
-            }]
-          } else {
-            items.quantity = String(count - 1);
-            items.uid = updateItem?.uid;
-            return prevData;
-          }
-        });
-      }
-    };
-
-    if (matchedItem?.quantity) {
-      setQuantity(parseInt(matchedItem?.quantity) - 1);
-    } else {
-      setQuantity(quantity - 1)
-    };
-  };
-
-
-
 
 
   const handleAddClick = () => {
@@ -407,7 +303,9 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
       setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
-    }
+    };
+    console.log('isOrderUpdate',isOrderUpdate);
+    
     if (!isOrderUpdate) {
       setLineItems([...lineItems, {
         quantity: String(quantity + 1),
@@ -429,33 +327,135 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
     }
   }
 
-  const handleCheckboxChange = (modifierName: string, modifierId: string) => {
+
+
+const handleCountIncrement = async (quantityVal: string | undefined) => {
+    setIsItemAdded(true)
+    const count = quantityVal ? parseInt(quantityVal) : quantity;
+
+    setQuantity(count + 1);
+    setCartItemCount(cartItemCount + 1);
+    setLineItems((prevData: LineItems[]) => {
+        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (items) {
+            items.quantity = String(count + 1);
+            return prevData;
+        }
+        return prevData
+    });
+    if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+
+        setUpdateLineItem((prevData: LineItems[]) => {
+            const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+
+            if (!items) {
+                return [...prevData, {
+                    quantity: String(count + 1),
+                    uid: updateItem?.uid,
+                    catalog_object_id: data?.item_data?.variations[0]?.id
+                }]
+            } else {
+                items.quantity = String(count + 1);
+                items.uid = updateItem?.uid;
+                return prevData;
+            }
+        });
+    }
+}
+
+
+const handleQuantityDecrement = (quantityVal: string | undefined) => {
+    setIsItemAdded(true);
+    const count = quantityVal ? parseInt(quantityVal) : quantity;
+    setCartItemCount(cartItemCount - 1);
+    if (count == 1) {
+        setIsCountDecreased(true)
+        setIsAdded(false);
+
+
+        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+        setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
+        const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
+        setLineItems(removeLineItem);
+
+
+        const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+        setUpdateLineItem(removeUpdateLineItem);
+
+        const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+        setOrderDetails((prevData: OrderDetailsType) => {
+            return { ...prevData, line_items: removeLineItemUpdate };
+        });
+
+    } else {
+
+        setLineItems((prevData: LineItems[]) => {
+            const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+            if (item) {
+                item.quantity = String(count - 1);
+                return prevData;
+            }
+            return prevData;
+        });
+
+        if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+            const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+
+            setUpdateLineItem((prevData: LineItems[]) => {
+                const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+                if (!items) {
+                    return [...prevData, {
+                        quantity: String(count - 1),
+                        uid: updateItem?.uid,
+                        catalog_object_id: data?.item_data?.variations[0]?.id
+                    }]
+                } else {
+                    items.quantity = String(count - 1);
+                    items.uid = updateItem?.uid;
+                    return prevData;
+                }
+            });
+        }
+    };
+
+    if (matchedItem?.quantity) {
+        setQuantity(parseInt(matchedItem?.quantity) - 1);
+    } else {
+        setQuantity(quantity - 1)
+    };
+};
+
+
+const handleCheckboxChange = (modifierName: string, modifierId: string) => {
     setSelectedOption(modifierName);
 
+
+
     setLineItems((prevData: LineItems[]) => {
-      const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-      if (addModifier) {
-        addModifier.modifiers = [{ catalog_object_id: modifierId }]
-      }
-      return prevData
+        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (addModifier) {
+            addModifier.modifiers = [{ catalog_object_id: modifierId }]
+        }
+        return prevData
     }
 
     );
 
     if (isOrderUpdate && isOrderUpdate !== 'create') {
-      setUpdateLineItem((prevData: LineItems[]) => {
-        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (addModifier) {
-          addModifier.modifiers = [{ catalog_object_id: modifierId }]
+        setUpdateLineItem((prevData: LineItems[]) => {
+            const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+            if (addModifier) {
+                addModifier.modifiers = [{ catalog_object_id: modifierId }]
+            }
+            return prevData
         }
-        return prevData
-      }
 
-      );
+        );
     }
 
 
-  };
+};
 
 
   return <div className="flex flex-col items-center rounded-lg text-center">

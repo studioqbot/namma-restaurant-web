@@ -157,7 +157,9 @@ function CartScreen() {
 
                 }
             } catch (error) {
+                setLoading(true);
                 console.log("Error", error);
+                alert('Card nonce not found');
 
             }
         }
@@ -311,7 +313,7 @@ function CartScreen() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {
+                                            {!globalLoading ?
                                                 (orderDetails?.line_items && orderDetails?.line_items?.length > 0) && orderDetails?.line_items?.map((lineItem: LineItemType) => (
                                                     <CartChild
                                                         key={lineItem?.uid}
@@ -330,16 +332,15 @@ function CartScreen() {
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
                                                     />
-                                                ))
-                                            }
-                                            {globalLoading &&
+                                                )) : 
                                                 <tr>
                                                     <td colSpan={3} >
                                                         <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
                                                             <Image className='h-[100px] w-[100px] ' src={LoadingGif} alt="Loading..." />
                                                         </div>
                                                     </td>
-                                                </tr>}
+                                                </tr>
+                                            }
                                         </tbody>
                                     </table>
                                 </div>
@@ -619,6 +620,7 @@ function CartScreen() {
             {
                 loading && <Loader />
             }
+            
         </>
     );
 };
