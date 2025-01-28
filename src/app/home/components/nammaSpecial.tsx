@@ -28,8 +28,8 @@ const NammaSpecials = () => {
 
 
 
-  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem,setFieldToClear,
-    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered,fieldToClear, setGlobalLoading } = useContext(GlobalContext);
+  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem, setFieldToClear,
+    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, fieldToClear, setGlobalLoading, isCartOpen } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
@@ -140,36 +140,36 @@ const NammaSpecials = () => {
   const orderUpdate = async () => {
     setGlobalLoading(true)
     const body: OrderUpdateBodyAdd = {
-        fields_to_clear: fieldToClear,
-        order: {
-            location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-            line_items: updateLineItem,
+      fields_to_clear: fieldToClear,
+      order: {
+        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
+        line_items: updateLineItem,
 
-            pricing_options: {
-                auto_apply_taxes: true,
-                auto_apply_discounts: true,
-            },
-            version: orderDetails?.version
-        }
+        pricing_options: {
+          auto_apply_taxes: true,
+          auto_apply_discounts: true,
+        },
+        version: orderDetails?.version
+      }
     }
     try {
-        const response = await orderUpdateApi(body, orderDetails?.id)
-        setGlobalLoading(false)
-        if (response?.status === 200) {
-            setIsOrdered(true);
-            setOrderDetails(response?.data?.order);
-            setLineItems(response?.data?.order?.line_items || []);
-            setIsOrderUpdate('updated');
-            setUpdateLineItem([]);
-            setFieldToClear([])
+      const response = await orderUpdateApi(body, orderDetails?.id)
+      setGlobalLoading(false)
+      if (response?.status === 200) {
+        setIsOrdered(true);
+        setOrderDetails(response?.data?.order);
+        setLineItems(response?.data?.order?.line_items || []);
+        setIsOrderUpdate('updated');
+        setUpdateLineItem([]);
+        setFieldToClear([])
 
-        }
+      }
 
     } catch (error) {
-        setGlobalLoading(false)
-        console.log('Error', error);
+      setGlobalLoading(false)
+      console.log('Error', error);
     }
-};
+  };
 
   const getNammaSpeacialDataFromLocal = () => {
     const imageDatas: ImageType[] | null = getDataFromLocalStorage('ImageData');
@@ -279,7 +279,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
   const [quantity, setQuantity] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
+  const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem,
+    isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
   const [selectedOption, setSelectedOption] = useState<string>('');
@@ -304,8 +305,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
     };
-    console.log('isOrderUpdate',isOrderUpdate);
-    
+    console.log('isOrderUpdate', isOrderUpdate);
+
     if (!isOrderUpdate) {
       setLineItems([...lineItems, {
         quantity: String(quantity + 1),
@@ -329,133 +330,133 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
 
 
-const handleCountIncrement = async (quantityVal: string | undefined) => {
+  const handleCountIncrement = async (quantityVal: string | undefined) => {
     setIsItemAdded(true)
     const count = quantityVal ? parseInt(quantityVal) : quantity;
 
     setQuantity(count + 1);
     setCartItemCount(cartItemCount + 1);
     setLineItems((prevData: LineItems[]) => {
-        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (items) {
-            items.quantity = String(count + 1);
-            return prevData;
-        }
-        return prevData
+      const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+      if (items) {
+        items.quantity = String(count + 1);
+        return prevData;
+      }
+      return prevData
     });
     if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
 
-        setUpdateLineItem((prevData: LineItems[]) => {
-            const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+      setUpdateLineItem((prevData: LineItems[]) => {
+        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
 
-            if (!items) {
-                return [...prevData, {
-                    quantity: String(count + 1),
-                    uid: updateItem?.uid,
-                    catalog_object_id: data?.item_data?.variations[0]?.id
-                }]
-            } else {
-                items.quantity = String(count + 1);
-                items.uid = updateItem?.uid;
-                return prevData;
-            }
-        });
+        if (!items) {
+          return [...prevData, {
+            quantity: String(count + 1),
+            uid: updateItem?.uid,
+            catalog_object_id: data?.item_data?.variations[0]?.id
+          }]
+        } else {
+          items.quantity = String(count + 1);
+          items.uid = updateItem?.uid;
+          return prevData;
+        }
+      });
     }
-}
+  }
 
 
-const handleQuantityDecrement = (quantityVal: string | undefined) => {
+  const handleQuantityDecrement = (quantityVal: string | undefined) => {
     setIsItemAdded(true);
     const count = quantityVal ? parseInt(quantityVal) : quantity;
     setCartItemCount(cartItemCount - 1);
     if (count == 1) {
-        setIsCountDecreased(true)
-        setIsAdded(false);
+      setIsCountDecreased(true)
+      setIsAdded(false);
 
 
-        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-        setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
-        const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-        setLineItems(removeLineItem);
+      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+      setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
+      const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
+      setLineItems(removeLineItem);
 
 
-        const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-        setUpdateLineItem(removeUpdateLineItem);
+      const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+      setUpdateLineItem(removeUpdateLineItem);
 
-        const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-        setOrderDetails((prevData: OrderDetailsType) => {
-            return { ...prevData, line_items: removeLineItemUpdate };
-        });
+      const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+      setOrderDetails((prevData: OrderDetailsType) => {
+        return { ...prevData, line_items: removeLineItemUpdate };
+      });
 
     } else {
 
-        setLineItems((prevData: LineItems[]) => {
-            const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-            if (item) {
-                item.quantity = String(count - 1);
-                return prevData;
-            }
-            return prevData;
-        });
-
-        if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-            const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
-
-            setUpdateLineItem((prevData: LineItems[]) => {
-                const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-                if (!items) {
-                    return [...prevData, {
-                        quantity: String(count - 1),
-                        uid: updateItem?.uid,
-                        catalog_object_id: data?.item_data?.variations[0]?.id
-                    }]
-                } else {
-                    items.quantity = String(count - 1);
-                    items.uid = updateItem?.uid;
-                    return prevData;
-                }
-            });
+      setLineItems((prevData: LineItems[]) => {
+        const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (item) {
+          item.quantity = String(count - 1);
+          return prevData;
         }
+        return prevData;
+      });
+
+      if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+
+        setUpdateLineItem((prevData: LineItems[]) => {
+          const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+          if (!items) {
+            return [...prevData, {
+              quantity: String(count - 1),
+              uid: updateItem?.uid,
+              catalog_object_id: data?.item_data?.variations[0]?.id
+            }]
+          } else {
+            items.quantity = String(count - 1);
+            items.uid = updateItem?.uid;
+            return prevData;
+          }
+        });
+      }
     };
 
     if (matchedItem?.quantity) {
-        setQuantity(parseInt(matchedItem?.quantity) - 1);
+      setQuantity(parseInt(matchedItem?.quantity) - 1);
     } else {
-        setQuantity(quantity - 1)
+      setQuantity(quantity - 1)
     };
-};
+  };
 
 
-const handleCheckboxChange = (modifierName: string, modifierId: string) => {
+  const handleCheckboxChange = (modifierName: string, modifierId: string) => {
     setSelectedOption(modifierName);
 
 
 
     setLineItems((prevData: LineItems[]) => {
-        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (addModifier) {
-            addModifier.modifiers = [{ catalog_object_id: modifierId }]
-        }
-        return prevData
+      const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+      if (addModifier) {
+        addModifier.modifiers = [{ catalog_object_id: modifierId }]
+      }
+      return prevData
     }
 
     );
 
     if (isOrderUpdate && isOrderUpdate !== 'create') {
-        setUpdateLineItem((prevData: LineItems[]) => {
-            const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-            if (addModifier) {
-                addModifier.modifiers = [{ catalog_object_id: modifierId }]
-            }
-            return prevData
+      setUpdateLineItem((prevData: LineItems[]) => {
+        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (addModifier) {
+          addModifier.modifiers = [{ catalog_object_id: modifierId }]
         }
+        return prevData
+      }
 
-        );
+      );
     }
 
 
-};
+  };
 
 
   return <div className="flex flex-col items-center rounded-lg text-center">
@@ -468,98 +469,98 @@ const handleCheckboxChange = (modifierName: string, modifierId: string) => {
     <div className="flex flex-col items-center justify-between mt-auto">
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
-
+      {isCartOpen && <>
       {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
-        <button
-          className="px-3 py-1 text-red-600 hover:bg-gray-100"
-          onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
-        >
-          -
-        </button>
-        <span className="px-3 py-1"> {matchedItem ? matchedItem?.quantity : quantity}</span>
-        <button
-          className="px-3 py-1 text-red-600 hover:bg-gray-100"
-          onClick={() => {
-            handleCountIncrement(matchedItem?.quantity)
-          }}
-        >
-          +
-        </button>
-      </div> : <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
+          <button
+            className="px-3 py-1 text-red-600 hover:bg-gray-100"
+            onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
+          >
+            -
+          </button>
+          <span className="px-3 py-1"> {matchedItem ? matchedItem?.quantity : quantity}</span>
+          <button
+            className="px-3 py-1 text-red-600 hover:bg-gray-100"
+            onClick={() => {
+              handleCountIncrement(matchedItem?.quantity)
+            }}
+          >
+            +
+          </button>
+        </div> : <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
 
-        <button
-          className="px-3 py-1 px-[10px] min-w-[100px] hover:bg-gray-100"
-          onClick={() => handleAddClick()}
-        >
-          Add
-        </button>
-      </div>}
+          <button
+            className="px-3 py-1 px-[10px] min-w-[100px] hover:bg-gray-100"
+            onClick={() => handleAddClick()}
+          >
+            Add
+          </button>
+        </div>}
+      </>}
 
-
-    </div>
-    {isModalOpen && (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-        onClick={() => setIsModalOpen(false)}
-      >
+      </div>
+      {isModalOpen && (
         <div
-          className="bg-white rounded-lg w-[330px] p-[30px] relative"
-          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
+          onClick={() => setIsModalOpen(false)}
         >
-          <div className="w-full flex flex-col items-start justify-center">
-            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-            {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
-              <div
-                key={modifier?.id}
-                className="flex items-center justify-between w-full py-[10px] relative"
-              >
-                <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                <span
-                  className="bg-white min-w-[100px] relative z-[2] text-left"
+          <div
+            className="bg-white rounded-lg w-[330px] p-[30px] relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-full flex flex-col items-start justify-center">
+              <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
+              {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
+                <div
+                  key={modifier?.id}
+                  className="flex items-center justify-between w-full py-[10px] relative"
                 >
-                  {modifier?.modifier_data?.name}
-                </span>
-
-                <div className="bg-white relative z-[2] flex pl-[10px]">
-
-                  <input
-                    type='radio'
-                    id={modifier?.modifier_data?.name}
-                    name="customization"
-                    value={modifier?.modifier_data?.name}
-                    checked={selectedOption === modifier?.modifier_data?.name}
-                    onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
-                    className="hidden peer"
-                  />
-
-                  <label
-                    htmlFor={modifier?.modifier_data?.name}
-                    className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
+                  <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
+                  <span
+                    className="bg-white min-w-[100px] relative z-[2] text-left"
                   >
-                    <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                  </label>
-                </div>
+                    {modifier?.modifier_data?.name}
+                  </span>
 
-                {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
+                  <div className="bg-white relative z-[2] flex pl-[10px]">
+
+                    <input
+                      type='radio'
+                      id={modifier?.modifier_data?.name}
+                      name="customization"
+                      value={modifier?.modifier_data?.name}
+                      checked={selectedOption === modifier?.modifier_data?.name}
+                      onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
+                      className="hidden peer"
+                    />
+
+                    <label
+                      htmlFor={modifier?.modifier_data?.name}
+                      className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
+                    >
+                      <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
+                    </label>
+                  </div>
+
+                  {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
                                     
                                     </span> */}
 
+                </div>
+              ))}
+              <div className='w-full flex justify-end mt-4' onClick={() => {
+                if (selectedOption) {
+                  setIsModalOpen(false)
+                }
+              }}>
+                <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
               </div>
-            ))}
-            <div className='w-full flex justify-end mt-4' onClick={() => {
-              if (selectedOption) {
-                setIsModalOpen(false)
-              }
-            }}>
-              <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
-            </div>
 
+            </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
+      )}
+    </div>
 })
 
-NammaSpecialCard.displayName = "NammaSpecialCard";
-export default NammaSpecials;
+    NammaSpecialCard.displayName = "NammaSpecialCard";
+    export default NammaSpecials;

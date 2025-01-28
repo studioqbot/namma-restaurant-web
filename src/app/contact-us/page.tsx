@@ -1,11 +1,12 @@
 'use client';
+import GlobalContext from '@/constants/global-context';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext } from 'react';
 
 const OurMenu = () => {
 
-
+const{isCartOpen } = useContext(GlobalContext);
     return (
         <div className="w-full">
             <div className="container">
@@ -68,7 +69,7 @@ const OurMenu = () => {
                             <div className='w-full p-[25px] py-0'>
                                 <div className="flex w-full max-w-4xl border border-[#222A4A] rounded-lg overflow-hidden">
                                     {/* Left Section */}
-                                    <div className="flex items-center flex-col justify-center bg-[#34A853] text-white p-4 w-[20%]">
+                                    <div className={`flex items-center flex-col justify-center ${isCartOpen ? 'bg-[#34A853]' : 'bg-[#A02621]'} text-white p-4 w-[20%]`}>
                                             <div className="text-2xl">
                                                 <Image
                                                     src="/assets/images/items.svg"
@@ -77,7 +78,7 @@ const OurMenu = () => {
                                                     height={24}
                                                 />
                                             </div>
-                                            <p className="text-[14px] text-[#FFFFFF] font-semibold leading-[16px] font-unbounded text-center mt-[6px]">OPEN <br /> NOW</p>
+                                            <p className="text-[14px] text-[#FFFFFF] font-semibold leading-[16px] font-unbounded text-center mt-[6px]">{!isCartOpen && 'CLOSED'}{isCartOpen && 'OPEN'} <br /> {isCartOpen && 'NOW'}   </p>
                                         </div>
 
                                     {/* Right Section */}
