@@ -29,7 +29,7 @@ const NammaSpecials = () => {
 
 
   const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem, setFieldToClear,
-    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, fieldToClear, setGlobalLoading, isCartOpen } = useContext(GlobalContext);
+    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, fieldToClear, setGlobalLoading } = useContext(GlobalContext);
   const [isItemAdded, setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
