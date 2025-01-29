@@ -58,6 +58,8 @@ const OurMenu = () => {
             const response = await catalogItems(params);
             if (response?.status === 200) {
                 setDataInLocalStorage('CatalogCategoryData', response?.data?.objects);
+                const currentTimePlusFiveMinutes = dayjs().add(1, 'day').toDate();
+                setDataInLocalStorage('Date', currentTimePlusFiveMinutes);
                 setCatalogCategory(response?.data?.objects);
                 setCatalogCategoryTab(response?.data?.objects);
             }
@@ -73,7 +75,7 @@ const OurMenu = () => {
             const response = await catalogItems(params);
             if (response?.status === 200) {
                 setDataInLocalStorage('CatalogItemsData', response?.data?.objects)
-                const currentTimePlusFiveMinutes = dayjs().add(1, 'week').toDate();
+                const currentTimePlusFiveMinutes = dayjs().add(1, 'day').toDate();
 
                 setDataInLocalStorage('Date', currentTimePlusFiveMinutes);
 
