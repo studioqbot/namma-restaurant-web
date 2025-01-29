@@ -36,7 +36,8 @@ const OurMenu = () => {
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const [modifierIds, setModifierIds] = useState<ModifierIds[]>([]);
     const [fieldToClear, setFieldToClear] = useState<string[]>([]);
-
+    const [cursor, setCursor] = useState<string>('');
+    const limit = 100;
 
     const getModifierListData = async () => {
         try {
@@ -71,7 +72,7 @@ const OurMenu = () => {
 
     const getCatalofItemAndCAtegoryData = async () => {
         try {
-            const params = { types: 'ITEM' }
+            const params = { types: 'ITEM', limit: limit }
             const response = await catalogItems(params);
             if (response?.status === 200) {
                 setDataInLocalStorage('CatalogItemsData', response?.data?.objects)
@@ -80,6 +81,33 @@ const OurMenu = () => {
                 setDataInLocalStorage('Date', currentTimePlusFiveMinutes);
 
                 setCatalogCategoryAndItem(response?.data?.objects)
+                setCursor(response?.data?.cursor)
+            }
+
+
+        } catch (error) {
+            console.log('Error', error);
+
+        }
+    };
+
+    const getCatalofItemAndCAtegoryDataPage2 = async () => {
+        try {
+            const params = { types: 'ITEM', cursor: cursor, limit: limit }
+            const response = await catalogItems(params);
+            if (response?.status === 200) {
+                if (response?.data?.cursor) {
+                    setCursor(response?.data?.cursor)
+                } else {
+                    const currentTimePlusFiveMinutes = dayjs().add(1, 'day').toDate();
+                    setDataInLocalStorage('DatePage2', currentTimePlusFiveMinutes);
+                    setCursor('')
+                }
+                const itemData = [...catalogCategoryAndItem, ...response?.data?.objects];
+                setDataInLocalStorage('CatalogItemsData', itemData)
+
+                setCatalogCategoryAndItem(itemData);
+
             }
 
 
@@ -136,6 +164,14 @@ const OurMenu = () => {
         }
 
     }, []);
+
+    useEffect(() => {
+        const dateData: Dayjs | null = getDataFromLocalStorage('DatePage2');
+        if (cursor && ((dayjs(dateData).isSame() || dayjs(dateData).isBefore()) || !dateData)) {
+            getCatalofItemAndCAtegoryDataPage2()
+        }
+
+    }, [cursor])
 
     const orderCreate = async () => {
         setGlobalLoading(true)
@@ -220,8 +256,6 @@ const OurMenu = () => {
         }
 
     }, [isOrderUpdate]);
-
-
 
 
 
