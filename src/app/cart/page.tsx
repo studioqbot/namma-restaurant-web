@@ -113,8 +113,6 @@ function CartScreen() {
     };
 
     const handleSubmitPayment = async (tokenData: TokenData) => {
-        console.log('tokenData', tokenData);
-
         const errorData = { ...errors } as Errors;
         if (!yourDetails?.name) {
             errorData.name = 'Full name is required'
@@ -286,7 +284,6 @@ function CartScreen() {
     useEffect(() => {
         getModifierListData()
     }, [])
-
 
     return (
         <>
@@ -513,9 +510,9 @@ function CartScreen() {
 
                                 <PaymentForm
 
-                                    applicationId="sandbox-sq0idb-CdrXsMRXd9_VI-MO3QiAHQ"
+                                    applicationId={process.env.NEXT_PUBLIC_SQUIRE_APP_ID}
                                     cardTokenizeResponseReceived={(token: TokenData) => {
-                                            handleSubmitPayment(token)
+                                            handleSubmitPayment(token);
                                     }}
 
                                     locationId={process.env.NEXT_PUBLIC_LOCATION_ID}
