@@ -86,7 +86,7 @@ function CartScreen() {
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
         setUpdateLineItem, updateLineItem, setIsOrderUpdate,
-        fieldToClear, setFieldToClear, isOrdered, globalLoading
+         setFieldToClear, isOrdered, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
 
@@ -513,14 +513,9 @@ function CartScreen() {
 
                                 <PaymentForm
 
-                                    applicationId={process.env.NEXT_PUBLIC_SQUIRE_APP_ID}
+                                    applicationId="sandbox-sq0idb-CdrXsMRXd9_VI-MO3QiAHQ"
                                     cardTokenizeResponseReceived={(token: TokenData) => {
-                                        if (fieldToClear?.length > 0) {
-                                            // orderUpdate(token)
-                                        } else {
                                             handleSubmitPayment(token)
-                                        }
-
                                     }}
 
                                     locationId={process.env.NEXT_PUBLIC_LOCATION_ID}
