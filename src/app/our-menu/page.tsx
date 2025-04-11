@@ -290,7 +290,7 @@ const OurMenu = () => {
                             if (!item?.category_data?.is_top_level) return null;
                             // if (!category?.category_data?.loca) return null;
 
-                            console.log("item285 category_data", { i }, item.category_data.name, item);
+                
 
                             return (
                                 <button
