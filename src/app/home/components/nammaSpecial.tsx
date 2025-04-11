@@ -276,7 +276,7 @@ const NammaSpecials = () => {
 const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
   const [quantity, setQuantity] = useState(0);
-  const [isAdded, setIsAdded] = useState(false);
+  // const [isAdded, setIsAdded] = useState(false);
   const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem,
     isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -290,140 +290,140 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   }, [lineItems, data]);
 
 
-  const handleAddClick = () => {
-    setIsItemAdded(true)
-    setQuantity(quantity + 1)
-    setCartItemCount(cartItemCount + 1)
-    setIsAdded(true);
-    if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
-      setIsModalOpen(true);
+  // const handleAddClick = () => {
+  //   setIsItemAdded(true)
+  //   setQuantity(quantity + 1)
+  //   setCartItemCount(cartItemCount + 1)
+  //   // setIsAdded(true);
+  //   if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
+  //     setIsModalOpen(true);
 
-      const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id) as ModifierDataType;
+  //     const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id) as ModifierDataType;
 
-      setModifierListData(modifierData?.modifier_list_data?.modifiers)
+  //     setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
-    };
-
-
-    if (!isOrderUpdate) {
-      setLineItems([...lineItems, {
-        quantity: String(quantity + 1),
-        catalog_object_id: data?.item_data?.variations[0]?.id,
-      }]);
-    } else {
-      setLineItems((prevData: LineItems[]) => {
-        return [...prevData, {
-          quantity: String(quantity + 1),
-          catalog_object_id: data?.item_data?.variations[0]?.id,
-        }]
-      });
-      setUpdateLineItem((prevData: LineItems[]) => {
-        return [...prevData, {
-          quantity: String(quantity + 1),
-          catalog_object_id: data?.item_data?.variations[0]?.id,
-        }]
-      })
-    }
-  }
+  //   };
 
 
-
-  const handleCountIncrement = async (quantityVal: string | undefined) => {
-    setIsItemAdded(true)
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-
-    setQuantity(count + 1);
-    setCartItemCount(cartItemCount + 1);
-    setLineItems((prevData: LineItems[]) => {
-      const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-      if (items) {
-        items.quantity = String(count + 1);
-        return prevData;
-      }
-      return prevData
-    });
-    if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-      setUpdateLineItem((prevData: LineItems[]) => {
-        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-
-        if (!items) {
-          return [...prevData, {
-            quantity: String(count + 1),
-            uid: updateItem?.uid,
-            catalog_object_id: data?.item_data?.variations[0]?.id
-          }]
-        } else {
-          items.quantity = String(count + 1);
-          items.uid = updateItem?.uid;
-          return prevData;
-        }
-      });
-    }
-  }
+  //   if (!isOrderUpdate) {
+  //     setLineItems([...lineItems, {
+  //       quantity: String(quantity + 1),
+  //       catalog_object_id: data?.item_data?.variations[0]?.id,
+  //     }]);
+  //   } else {
+  //     setLineItems((prevData: LineItems[]) => {
+  //       return [...prevData, {
+  //         quantity: String(quantity + 1),
+  //         catalog_object_id: data?.item_data?.variations[0]?.id,
+  //       }]
+  //     });
+  //     setUpdateLineItem((prevData: LineItems[]) => {
+  //       return [...prevData, {
+  //         quantity: String(quantity + 1),
+  //         catalog_object_id: data?.item_data?.variations[0]?.id,
+  //       }]
+  //     })
+  //   }
+  // }
 
 
-  const handleQuantityDecrement = (quantityVal: string | undefined) => {
-    setIsItemAdded(true);
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-    setCartItemCount(cartItemCount - 1);
-    if (count == 1) {
-      setIsCountDecreased(true)
-      setIsAdded(false);
+
+  // const handleCountIncrement = async (quantityVal: string | undefined) => {
+  //   setIsItemAdded(true)
+  //   const count = quantityVal ? parseInt(quantityVal) : quantity;
+
+  //   setQuantity(count + 1);
+  //   setCartItemCount(cartItemCount + 1);
+  //   setLineItems((prevData: LineItems[]) => {
+  //     const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+  //     if (items) {
+  //       items.quantity = String(count + 1);
+  //       return prevData;
+  //     }
+  //     return prevData
+  //   });
+  //   if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+  //     const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+
+  //     setUpdateLineItem((prevData: LineItems[]) => {
+  //       const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+
+  //       if (!items) {
+  //         return [...prevData, {
+  //           quantity: String(count + 1),
+  //           uid: updateItem?.uid,
+  //           catalog_object_id: data?.item_data?.variations[0]?.id
+  //         }]
+  //       } else {
+  //         items.quantity = String(count + 1);
+  //         items.uid = updateItem?.uid;
+  //         return prevData;
+  //       }
+  //     });
+  //   }
+  // }
 
 
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-      setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
-      const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-      setLineItems(removeLineItem);
+  // const handleQuantityDecrement = (quantityVal: string | undefined) => {
+  //   setIsItemAdded(true);
+  //   const count = quantityVal ? parseInt(quantityVal) : quantity;
+  //   setCartItemCount(cartItemCount - 1);
+  //   if (count == 1) {
+  //     setIsCountDecreased(true)
+  //     // setIsAdded(false);
 
 
-      const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setUpdateLineItem(removeUpdateLineItem);
+  //     const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+  //     setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
+  //     const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
+  //     setLineItems(removeLineItem);
 
-      const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setOrderDetails((prevData: OrderDetailsType) => {
-        return { ...prevData, line_items: removeLineItemUpdate };
-      });
 
-    } else {
+  //     const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+  //     setUpdateLineItem(removeUpdateLineItem);
 
-      setLineItems((prevData: LineItems[]) => {
-        const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (item) {
-          item.quantity = String(count - 1);
-          return prevData;
-        }
-        return prevData;
-      });
+  //     const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+  //     setOrderDetails((prevData: OrderDetailsType) => {
+  //       return { ...prevData, line_items: removeLineItemUpdate };
+  //     });
 
-      if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+  //   } else {
 
-        setUpdateLineItem((prevData: LineItems[]) => {
-          const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-          if (!items) {
-            return [...prevData, {
-              quantity: String(count - 1),
-              uid: updateItem?.uid,
-              catalog_object_id: data?.item_data?.variations[0]?.id
-            }]
-          } else {
-            items.quantity = String(count - 1);
-            items.uid = updateItem?.uid;
-            return prevData;
-          }
-        });
-      }
-    };
+  //     setLineItems((prevData: LineItems[]) => {
+  //       const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+  //       if (item) {
+  //         item.quantity = String(count - 1);
+  //         return prevData;
+  //       }
+  //       return prevData;
+  //     });
 
-    if (matchedItem?.quantity) {
-      setQuantity(parseInt(matchedItem?.quantity) - 1);
-    } else {
-      setQuantity(quantity - 1)
-    };
-  };
+  //     if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+  //       const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+
+  //       setUpdateLineItem((prevData: LineItems[]) => {
+  //         const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+  //         if (!items) {
+  //           return [...prevData, {
+  //             quantity: String(count - 1),
+  //             uid: updateItem?.uid,
+  //             catalog_object_id: data?.item_data?.variations[0]?.id
+  //           }]
+  //         } else {
+  //           items.quantity = String(count - 1);
+  //           items.uid = updateItem?.uid;
+  //           return prevData;
+  //         }
+  //       });
+  //     }
+  //   };
+
+  //   if (matchedItem?.quantity) {
+  //     setQuantity(parseInt(matchedItem?.quantity) - 1);
+  //   } else {
+  //     setQuantity(quantity - 1)
+  //   };
+  // };
 
 
   const handleCheckboxChange = (modifierName: string, modifierId: string) => {
