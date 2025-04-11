@@ -315,7 +315,7 @@ const OurMenu = () => {
                         <div className="p-6">
                             {catalogCategory
                                 ?.filter((_, index) => index % 2 === 0)
-                                ?.map((category, i) => {
+                                ?.map((category) => {
                                     // Only render if is_top_level is true
                                     // Mark 'Namma Menu' as not top level
                                     if (category?.category_data?.name === 'Namma Menu') {
@@ -366,7 +366,7 @@ const OurMenu = () => {
                         <div className="p-6">
                             {catalogCategory
                                 ?.filter((_, index) => index % 2 !== 0)
-                                ?.map((category, i) => {
+                                ?.map((category) => {
                                     // Mark 'Namma Menu' as not top level
                                     if (category?.category_data?.name === 'Namma Menu') {
                                         category.category_data.is_top_level = false;
