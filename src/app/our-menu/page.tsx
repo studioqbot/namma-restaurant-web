@@ -266,6 +266,7 @@ const OurMenu = () => {
                     <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className="absolute bottom-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className='text-[#A02621] text-[27px] leading-[31px] font-semibold font-unbounded bg-[#eee1d1] absolute pr-[10px] top-[-14px] left-0'>Our Menu</span>
+
                     <div className="flex flex-row items-center overflow-x-auto whitespace-nowrap justify-between w-full">
                         <button
                             className={`text-[#222A4A] leading-[29px] text-[13px]  ${activeMenu === "All"
@@ -290,7 +291,7 @@ const OurMenu = () => {
                             if (!item?.category_data?.is_top_level) return null;
                             // if (!category?.category_data?.loca) return null;
 
-                
+
 
                             return (
                                 <button
@@ -619,7 +620,26 @@ const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
     return (
         <div className="flex items-center justify-between py-2 relative">
             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[-1]' />
-            <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">{data?.item_data?.name}</span>
+            {/* <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">{data?.item_data?.name}</span> */}
+            {/* <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span> */}
+
+
+            {(!!data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount &&
+                !isNaN(data.item_data.variations[0].item_variation_data.price_money.amount) &&
+                data.item_data.variations[0].item_variation_data.price_money.amount !== 0) && (
+                    <>
+                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
+                            {data?.item_data?.name}
+                        </span>
+                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
+                            ${data.item_data.variations[0].item_variation_data.price_money.amount / 100}
+                        </span>
+                    </>
+                )}
+
+
+
+
             {/**
              * 
              *  <div className="flex items-center bg-[#eee1d1] gap-4 pl-[11px]">
