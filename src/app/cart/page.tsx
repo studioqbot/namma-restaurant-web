@@ -86,7 +86,7 @@ function CartScreen() {
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
         setUpdateLineItem, updateLineItem, setIsOrderUpdate,
-         setFieldToClear, isOrdered, globalLoading
+        setFieldToClear, isOrdered, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
 
@@ -150,7 +150,7 @@ function CartScreen() {
 
                 if (response?.status === 200) {
                     setLoading(false)
-                    console.log('responseresponse', response?.data);
+
                     openModal()
 
                 }
@@ -273,7 +273,7 @@ function CartScreen() {
 
     useEffect(() => {
         const orderId = getDataFromLocalStorage('OrderId');
-        console.log('orderId', isOrdered);
+
 
         if ((orderDetails.id || orderId)) {
             fetchOrderDetails(orderDetails.id || orderId)
@@ -329,7 +329,7 @@ function CartScreen() {
                                                         orderUpdate={orderUpdate}
                                                         setLoading={setLoading}
                                                     />
-                                                )) : 
+                                                )) :
                                                 <tr>
                                                     <td colSpan={3} >
                                                         <div className="w-full py-[20px] rounded-full p-5 flex justify-center">
@@ -512,7 +512,7 @@ function CartScreen() {
 
                                     applicationId={process.env.NEXT_PUBLIC_SQUIRE_APP_ID}
                                     cardTokenizeResponseReceived={(token: TokenData) => {
-                                            handleSubmitPayment(token);
+                                        handleSubmitPayment(token);
                                     }}
 
                                     locationId={process.env.NEXT_PUBLIC_LOCATION_ID}
@@ -612,7 +612,7 @@ function CartScreen() {
             {
                 loading && <Loader />
             }
-            
+
         </>
     );
 };
@@ -672,7 +672,7 @@ const CartChild = (props: CartProps) => {
                 if (response?.status === 200) {
                     setIsModalOpen(true);
                     const modifierData = modifierList?.find((modifier) => modifier?.id === response?.data?.object?.modifier_data?.modifier_list_id)
-              
+
 
                     setModifierListData(modifierData?.modifier_list_data?.modifiers)
                 }

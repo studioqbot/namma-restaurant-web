@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
 
 function Header() {
-  const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen ,isCartOpen} = useContext(GlobalContext);
+  // const { cartItemCount, setIsOrderUpdate, isOrderUpdate, lineItems, setIsCartOpen ,isCartOpen} = useContext(GlobalContext);
+  const { setIsCartOpen} = useContext(GlobalContext);
   const router = useRouter()
 
 
@@ -86,7 +87,12 @@ function Header() {
             <Link href="/our-menu" >Our Menu</Link>
             <Link href="https://www.google.com/maps?q=181+Ranch+Dr,+Milpitas+95035" target='_blank'>Location</Link>
             <Link href="/contact-us" >Contact us</Link>
-            {isCartOpen && <button disabled={lineItems?.length === 0 ? true : false} className="bg-[#FFC300] px-[28px] py-[7px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative" onClick={() => {
+            {/* <Link href="https://withbites.com/merchants/nammamilpitas" >Order Now</Link> */}
+            {/**
+             * 
+             *View cart buttom removed 
+             *
+             {isCartOpen && <button disabled={lineItems?.length === 0 ? true : false} className="bg-[#FFC300] px-[28px] py-[7px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative" onClick={() => {
 
               if (!isOrderUpdate) {
                 setIsOrderUpdate('create');
@@ -98,7 +104,7 @@ function Header() {
             }}>
               View Cart
               {cartItemCount !== 0 && <span className='absolute w-[25px] h-[25px] bg-[#9E241F] text-[#fff] text-[14px] font-bold rounded-[100px] flex items-center justify-center top-[-10px] right-[3px]'>{cartItemCount||0}</span>}
-            </button>}
+            </button>} */}
           </div>
         </nav>
       </div>

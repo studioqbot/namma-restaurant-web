@@ -64,8 +64,6 @@ const NammaSpecials = () => {
     }
   };
 
-  console.log('modifierList', modifierList);
-
 
   const getNammaSpeacialItemsImage = async () => {
     try {
@@ -305,7 +303,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
     };
-    console.log('isOrderUpdate', isOrderUpdate);
+
 
     if (!isOrderUpdate) {
       setLineItems([...lineItems, {
@@ -469,7 +467,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
     <div className="flex flex-col items-center justify-between mt-auto">
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
-      {isCartOpen && <>
+      {/* {isCartOpen && <>
       {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
           <button
             className="px-3 py-1 text-red-600 hover:bg-gray-100"
@@ -495,7 +493,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
             Add
           </button>
         </div>}
-      </>}
+      </>} */}
 
       </div>
       {isModalOpen && (
