@@ -25,7 +25,7 @@ function Banner() {
                                 Experience the rich culinary heritage of South India, crafted with love and served fresh for your takeaway delight.
                             </p>
                             <div className="flex gap-[15px]">
-                                <button className="bg-[#FFC300] px-[32px] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative" onClick={() => router.push('/our-menu')}>Order Now</button>
+                                <button className="bg-[#FFC300] px-[32px] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative" onClick={() => router.push('https://withbites.com/merchants/nammamilpitas')}>Order Now</button>
                                 <button className="bg-transparent border border-[#A02621] px-[32px] py-[11px] rounded-[100px] text-[17px] font-medium text-[#A02621]" onClick={() => router.push('/our-menu')} >Explore Our Menu</button>
                             </div>
                         </div>
