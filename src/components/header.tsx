@@ -87,7 +87,7 @@ function Header() {
             <Link href="/our-menu" >Our Menu</Link>
             <Link href="https://www.google.com/maps?q=181+Ranch+Dr,+Milpitas+95035" target='_blank'>Location</Link>
             <Link href="/contact-us" >Contact us</Link>
-            <Link href="https://withbites.com/merchants/nammamilpitas" >Order Now</Link>
+            {/* <Link href="https://withbites.com/merchants/nammamilpitas" >Order Now</Link> */}
             {/**
              * 
              *View cart buttom removed 
