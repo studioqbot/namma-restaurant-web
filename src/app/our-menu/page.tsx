@@ -282,7 +282,7 @@ const OurMenu = () => {
                             <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px]">|</span>
                         </button>
 
-                        {catalogCategoryTab?.map((item, i) => {
+                        {catalogCategoryTab?.map((item) => {
                             // Mark 'Namma Menu' as not top level
                             if (item?.category_data?.name === 'Namma Menu') {
                                 item.category_data.is_top_level = false;
