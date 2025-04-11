@@ -282,17 +282,22 @@ const OurMenu = () => {
                         </button>
 
                         {catalogCategoryTab?.map((item, i) => {
+                            // Mark 'Namma Menu' as not top level
+                            if (item?.category_data?.name === 'Namma Menu') {
+                                item.category_data.is_top_level = false;
+                            }
                             // Check if category_data exists and is_top_level is true
                             if (!item?.category_data?.is_top_level) return null;
+                            // if (!category?.category_data?.loca) return null;
 
-                            // console.log("item285 category_data", { i }, item.category_data.name, item.category_data.is_top_level);
+                            console.log("item285 category_data", { i }, item.category_data.name, item);
 
                             return (
                                 <button
                                     key={item?.id}
                                     className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item?.category_data?.name
-                                            ? "text-[#A02621] font-semibold"
-                                            : "text-[#222A4A]"
+                                        ? "text-[#A02621] font-semibold"
+                                        : "text-[#222A4A]"
                                         }`}
                                     onClick={() => handleCategoryTabs(item)}
                                 >
@@ -308,74 +313,104 @@ const OurMenu = () => {
                 <div className="grid grid-cols-12 gap-[40px]">
                     <div className="col-span-6">
                         <div className="p-6">
-                            {catalogCategory.filter((_, index) => index % 2 === 0)?.map((category) => {
-                                const catalogItems = catalogCategoryAndItem?.filter((itemData: CatalogItemsType) => {
-                                    return itemData?.item_data?.category_id === category?.id;
-                                });
-                                return <div key={category?.id} className="col-span-6">
-                                    <div className="p-6">
-                                        <div className="mb-8">
-                                            <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
-                                                {category?.category_data?.name}
-                                            </h2>
-                                            <div className="space-y-2">
-                                                {catalogItems?.map((item: CatalogItemsType) => (
-                                                    <OurMenuItems
-                                                        key={item?.id}
-                                                        data={item}
-                                                        lineItems={lineItems}
-                                                        setLineItems={setLineItems}
-                                                        setUpdateLineItem={setUpdateLineItem}
-                                                        updateLineItem={updateLineItem}
-                                                        setIsItemAdded={setIsItemAdded}
-                                                        modifierList={modifierList}
-                                                        modifierIds={modifierIds}
-                                                        setModifierIds={setModifierIds}
-                                                        setFieldToClear={setFieldToClear}
-                                                    />
-                                                ))}
+                            {catalogCategory
+                                ?.filter((_, index) => index % 2 === 0)
+                                ?.map((category, i) => {
+                                    // Only render if is_top_level is true
+                                    // Mark 'Namma Menu' as not top level
+                                    if (category?.category_data?.name === 'Namma Menu') {
+                                        category.category_data.is_top_level = false;
+                                    }
+                                    if (!category?.category_data?.is_top_level) return null;
+
+
+                                    const catalogItems = catalogCategoryAndItem?.filter(
+                                        (itemData: CatalogItemsType) =>
+                                            itemData?.item_data?.category_id === category?.id
+                                    );
+
+                                    return (
+                                        <div key={category?.id} className="col-span-6">
+                                            <div className="p-6">
+                                                <div className="mb-8">
+                                                    <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
+                                                        {category?.category_data?.name}
+                                                    </h2>
+                                                    <div className="space-y-2">
+                                                        {catalogItems?.map((item: CatalogItemsType) => (
+                                                            <OurMenuItems
+                                                                key={item?.id}
+                                                                data={item}
+                                                                lineItems={lineItems}
+                                                                setLineItems={setLineItems}
+                                                                setUpdateLineItem={setUpdateLineItem}
+                                                                updateLineItem={updateLineItem}
+                                                                setIsItemAdded={setIsItemAdded}
+                                                                modifierList={modifierList}
+                                                                modifierIds={modifierIds}
+                                                                setModifierIds={setModifierIds}
+                                                                setFieldToClear={setFieldToClear}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            })}
+                                    );
+                                })}
+
                         </div>
                     </div>
 
                     <div className="col-span-6">
                         <div className="p-6">
-                            {catalogCategory?.filter((_, index) => index % 2 !== 0)?.map((category) => {
-                                const catalogItems = catalogCategoryAndItem?.filter((itemData: CatalogItemsType) => {
-                                    return itemData?.item_data?.category_id === category?.id;
-                                });
-                                return <div key={category?.id} className="col-span-6">
-                                    <div className="p-6">
-                                        <div className="mb-8">
-                                            <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
-                                                {category?.category_data?.name}
-                                            </h2>
-                                            <div className="space-y-2">
-                                                {catalogItems?.map((item: CatalogItemsType) => (
-                                                    <OurMenuItems
-                                                        key={item?.id}
-                                                        data={item}
-                                                        lineItems={lineItems}
-                                                        setLineItems={setLineItems}
-                                                        setUpdateLineItem={setUpdateLineItem}
-                                                        updateLineItem={updateLineItem}
-                                                        setIsItemAdded={setIsItemAdded}
-                                                        modifierList={modifierList}
-                                                        modifierIds={modifierIds}
-                                                        setModifierIds={setModifierIds}
-                                                        setFieldToClear={setFieldToClear}
+                            {catalogCategory
+                                ?.filter((_, index) => index % 2 !== 0)
+                                ?.map((category, i) => {
+                                    // Mark 'Namma Menu' as not top level
+                                    if (category?.category_data?.name === 'Namma Menu') {
+                                        category.category_data.is_top_level = false;
+                                    }
+                                    // Skip rendering if category_data.is_top_level is not true
+                                    if (!category?.category_data?.is_top_level) return null;
+                                    // if (!category?.category_data?.location_overrides) return null;
 
-                                                    />
-                                                ))}
+
+                                    const catalogItems = catalogCategoryAndItem?.filter(
+                                        (itemData: CatalogItemsType) =>
+                                            itemData?.item_data?.category_id === category?.id
+                                    );
+
+                                    return (
+                                        <div key={category?.id} className="col-span-6">
+                                            <div className="p-6">
+                                                <div className="mb-8">
+                                                    <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
+                                                        {category?.category_data?.name}
+                                                    </h2>
+                                                    <div className="space-y-2">
+                                                        {catalogItems?.map((item: CatalogItemsType) => (
+                                                            <OurMenuItems
+                                                                key={item?.id}
+                                                                data={item}
+                                                                lineItems={lineItems}
+                                                                setLineItems={setLineItems}
+                                                                setUpdateLineItem={setUpdateLineItem}
+                                                                updateLineItem={updateLineItem}
+                                                                setIsItemAdded={setIsItemAdded}
+                                                                modifierList={modifierList}
+                                                                modifierIds={modifierIds}
+                                                                setModifierIds={setModifierIds}
+                                                                setFieldToClear={setFieldToClear}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            })}
+                                    );
+                                })}
+
                         </div>
                     </div>
                 </div>

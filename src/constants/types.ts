@@ -192,7 +192,10 @@ export interface CategoryDataType {
     version: number,
     category_data: {
         name: string,
-        is_top_level: boolean
+        is_top_level: boolean,
+        is_deleted: boolean,
+        location_overrides :object
+
     }
 }
 
