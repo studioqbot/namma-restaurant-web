@@ -1,10 +1,10 @@
 'use client';
 import GlobalContext from '@/constants/global-context';
-import { CatalogItemsType, CategoryDataType, LineItems, ModifierDataType, ModifierIds, ModifierType, OrderCreateBody, OrderDetailsType, OrderUpdateBodyAdd } from '@/constants/types';
+import { CatalogItemsType, CategoryDataType, LineItems, ModifierDataType, ModifierIds, OrderCreateBody, OrderUpdateBodyAdd } from '@/constants/types';
 import { catalogItems, orderCreateApi, orderUpdateApi } from '@/services/apiServices';
-import { getDataFromLocalStorage, isEmptyObj, removeItemFrmLocalStorage, setDataInLocalStorage } from '@/utils/genericUtilties';
+import { getDataFromLocalStorage, removeItemFrmLocalStorage, setDataInLocalStorage } from '@/utils/genericUtilties';
 import dayjs, { Dayjs } from 'dayjs';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 
 interface OurMenuItemsType {
@@ -281,21 +281,28 @@ const OurMenu = () => {
                             <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px]">|</span>
                         </button>
 
-                        {catalogCategoryTab?.map((item) => (
-                            <button
-                                key={item?.id}
-                                className={`text-[#222A4A] leading-[29px] text-[13px]  ${activeMenu === item?.category_data?.name
-                                    ? "text-[#A02621] font-semibold"
-                                    : "text-[#222A4A]"
-                                    }`}
-                                onClick={() => handleCategoryTabs(item)}
-                            >
-                                {item?.category_data?.name}
-                                <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
-                            </button>
+                        {catalogCategoryTab?.map((item, i) => {
+                            // Check if category_data exists and is_top_level is true
+                            if (!item?.category_data?.is_top_level) return null;
 
+                            // console.log("item285 category_data", { i }, item.category_data.name, item.category_data.is_top_level);
 
-                        ))}
+                            return (
+                                <button
+                                    key={item?.id}
+                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item?.category_data?.name
+                                            ? "text-[#A02621] font-semibold"
+                                            : "text-[#222A4A]"
+                                        }`}
+                                    onClick={() => handleCategoryTabs(item)}
+                                >
+                                    {/* {item.id}{item?.category_data?.name}7799 */}
+                                    {item?.category_data?.name}
+                                    <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
+                                </button>
+                            );
+                        })}
+
                     </div>
                 </div>
                 <div className="grid grid-cols-12 gap-[40px]">
@@ -379,191 +386,198 @@ const OurMenu = () => {
     );
 };
 
-const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineItem, setIsItemAdded, updateLineItem, modifierList, setFieldToClear }: OurMenuItemsType) => {
+// const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineItem, setIsItemAdded, updateLineItem, modifierList, setFieldToClear }: OurMenuItemsType) => {
+const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
 
-    const [quantity, setQuantity] = useState(0);
-    const [modifierListData, setModifierListData] = useState<ModifierType[] | undefined>([]);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [selectedOption, setSelectedOption] = useState<string>('');
-
-
-
-
-    const [isAdded, setIsAdded] = useState(false);
-    const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setOrderDetails, setIsCountDecreased, isCartOpen } = useContext(GlobalContext);
-
-    const matchedItem = useMemo(() => {
-        return orderDetails?.line_items?.find(
-            (dataItem: LineItems) => dataItem?.catalog_object_id === data?.item_data?.variations[0]?.id
-        );
-    }, [lineItems, data]);
+    // const [quantity, setQuantity] = useState(0);
+    // const [modifierListData, setModifierListData] = useState<ModifierType[] | undefined>([]);
+    // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    // const [selectedOption, setSelectedOption] = useState<string>('');
 
 
 
-    const handleAddClick = () => {
-        setIsItemAdded(true)
-        setQuantity(quantity + 1);
-        setCartItemCount(cartItemCount + 1);
-        setIsAdded(true);
-        console.log('modifierData', data?.item_data?.modifier_list_info);
-        if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
-            setIsModalOpen(true);
 
-            const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id)
+    // const [isAdded, setIsAdded] = useState(false);
+    // const { 
+    // setCartItemCount, 
+    // cartItemCount, 
+    // isOrderUpdate,
+    //  orderDetails, 
+    // setOrderDetails, setIsCountDecreased, isCartOpen 
+    // } = useContext(GlobalContext);
 
-            setModifierListData(modifierData?.modifier_list_data?.modifiers)
-
-        }
-
-        if (!isOrderUpdate) {
-            setLineItems([...lineItems, {
-                quantity: String(quantity + 1),
-                catalog_object_id: data?.item_data?.variations[0]?.id,
-            }]);
-        } else {
-            setLineItems((prevData: LineItems[]) => {
-                return [...prevData, {
-                    quantity: String(quantity + 1),
-                    catalog_object_id: data?.item_data?.variations[0]?.id,
-                }]
-            });
-            setUpdateLineItem((prevData: LineItems[]) => {
-                return [...prevData, {
-                    quantity: String(quantity + 1),
-                    catalog_object_id: data?.item_data?.variations[0]?.id,
-                }]
-            })
-        }
-    }
-
-
-    const handleCountIncrement = async (quantityVal: string | undefined) => {
-        setIsItemAdded(true)
-        const count = quantityVal ? parseInt(quantityVal) : quantity;
-
-        setQuantity(count + 1);
-        setCartItemCount(cartItemCount + 1);
-        setLineItems((prevData: LineItems[]) => {
-            const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-            if (items) {
-                items.quantity = String(count + 1);
-                return prevData;
-            }
-            return prevData
-        });
-        if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-            const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-            setUpdateLineItem((prevData: LineItems[]) => {
-                const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-
-                if (!items) {
-                    return [...prevData, {
-                        quantity: String(count + 1),
-                        uid: updateItem?.uid,
-                        catalog_object_id: data?.item_data?.variations[0]?.id
-                    }]
-                } else {
-                    items.quantity = String(count + 1);
-                    items.uid = updateItem?.uid;
-                    return prevData;
-                }
-            });
-        }
-    }
-
-
-    const handleQuantityDecrement = (quantityVal: string | undefined) => {
-        setIsItemAdded(true);
-        const count = quantityVal ? parseInt(quantityVal) : quantity;
-        setCartItemCount(cartItemCount - 1);
-        if (count == 1) {
-            setIsCountDecreased(true)
-            setIsAdded(false);
-
-
-            const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-            setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
-            const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-            setLineItems(removeLineItem);
-
-
-            const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-            setUpdateLineItem(removeUpdateLineItem);
-
-            const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-            setOrderDetails((prevData: OrderDetailsType) => {
-                return { ...prevData, line_items: removeLineItemUpdate };
-            });
-
-        } else {
-
-            setLineItems((prevData: LineItems[]) => {
-                const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-                if (item) {
-                    item.quantity = String(count - 1);
-                    return prevData;
-                }
-                return prevData;
-            });
-
-            if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-                const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
-
-                setUpdateLineItem((prevData: LineItems[]) => {
-                    const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-                    if (!items) {
-                        return [...prevData, {
-                            quantity: String(count - 1),
-                            uid: updateItem?.uid,
-                            catalog_object_id: data?.item_data?.variations[0]?.id
-                        }]
-                    } else {
-                        items.quantity = String(count - 1);
-                        items.uid = updateItem?.uid;
-                        return prevData;
-                    }
-                });
-            }
-        };
-
-        if (matchedItem?.quantity) {
-            setQuantity(parseInt(matchedItem?.quantity) - 1);
-        } else {
-            setQuantity(quantity - 1)
-        };
-    };
-
-
-    const handleCheckboxChange = (modifierName: string, modifierId: string) => {
-        setSelectedOption(modifierName);
+    // const matchedItem = useMemo(() => {
+    //     return orderDetails?.line_items?.find(
+    //         (dataItem: LineItems) => dataItem?.catalog_object_id === data?.item_data?.variations[0]?.id
+    //     );
+    // }, [lineItems, data]);
 
 
 
-        setLineItems((prevData: LineItems[]) => {
-            const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-            if (addModifier) {
-                addModifier.modifiers = [{ catalog_object_id: modifierId }]
-            }
-            return prevData
-        }
+    // const handleAddClick = () => {
+    //     setIsItemAdded(true)
+    //     setQuantity(quantity + 1);
+    //     setCartItemCount(cartItemCount + 1);
+    //     setIsAdded(true);
+    //     console.log('modifierData', data?.item_data?.modifier_list_info);
+    //     if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
+    //         setIsModalOpen(true);
 
-        );
+    //         const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id)
 
-        if (isOrderUpdate && isOrderUpdate !== 'create') {
-            setUpdateLineItem((prevData: LineItems[]) => {
-                const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-                if (addModifier) {
-                    addModifier.modifiers = [{ catalog_object_id: modifierId }]
-                }
-                return prevData
-            }
+    //         setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
-            );
-        }
+    //     }
+
+    //     if (!isOrderUpdate) {
+    //         setLineItems([...lineItems, {
+    //             quantity: String(quantity + 1),
+    //             catalog_object_id: data?.item_data?.variations[0]?.id,
+    //         }]);
+    //     } else {
+    //         setLineItems((prevData: LineItems[]) => {
+    //             return [...prevData, {
+    //                 quantity: String(quantity + 1),
+    //                 catalog_object_id: data?.item_data?.variations[0]?.id,
+    //             }]
+    //         });
+    //         setUpdateLineItem((prevData: LineItems[]) => {
+    //             return [...prevData, {
+    //                 quantity: String(quantity + 1),
+    //                 catalog_object_id: data?.item_data?.variations[0]?.id,
+    //             }]
+    //         })
+    //     }
+    // }
 
 
-    };
+    // const handleCountIncrement = async (quantityVal: string | undefined) => {
+    //     setIsItemAdded(true)
+    //     const count = quantityVal ? parseInt(quantityVal) : quantity;
+
+    //     setQuantity(count + 1);
+    //     setCartItemCount(cartItemCount + 1);
+    //     setLineItems((prevData: LineItems[]) => {
+    //         const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+    //         if (items) {
+    //             items.quantity = String(count + 1);
+    //             return prevData;
+    //         }
+    //         return prevData
+    //     });
+    //     if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+    //         const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+
+    //         setUpdateLineItem((prevData: LineItems[]) => {
+    //             const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+
+    //             if (!items) {
+    //                 return [...prevData, {
+    //                     quantity: String(count + 1),
+    //                     uid: updateItem?.uid,
+    //                     catalog_object_id: data?.item_data?.variations[0]?.id
+    //                 }]
+    //             } else {
+    //                 items.quantity = String(count + 1);
+    //                 items.uid = updateItem?.uid;
+    //                 return prevData;
+    //             }
+    //         });
+    //     }
+    // }
+
+
+    // const handleQuantityDecrement = (quantityVal: string | undefined) => {
+    //     setIsItemAdded(true);
+    //     const count = quantityVal ? parseInt(quantityVal) : quantity;
+    //     setCartItemCount(cartItemCount - 1);
+    //     if (count == 1) {
+    //         setIsCountDecreased(true)
+    //         setIsAdded(false);
+
+
+    //         const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+    //         setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
+    //         const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
+    //         setLineItems(removeLineItem);
+
+
+    //         const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+    //         setUpdateLineItem(removeUpdateLineItem);
+
+    //         const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+    //         setOrderDetails((prevData: OrderDetailsType) => {
+    //             return { ...prevData, line_items: removeLineItemUpdate };
+    //         });
+
+    //     } else {
+
+    //         setLineItems((prevData: LineItems[]) => {
+    //             const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+    //             if (item) {
+    //                 item.quantity = String(count - 1);
+    //                 return prevData;
+    //             }
+    //             return prevData;
+    //         });
+
+    //         if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+    //             const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+
+    //             setUpdateLineItem((prevData: LineItems[]) => {
+    //                 const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+    //                 if (!items) {
+    //                     return [...prevData, {
+    //                         quantity: String(count - 1),
+    //                         uid: updateItem?.uid,
+    //                         catalog_object_id: data?.item_data?.variations[0]?.id
+    //                     }]
+    //                 } else {
+    //                     items.quantity = String(count - 1);
+    //                     items.uid = updateItem?.uid;
+    //                     return prevData;
+    //                 }
+    //             });
+    //         }
+    //     };
+
+    //     if (matchedItem?.quantity) {
+    //         setQuantity(parseInt(matchedItem?.quantity) - 1);
+    //     } else {
+    //         setQuantity(quantity - 1)
+    //     };
+    // };
+
+
+    // const handleCheckboxChange = (modifierName: string, modifierId: string) => {
+    //     setSelectedOption(modifierName);
+
+
+
+    //     setLineItems((prevData: LineItems[]) => {
+    //         const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+    //         if (addModifier) {
+    //             addModifier.modifiers = [{ catalog_object_id: modifierId }]
+    //         }
+    //         return prevData
+    //     }
+
+    //     );
+
+    //     if (isOrderUpdate && isOrderUpdate !== 'create') {
+    //         setUpdateLineItem((prevData: LineItems[]) => {
+    //             const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
+    //             if (addModifier) {
+    //                 addModifier.modifiers = [{ catalog_object_id: modifierId }]
+    //             }
+    //             return prevData
+    //         }
+
+    //         );
+    //     }
+
+
+    // };
 
 
 
@@ -571,7 +585,9 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
         <div className="flex items-center justify-between py-2 relative">
             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[-1]' />
             <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">{data?.item_data?.name}</span>
-            <div className="flex items-center bg-[#eee1d1] gap-4 pl-[11px]">
+            {/**
+             * 
+             *  <div className="flex items-center bg-[#eee1d1] gap-4 pl-[11px]">
                 <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
                 {isCartOpen && <>{(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center min-w-[100px] border border-[#A02621] rounded-[100px] overflow-hidden text-[#A02621] text-[12px]">
@@ -600,11 +616,11 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
                     }}
                     className="py-[4px] min-w-[100px] border border-[#A02621] rounded-[100px] overflow-hidden text-[#A02621] text-[12px]"
                 >
-                    Add
+                    Add123
                 </button>}
                 </>}
-            </div>
-            {isModalOpen && (
+            </div> */}
+            {/* {isModalOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
                     onClick={() => setIsModalOpen(false)}
@@ -642,9 +658,7 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
                                         </label>
                                     </div>
 
-                                    {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
-                                    
-                                    </span> */}
+
 
                                 </div>
                             ))}
@@ -655,7 +669,7 @@ const OurMenuItems = React.memo(({ data, setLineItems, lineItems, setUpdateLineI
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 });
