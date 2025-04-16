@@ -53,7 +53,7 @@ const NammaSpecials = () => {
       if (response?.status === 200) {
         setNammaSpecialItemsData(response?.data?.items);
         setDataInLocalStorage('NammaSpecialItemsData', response?.data?.items);
-        const currentTimePlusOneWeek = dayjs().add(1, 'day').toDate();
+        const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       }
 
@@ -63,6 +63,8 @@ const NammaSpecials = () => {
 
     }
   };
+
+  console.log('modifierList', modifierList);
 
 
   const getNammaSpeacialItemsImage = async () => {
@@ -74,7 +76,7 @@ const NammaSpecials = () => {
       if (response?.status === 200) {
         setImageData(response?.data?.objects);
         setDataInLocalStorage('ImageData', response?.data?.objects);
-        const currentTimePlusOneWeek = dayjs().add(1, 'day').toDate();
+        const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       }
 
@@ -92,7 +94,7 @@ const NammaSpecials = () => {
       if (response?.status === 200) {
         setDataInLocalStorage('ModifierListData', response?.data?.objects);
         setMofierList(response?.data?.objects);
-        const currentTimePlusOneWeek = dayjs().add(1, 'day').toDate();
+        const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       };
 
@@ -213,10 +215,10 @@ const NammaSpecials = () => {
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">
       <div className='h-full absolute w-full top-0 bottom-0 z-[1] flex justify-center'>
-        <img src="/assets/images/bg-pattern1.svg" alt="banner-bg" className="h-full absolute top-0 bottom-0 z-[1]" />
+        <Image src="/assets/images/bg-pattern1.svg" alt="banner-bg" width={100} height={100} className="h-full absolute top-0 bottom-0 z-[1]" />
       </div>
       <div className="text-center flex justify-center">
-        <img src="/assets/images/namma-special.svg" alt="banner-bg" className="absolute top-[-18px] z-[2]" />
+        <Image src="/assets/images/namma-special.svg" width={100} height={100} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
       </div>
 
 
@@ -276,7 +278,7 @@ const NammaSpecials = () => {
 const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
   const [quantity, setQuantity] = useState(0);
-  // const [isAdded, setIsAdded] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem,
     isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -290,140 +292,140 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   }, [lineItems, data]);
 
 
-  // const handleAddClick = () => {
-  //   setIsItemAdded(true)
-  //   setQuantity(quantity + 1)
-  //   setCartItemCount(cartItemCount + 1)
-  //   // setIsAdded(true);
-  //   if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
-  //     setIsModalOpen(true);
+  const handleAddClick = () => {
+    setIsItemAdded(true)
+    setQuantity(quantity + 1)
+    setCartItemCount(cartItemCount + 1)
+    setIsAdded(true);
+    if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
+      setIsModalOpen(true);
 
-  //     const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id) as ModifierDataType;
+      const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id) as ModifierDataType;
 
-  //     setModifierListData(modifierData?.modifier_list_data?.modifiers)
+      setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
-  //   };
+    };
+    console.log('isOrderUpdate', isOrderUpdate);
 
-
-  //   if (!isOrderUpdate) {
-  //     setLineItems([...lineItems, {
-  //       quantity: String(quantity + 1),
-  //       catalog_object_id: data?.item_data?.variations[0]?.id,
-  //     }]);
-  //   } else {
-  //     setLineItems((prevData: LineItems[]) => {
-  //       return [...prevData, {
-  //         quantity: String(quantity + 1),
-  //         catalog_object_id: data?.item_data?.variations[0]?.id,
-  //       }]
-  //     });
-  //     setUpdateLineItem((prevData: LineItems[]) => {
-  //       return [...prevData, {
-  //         quantity: String(quantity + 1),
-  //         catalog_object_id: data?.item_data?.variations[0]?.id,
-  //       }]
-  //     })
-  //   }
-  // }
-
-
-
-  // const handleCountIncrement = async (quantityVal: string | undefined) => {
-  //   setIsItemAdded(true)
-  //   const count = quantityVal ? parseInt(quantityVal) : quantity;
-
-  //   setQuantity(count + 1);
-  //   setCartItemCount(cartItemCount + 1);
-  //   setLineItems((prevData: LineItems[]) => {
-  //     const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-  //     if (items) {
-  //       items.quantity = String(count + 1);
-  //       return prevData;
-  //     }
-  //     return prevData
-  //   });
-  //   if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-  //     const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-  //     setUpdateLineItem((prevData: LineItems[]) => {
-  //       const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-
-  //       if (!items) {
-  //         return [...prevData, {
-  //           quantity: String(count + 1),
-  //           uid: updateItem?.uid,
-  //           catalog_object_id: data?.item_data?.variations[0]?.id
-  //         }]
-  //       } else {
-  //         items.quantity = String(count + 1);
-  //         items.uid = updateItem?.uid;
-  //         return prevData;
-  //       }
-  //     });
-  //   }
-  // }
+    if (!isOrderUpdate) {
+      setLineItems([...lineItems, {
+        quantity: String(quantity + 1),
+        catalog_object_id: data?.item_data?.variations[0]?.id,
+      }]);
+    } else {
+      setLineItems((prevData: LineItems[]) => {
+        return [...prevData, {
+          quantity: String(quantity + 1),
+          catalog_object_id: data?.item_data?.variations[0]?.id,
+        }]
+      });
+      setUpdateLineItem((prevData: LineItems[]) => {
+        return [...prevData, {
+          quantity: String(quantity + 1),
+          catalog_object_id: data?.item_data?.variations[0]?.id,
+        }]
+      })
+    }
+  }
 
 
-  // const handleQuantityDecrement = (quantityVal: string | undefined) => {
-  //   setIsItemAdded(true);
-  //   const count = quantityVal ? parseInt(quantityVal) : quantity;
-  //   setCartItemCount(cartItemCount - 1);
-  //   if (count == 1) {
-  //     setIsCountDecreased(true)
-  //     // setIsAdded(false);
+
+  const handleCountIncrement = async (quantityVal: string | undefined) => {
+    setIsItemAdded(true)
+    const count = quantityVal ? parseInt(quantityVal) : quantity;
+
+    setQuantity(count + 1);
+    setCartItemCount(cartItemCount + 1);
+    setLineItems((prevData: LineItems[]) => {
+      const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+      if (items) {
+        items.quantity = String(count + 1);
+        return prevData;
+      }
+      return prevData
+    });
+    if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+
+      setUpdateLineItem((prevData: LineItems[]) => {
+        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+
+        if (!items) {
+          return [...prevData, {
+            quantity: String(count + 1),
+            uid: updateItem?.uid,
+            catalog_object_id: data?.item_data?.variations[0]?.id
+          }]
+        } else {
+          items.quantity = String(count + 1);
+          items.uid = updateItem?.uid;
+          return prevData;
+        }
+      });
+    }
+  }
 
 
-  //     const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-  //     setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
-  //     const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-  //     setLineItems(removeLineItem);
+  const handleQuantityDecrement = (quantityVal: string | undefined) => {
+    setIsItemAdded(true);
+    const count = quantityVal ? parseInt(quantityVal) : quantity;
+    setCartItemCount(cartItemCount - 1);
+    if (count == 1) {
+      setIsCountDecreased(true)
+      setIsAdded(false);
 
 
-  //     const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-  //     setUpdateLineItem(removeUpdateLineItem);
+      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
+      setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
+      const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
+      setLineItems(removeLineItem);
 
-  //     const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-  //     setOrderDetails((prevData: OrderDetailsType) => {
-  //       return { ...prevData, line_items: removeLineItemUpdate };
-  //     });
 
-  //   } else {
+      const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+      setUpdateLineItem(removeUpdateLineItem);
 
-  //     setLineItems((prevData: LineItems[]) => {
-  //       const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-  //       if (item) {
-  //         item.quantity = String(count - 1);
-  //         return prevData;
-  //       }
-  //       return prevData;
-  //     });
+      const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
+      setOrderDetails((prevData: OrderDetailsType) => {
+        return { ...prevData, line_items: removeLineItemUpdate };
+      });
 
-  //     if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-  //       const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+    } else {
 
-  //       setUpdateLineItem((prevData: LineItems[]) => {
-  //         const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-  //         if (!items) {
-  //           return [...prevData, {
-  //             quantity: String(count - 1),
-  //             uid: updateItem?.uid,
-  //             catalog_object_id: data?.item_data?.variations[0]?.id
-  //           }]
-  //         } else {
-  //           items.quantity = String(count - 1);
-  //           items.uid = updateItem?.uid;
-  //           return prevData;
-  //         }
-  //       });
-  //     }
-  //   };
+      setLineItems((prevData: LineItems[]) => {
+        const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+        if (item) {
+          item.quantity = String(count - 1);
+          return prevData;
+        }
+        return prevData;
+      });
 
-  //   if (matchedItem?.quantity) {
-  //     setQuantity(parseInt(matchedItem?.quantity) - 1);
-  //   } else {
-  //     setQuantity(quantity - 1)
-  //   };
-  // };
+      if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
+        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
+
+        setUpdateLineItem((prevData: LineItems[]) => {
+          const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
+          if (!items) {
+            return [...prevData, {
+              quantity: String(count - 1),
+              uid: updateItem?.uid,
+              catalog_object_id: data?.item_data?.variations[0]?.id
+            }]
+          } else {
+            items.quantity = String(count - 1);
+            items.uid = updateItem?.uid;
+            return prevData;
+          }
+        });
+      }
+    };
+
+    if (matchedItem?.quantity) {
+      setQuantity(parseInt(matchedItem?.quantity) - 1);
+    } else {
+      setQuantity(quantity - 1)
+    };
+  };
 
 
   const handleCheckboxChange = (modifierName: string, modifierId: string) => {
@@ -459,16 +461,17 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
-      {image?.image_data?.url ? <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
-        <Image src={placeHolder} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
+      {image?.image_data?.url ? 
+      <Image src={image?.image_data?.url ? image?.image_data?.url : '#'} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
+        <Image src={placeHolder} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
 
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
     <div className="flex flex-col items-center justify-between mt-auto">
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
-      {/* {isCartOpen && <>
-      {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
+      {isCartOpen && <>
+        {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
           <button
             className="px-3 py-1 text-red-600 hover:bg-gray-100"
             onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
@@ -484,81 +487,77 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
           >
             +
           </button>
-        </div> : <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
+        </div> :
 
-          <button
-            className="px-3 py-1 px-[10px] min-w-[100px] hover:bg-gray-100"
-            onClick={() => handleAddClick()}
-          >
-            Add
-          </button>
-        </div>}
-      </>} */}
+          <></>
 
-      </div>
-      {isModalOpen && (
+        }
+      </>}
+
+    </div>
+    {isModalOpen && (
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
+        onClick={() => setIsModalOpen(false)}
+      >
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-          onClick={() => setIsModalOpen(false)}
+          className="bg-white rounded-lg w-[330px] p-[30px] relative"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="bg-white rounded-lg w-[330px] p-[30px] relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-full flex flex-col items-start justify-center">
-              <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-              {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
-                <div
-                  key={modifier?.id}
-                  className="flex items-center justify-between w-full py-[10px] relative"
+          <div className="w-full flex flex-col items-start justify-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
+            {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
+              <div
+                key={modifier?.id}
+                className="flex items-center justify-between w-full py-[10px] relative"
+              >
+                <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
+                <span
+                  className="bg-white min-w-[100px] relative z-[2] text-left"
                 >
-                  <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                  <span
-                    className="bg-white min-w-[100px] relative z-[2] text-left"
+                  {modifier?.modifier_data?.name}
+                </span>
+
+                <div className="bg-white relative z-[2] flex pl-[10px]">
+
+                  <input
+                    type='radio'
+                    id={modifier?.modifier_data?.name}
+                    name="customization"
+                    value={modifier?.modifier_data?.name}
+                    checked={selectedOption === modifier?.modifier_data?.name}
+                    onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
+                    className="hidden peer"
+                  />
+
+                  <label
+                    htmlFor={modifier?.modifier_data?.name}
+                    className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
                   >
-                    {modifier?.modifier_data?.name}
-                  </span>
+                    <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
+                  </label>
+                </div>
 
-                  <div className="bg-white relative z-[2] flex pl-[10px]">
-
-                    <input
-                      type='radio'
-                      id={modifier?.modifier_data?.name}
-                      name="customization"
-                      value={modifier?.modifier_data?.name}
-                      checked={selectedOption === modifier?.modifier_data?.name}
-                      onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
-                      className="hidden peer"
-                    />
-
-                    <label
-                      htmlFor={modifier?.modifier_data?.name}
-                      className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
-                    >
-                      <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                    </label>
-                  </div>
-
-                  {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
+                {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
                                     
                                     </span> */}
 
-                </div>
-              ))}
-              <div className='w-full flex justify-end mt-4' onClick={() => {
-                if (selectedOption) {
-                  setIsModalOpen(false)
-                }
-              }}>
-                <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
               </div>
-
+            ))}
+            <div className='w-full flex justify-end mt-4' onClick={() => {
+              if (selectedOption) {
+                setIsModalOpen(false)
+              }
+            }}>
+              <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
             </div>
+
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
 })
 
-    NammaSpecialCard.displayName = "NammaSpecialCard";
-    export default NammaSpecials;
+NammaSpecialCard.displayName = "NammaSpecialCard";
+export default NammaSpecials;
