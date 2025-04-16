@@ -85,7 +85,7 @@ function Header() {
             <Image
               src="/assets/images/Logo.svg"
               alt="Logo"
-              width={150}  // Add width
+              width={235}  // Add width
               height={60}  // Add height for proper aspect ratio
               className="h-[60px]"
             />

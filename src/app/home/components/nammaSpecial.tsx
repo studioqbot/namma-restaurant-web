@@ -218,7 +218,7 @@ const NammaSpecials = () => {
         <Image src="/assets/images/bg-pattern1.svg" alt="banner-bg" width={100} height={100} className="h-full absolute top-0 bottom-0 z-[1]" />
       </div>
       <div className="text-center flex justify-center">
-        <Image src="/assets/images/namma-special.svg" width={100} height={100} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
+        <Image src="/assets/images/namma-special.svg" width={167} height={58} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
       </div>
 
 
