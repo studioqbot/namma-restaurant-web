@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { catalogItems, createPayment, getCatalogObject, orderUpdateApi,} from '@/services/apiServices';
+import { catalogItems, createPayment, getCatalogObject, orderUpdateApi} from '@/services/apiServices';
 import GlobalContext from '@/constants/global-context';
 import { LineItems, OrderDetailsType, LineItemType, OrderDetailsValue, TokenData, ModifierType, ModifierDataType, OrderUpdateBodyAdd } from '@/constants/types';
 import { useRouter } from 'next/navigation';
@@ -86,11 +86,11 @@ function CartScreen() {
     const {
         setOrderDetails, orderDetails, setCartItemCount, cartItemCount, setLineItems,
         setUpdateLineItem, updateLineItem, setIsOrderUpdate,
-        setFieldToClear, isOrdered, globalLoading
+        setFieldToClear, globalLoading
     } = useContext(GlobalContext);
     const route = useRouter();
 
-
+// console.log('unUsedVariable',isOrdered)
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
