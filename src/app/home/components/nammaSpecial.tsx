@@ -28,9 +28,9 @@ const NammaSpecials = () => {
 
 
 
-  const { isOrderUpdate, setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem, setFieldToClear,
+  const { setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem, setFieldToClear,
     setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, fieldToClear, setGlobalLoading } = useContext(GlobalContext);
-  const [isItemAdded, setIsItemAdded] = useState(false);
+  const [setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
   const dataLimit = 6;
@@ -202,14 +202,7 @@ const NammaSpecials = () => {
 
   }, [])
 
-  useEffect(() => {
-    if ((isOrderUpdate === 'create')) {
-      orderCreate()
-    } else if ((isOrderUpdate && isItemAdded)) {
-      orderUpdate()
-    }
-
-  }, [isOrderUpdate]);
+ 
 
 
   return (
@@ -279,7 +272,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
   const [quantity, setQuantity] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
-  const { setCartItemCount, cartItemCount, isOrderUpdate, orderDetails, setUpdateLineItem,
+  const { setCartItemCount, cartItemCount, orderDetails, setUpdateLineItem,
     isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
@@ -305,27 +298,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       setModifierListData(modifierData?.modifier_list_data?.modifiers)
 
     };
-    console.log('isOrderUpdate', isOrderUpdate);
+  
 
-    if (!isOrderUpdate) {
-      setLineItems([...lineItems, {
-        quantity: String(quantity + 1),
-        catalog_object_id: data?.item_data?.variations[0]?.id,
-      }]);
-    } else {
-      setLineItems((prevData: LineItems[]) => {
-        return [...prevData, {
-          quantity: String(quantity + 1),
-          catalog_object_id: data?.item_data?.variations[0]?.id,
-        }]
-      });
-      setUpdateLineItem((prevData: LineItems[]) => {
-        return [...prevData, {
-          quantity: String(quantity + 1),
-          catalog_object_id: data?.item_data?.variations[0]?.id,
-        }]
-      })
-    }
   }
 
 
@@ -344,25 +318,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       }
       return prevData
     });
-    if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-
-      setUpdateLineItem((prevData: LineItems[]) => {
-        const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-
-        if (!items) {
-          return [...prevData, {
-            quantity: String(count + 1),
-            uid: updateItem?.uid,
-            catalog_object_id: data?.item_data?.variations[0]?.id
-          }]
-        } else {
-          items.quantity = String(count + 1);
-          items.uid = updateItem?.uid;
-          return prevData;
-        }
-      });
-    }
+ 
   }
 
 
@@ -400,24 +356,6 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
         return prevData;
       });
 
-      if ((isOrderUpdate === 'update' || isOrderUpdate === 'created' || isOrderUpdate === 'updated')) {
-        const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;
-
-        setUpdateLineItem((prevData: LineItems[]) => {
-          const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-          if (!items) {
-            return [...prevData, {
-              quantity: String(count - 1),
-              uid: updateItem?.uid,
-              catalog_object_id: data?.item_data?.variations[0]?.id
-            }]
-          } else {
-            items.quantity = String(count - 1);
-            items.uid = updateItem?.uid;
-            return prevData;
-          }
-        });
-      }
     };
 
     if (matchedItem?.quantity) {
@@ -443,17 +381,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
     );
 
-    if (isOrderUpdate && isOrderUpdate !== 'create') {
-      setUpdateLineItem((prevData: LineItems[]) => {
-        const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (addModifier) {
-          addModifier.modifiers = [{ catalog_object_id: modifierId }]
-        }
-        return prevData
-      }
-
-      );
-    }
+ 
 
 
   };
