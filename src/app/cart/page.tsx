@@ -1,14 +1,14 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { catalogItems, createPayment, getCatalogObject, orderUpdateApi, retrieveOrder } from '@/services/apiServices';
+import { catalogItems, createPayment, getCatalogObject, orderUpdateApi,} from '@/services/apiServices';
 import GlobalContext from '@/constants/global-context';
 import { LineItems, OrderDetailsType, LineItemType, OrderDetailsValue, TokenData, ModifierType, ModifierDataType, OrderUpdateBodyAdd } from '@/constants/types';
 import { useRouter } from 'next/navigation';
 import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
 import Loader from '@/components/loader';
 import Image from 'next/image';
-import { getDataFromLocalStorage, setDataInLocalStorage } from '@/utils/genericUtilties';
+import { setDataInLocalStorage } from '@/utils/genericUtilties';
 import LoadingGif from '../../../public/assets/images/slow-cooker-loader.gif';
 
 
@@ -255,31 +255,31 @@ function CartScreen() {
         })
     };
 
-    const fetchOrderDetails = async (orderId: string | unknown) => {
-        try {
+    // const fetchOrderDetails = async (orderId: string | unknown) => {
+    //     try {
 
-            const response = await retrieveOrder(orderId)
-            if (response?.status === 200 && response?.data?.order) {
-                setOrderDetails(response?.data?.order);
-                setLineItems(response?.data?.order?.line_items || []);
-                setIsOrderUpdate('created');
-                const totalQuantity = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + parseInt(item.quantity, 10), 0);
-                setCartItemCount(totalQuantity)
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //         const response = await retrieveOrder(orderId)
+    //         if (response?.status === 200 && response?.data?.order) {
+    //             setOrderDetails(response?.data?.order);
+    //             setLineItems(response?.data?.order?.line_items || []);
+    //             setIsOrderUpdate('created');
+    //             const totalQuantity = response?.data?.order?.line_items?.reduce((sum: number, item: LineItemType) => sum + parseInt(item.quantity, 10), 0);
+    //             setCartItemCount(totalQuantity)
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
-    useEffect(() => {
-        const orderId = getDataFromLocalStorage('OrderId');
+    // useEffect(() => {
+    //     const orderId = getDataFromLocalStorage('OrderId');
 
 
-        if ((orderDetails.id || orderId)) {
-            fetchOrderDetails(orderDetails.id || orderId)
-        }
+    //     if ((orderDetails.id || orderId)) {
+    //         fetchOrderDetails(orderDetails.id || orderId)
+    //     }
 
-    }, [isOrdered])
+    // }, [isOrdered])
 
     useEffect(() => {
         getModifierListData()
