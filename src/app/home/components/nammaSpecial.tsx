@@ -215,10 +215,10 @@ const NammaSpecials = () => {
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">
       <div className='h-full absolute w-full top-0 bottom-0 z-[1] flex justify-center'>
-        <img src="/assets/images/bg-pattern1.svg" alt="banner-bg" className="h-full absolute top-0 bottom-0 z-[1]" />
+        <Image src="/assets/images/bg-pattern1.svg" alt="banner-bg" width={100} height={100} className="h-full absolute top-0 bottom-0 z-[1]" />
       </div>
       <div className="text-center flex justify-center">
-        <img src="/assets/images/namma-special.svg" alt="banner-bg" className="absolute top-[-18px] z-[2]" />
+        <Image src="/assets/images/namma-special.svg" width={100} height={100} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
       </div>
 
 
@@ -461,8 +461,9 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
-      {image?.image_data?.url ? <img src={image?.image_data?.url ? image?.image_data?.url : '#'} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
-        <Image src={placeHolder} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
+      {image?.image_data?.url ? 
+      <Image src={image?.image_data?.url ? image?.image_data?.url : '#'} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
+        <Image src={placeHolder} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
 
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
@@ -470,7 +471,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
 
       {isCartOpen && <>
-      {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
+        {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
           <button
             className="px-3 py-1 text-red-600 hover:bg-gray-100"
             onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
@@ -487,76 +488,76 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
             +
           </button>
         </div> :
-     
-        <></>
-        
+
+          <></>
+
         }
       </>}
 
-      </div>
-      {isModalOpen && (
+    </div>
+    {isModalOpen && (
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
+        onClick={() => setIsModalOpen(false)}
+      >
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-          onClick={() => setIsModalOpen(false)}
+          className="bg-white rounded-lg w-[330px] p-[30px] relative"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="bg-white rounded-lg w-[330px] p-[30px] relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="w-full flex flex-col items-start justify-center">
-              <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-              {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
-                <div
-                  key={modifier?.id}
-                  className="flex items-center justify-between w-full py-[10px] relative"
+          <div className="w-full flex flex-col items-start justify-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
+            {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
+              <div
+                key={modifier?.id}
+                className="flex items-center justify-between w-full py-[10px] relative"
+              >
+                <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
+                <span
+                  className="bg-white min-w-[100px] relative z-[2] text-left"
                 >
-                  <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                  <span
-                    className="bg-white min-w-[100px] relative z-[2] text-left"
+                  {modifier?.modifier_data?.name}
+                </span>
+
+                <div className="bg-white relative z-[2] flex pl-[10px]">
+
+                  <input
+                    type='radio'
+                    id={modifier?.modifier_data?.name}
+                    name="customization"
+                    value={modifier?.modifier_data?.name}
+                    checked={selectedOption === modifier?.modifier_data?.name}
+                    onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
+                    className="hidden peer"
+                  />
+
+                  <label
+                    htmlFor={modifier?.modifier_data?.name}
+                    className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
                   >
-                    {modifier?.modifier_data?.name}
-                  </span>
+                    <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
+                  </label>
+                </div>
 
-                  <div className="bg-white relative z-[2] flex pl-[10px]">
-
-                    <input
-                      type='radio'
-                      id={modifier?.modifier_data?.name}
-                      name="customization"
-                      value={modifier?.modifier_data?.name}
-                      checked={selectedOption === modifier?.modifier_data?.name}
-                      onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
-                      className="hidden peer"
-                    />
-
-                    <label
-                      htmlFor={modifier?.modifier_data?.name}
-                      className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
-                    >
-                      <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                    </label>
-                  </div>
-
-                  {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
+                {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
                                     
                                     </span> */}
 
-                </div>
-              ))}
-              <div className='w-full flex justify-end mt-4' onClick={() => {
-                if (selectedOption) {
-                  setIsModalOpen(false)
-                }
-              }}>
-                <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
               </div>
-
+            ))}
+            <div className='w-full flex justify-end mt-4' onClick={() => {
+              if (selectedOption) {
+                setIsModalOpen(false)
+              }
+            }}>
+              <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
             </div>
+
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
 })
 
-    NammaSpecialCard.displayName = "NammaSpecialCard";
-    export default NammaSpecials;
+NammaSpecialCard.displayName = "NammaSpecialCard";
+export default NammaSpecials;

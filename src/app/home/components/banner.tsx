@@ -3,13 +3,13 @@ import React from 'react';
 import ReviewCard from './reviewcarousel';
 import ImageSlider from './banner-slider';
 import { useRouter } from 'next/navigation';
-
+import Image from 'next/image';
 
 function Banner() {
     const router = useRouter()
     return (
         <div className='w-full relative pt-[55px]'>
-            <img src="/assets/images/banner-bg.svg" alt="banner-bg" className="w-full absolute top-[50px] z-[-1]" />
+            <Image src="/assets/images/banner-bg.svg" width={'150'} height={'150'}alt="banner-bg" className="w-full absolute top-[50px] z-[-1]" />
             <div className='container'>
                 <div className='grid grid-cols-12 gap-[40px]'>
                     <div className='col-span-5'>
@@ -30,15 +30,15 @@ function Banner() {
                             </div>
                         </div>
                         <div className='w-full'>
-                            <ReviewCard/>
+                            <ReviewCard />
                         </div>
                     </div>
                     <div className='col-span-7'>
                         <div className='w-full mt-[-100px] pl-[50px]'>
-                        {/* <img src="/assets/images/hero-slider1.svg" alt="banner-bg" className="w-full" /> */}
-                        <ImageSlider/>
+                            {/* <Image src="/assets/images/hero-slider1.svg" alt="banner-bg" className="w-full" /> */}
+                            <ImageSlider />
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

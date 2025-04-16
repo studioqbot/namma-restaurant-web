@@ -349,7 +349,7 @@ function CartScreen() {
 
                                 {/* Takeaway Notice */}
                                 <div className="mt-4 flex items-start gap-2 text-sm text-gray-700">
-                                    <img
+                                    <Image
                                         src="/assets/images/exclamatory.svg"
                                         alt="Del"
                                         width={19}
@@ -740,7 +740,7 @@ const CartChild = (props: CartProps) => {
                 setCartItemCount(cartItemCount - quantity);
                 orderUpdate('0', lineItem?.catalog_object_id, lineItem?.uid, '', '');
             }}>
-                <img
+                <Image
                     src="/assets/images/del.svg"
                     alt="Del"
                     width={14}

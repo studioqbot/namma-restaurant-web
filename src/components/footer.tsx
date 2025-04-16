@@ -35,7 +35,7 @@ function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img
+                    <Image
                       src="/assets/images/whatsapp.svg"
                       alt="WhatsApp Icon"
                       width="18"
@@ -59,14 +59,14 @@ function Footer() {
                 <span>|</span>
                 <span><Link href="tel:+14086493417">408-649-3417</Link> &  <Link href="tel:+14086493418">408-649-3418</Link></span>
 
-                <div  className="ml-4">
+                <div className="ml-4">
                   <a
                     href="https://www.instagram.com/namma_restaurant/"
                     className="flex items-center space-x-2 underline font-bold text-gray-600 hover:text-blue-900"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img
+                    <Image
                       src="/assets/images/instagram.svg"
                       alt="Instagram Icon"
                       width="21"
