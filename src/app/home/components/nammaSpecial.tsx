@@ -1,11 +1,11 @@
 'use client'
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { ImageType, NammaSpecialItems } from '../type';
-import { nammaSpecialItems, catalogItems, orderCreateApi, orderUpdateApi } from '@/services/apiServices';
+import { nammaSpecialItems, catalogItems } from '@/services/apiServices';
 import GlobalContext from '@/constants/global-context';
 import { CatelogFilterBody } from '../page';
 import { getDataFromLocalStorage, isEmptyObj, setDataInLocalStorage } from '@/utils/genericUtilties';
-import { LineItems, ModifierDataType, ModifierType, OrderDetailsType, OrderUpdateBodyAdd } from '@/constants/types';
+import { LineItems, ModifierDataType, OrderDetailsType } from '@/constants/types';
 import { useRouter } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import placeHolder from '../../../../public/assets/images/place-holder.png'
@@ -28,9 +28,9 @@ const NammaSpecials = () => {
 
 
 
-  const { setOrderDetails, lineItems, setLineItems, nammaSpecialItemsData, updateLineItem, setUpdateLineItem, setFieldToClear,
-    setNammaSpecialItemsData, imageData, setImageData, orderDetails, setIsOrderUpdate, setIsOrdered, fieldToClear, setGlobalLoading } = useContext(GlobalContext);
-  const [setIsItemAdded] = useState(false);
+  const { lineItems, setLineItems, nammaSpecialItemsData, 
+    setNammaSpecialItemsData, imageData, setImageData } = useContext(GlobalContext);
+  // const [setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
   const dataLimit = 6;
@@ -104,73 +104,6 @@ const NammaSpecials = () => {
   };
 
 
-
-  const orderCreate = async () => {
-    setGlobalLoading(true)
-    const body = {
-      order: {
-        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-        line_items: lineItems,
-        pricing_options: {
-          auto_apply_taxes: true,
-          auto_apply_discounts: true,
-        },
-      }
-    }
-    try {
-      const response = await orderCreateApi(body)
-      setGlobalLoading(false)
-      if (response?.status === 200) {
-        setOrderDetails(response?.data?.order);
-        setLineItems(response?.data?.order?.line_items);
-        setDataInLocalStorage('OrderId', response?.data?.order?.id);
-        setIsOrderUpdate('created');
-        setIsOrdered(true);
-      }
-
-
-    } catch (error) {
-      setGlobalLoading(false)
-      console.log('Error', error);
-    }
-  }
-
-
-
-  const orderUpdate = async () => {
-    setGlobalLoading(true)
-    const body: OrderUpdateBodyAdd = {
-      fields_to_clear: fieldToClear,
-      order: {
-        location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-        line_items: updateLineItem,
-
-        pricing_options: {
-          auto_apply_taxes: true,
-          auto_apply_discounts: true,
-        },
-        version: orderDetails?.version
-      }
-    }
-    try {
-      const response = await orderUpdateApi(body, orderDetails?.id)
-      setGlobalLoading(false)
-      if (response?.status === 200) {
-        setIsOrdered(true);
-        setOrderDetails(response?.data?.order);
-        setLineItems(response?.data?.order?.line_items || []);
-        setIsOrderUpdate('updated');
-        setUpdateLineItem([]);
-        setFieldToClear([])
-
-      }
-
-    } catch (error) {
-      setGlobalLoading(false)
-      console.log('Error', error);
-    }
-  };
-
   const getNammaSpeacialDataFromLocal = () => {
     const imageDatas: ImageType[] | null = getDataFromLocalStorage('ImageData');
     const nammaSpecialData: NammaSpecialItems[] | null = getDataFromLocalStorage('NammaSpecialItemsData');
@@ -243,9 +176,9 @@ const NammaSpecials = () => {
               data={data}
               lineItems={lineItems}
               setLineItems={setLineItems}
-              setIsItemAdded={setIsItemAdded}
+              // setIsItemAdded={false}
+              setIsItemAdded={() => {}}
               modifierList={modifierList}
-
             />
           }
 
@@ -269,14 +202,15 @@ const NammaSpecials = () => {
 
 
 const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
-  const { image, data, lineItems, setLineItems, setIsItemAdded, modifierList } = props
+  // const { image, data, lineItems, setLineItems, setIsItemAdded } = props
+  const { image, data, lineItems, setLineItems } = props
   const [quantity, setQuantity] = useState(0);
   const [isAdded, setIsAdded] = useState(false);
   const { setCartItemCount, cartItemCount, orderDetails, setUpdateLineItem,
     isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string>('');
+  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
+  // const [selectedOption, setSelectedOption] = useState<string>('');
 
   const matchedItem: (LineItems | undefined) = useMemo(() => {
     return lineItems?.find(
@@ -284,28 +218,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
     );
   }, [lineItems, data]);
 
-
-  const handleAddClick = () => {
-    setIsItemAdded(true)
-    setQuantity(quantity + 1)
-    setCartItemCount(cartItemCount + 1)
-    setIsAdded(true);
-    if (data?.item_data?.modifier_list_info && data?.item_data?.modifier_list_info[0]?.modifier_list_id) {
-      setIsModalOpen(true);
-
-      const modifierData = modifierList?.find((modifier) => modifier?.id === data?.item_data?.modifier_list_info[0]?.modifier_list_id) as ModifierDataType;
-
-      setModifierListData(modifierData?.modifier_list_data?.modifiers)
-
-    };
-  
-
-  }
-
-
-
   const handleCountIncrement = async (quantityVal: string | undefined) => {
-    setIsItemAdded(true)
+    // setIsItemAdded(true)
     const count = quantityVal ? parseInt(quantityVal) : quantity;
 
     setQuantity(count + 1);
@@ -323,7 +237,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
 
   const handleQuantityDecrement = (quantityVal: string | undefined) => {
-    setIsItemAdded(true);
+    // setIsItemAdded(true);
     const count = quantityVal ? parseInt(quantityVal) : quantity;
     setCartItemCount(cartItemCount - 1);
     if (count == 1) {
@@ -366,25 +280,6 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
   };
 
 
-  const handleCheckboxChange = (modifierName: string, modifierId: string) => {
-    setSelectedOption(modifierName);
-
-
-
-    setLineItems((prevData: LineItems[]) => {
-      const addModifier = prevData?.find((item) => item.catalog_object_id === data?.item_data?.variations[0]?.id);
-      if (addModifier) {
-        addModifier.modifiers = [{ catalog_object_id: modifierId }]
-      }
-      return prevData
-    }
-
-    );
-
- 
-
-
-  };
 
 
   return <div className="flex flex-col items-center rounded-lg text-center">
@@ -423,69 +318,10 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       </>}
 
     </div>
-    {isModalOpen && (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-        onClick={() => setIsModalOpen(false)}
-      >
-        <div
-          className="bg-white rounded-lg w-[330px] p-[30px] relative"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="w-full flex flex-col items-start justify-center">
-            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-            {modifierListData && modifierListData?.length && modifierListData?.map((modifier: ModifierType) => (
-              <div
-                key={modifier?.id}
-                className="flex items-center justify-between w-full py-[10px] relative"
-              >
-                <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                <span
-                  className="bg-white min-w-[100px] relative z-[2] text-left"
-                >
-                  {modifier?.modifier_data?.name}
-                </span>
-
-                <div className="bg-white relative z-[2] flex pl-[10px]">
-
-                  <input
-                    type='radio'
-                    id={modifier?.modifier_data?.name}
-                    name="customization"
-                    value={modifier?.modifier_data?.name}
-                    checked={selectedOption === modifier?.modifier_data?.name}
-                    onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
-                    className="hidden peer"
-                  />
-
-                  <label
-                    htmlFor={modifier?.modifier_data?.name}
-                    className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
-                  >
-                    <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                  </label>
-                </div>
-
-                {/* <span className=' bg-white relative z-[2] flex pl-[10px]'>
-                                    
-                                    </span> */}
-
-              </div>
-            ))}
-            <div className='w-full flex justify-end mt-4' onClick={() => {
-              if (selectedOption) {
-                setIsModalOpen(false)
-              }
-            }}>
-              <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    )}
+ 
   </div>
 })
 
 NammaSpecialCard.displayName = "NammaSpecialCard";
 export default NammaSpecials;
+
