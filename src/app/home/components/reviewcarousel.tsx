@@ -24,12 +24,14 @@ export default function ReviewCard() {
   return (
     <div className="w-full">
       <div className="relative">
-        <Image className="absolute bottom-[-20px] left-[10px] right-0"
-          src="/assets/images/review-bg.svg"
-          alt="Google logo"
-          height={100}
-          width={100}
-        />
+         {/* <Image
+        src="/assets/images/review-bg.svg"
+        alt="Google logo"
+        fill
+        className="object-cover absolute bottom-[-20px] left-[10px] right-0"
+        priority
+      /> */}
+         <img className="absolute bottom-[-20px] left-[10px] right-0" alt="Google logo" src="/assets/images/review-bg.svg"/>
         <Slider {...settings}>
           <div>
             <div className="max-w-lg mx-auto bg-white rounded-[15px] flex overflow-hidden">

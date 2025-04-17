@@ -28,7 +28,7 @@ const NammaSpecials = () => {
 
 
 
-  const { lineItems, setLineItems, nammaSpecialItemsData, 
+  const { lineItems, setLineItems, nammaSpecialItemsData,
     setNammaSpecialItemsData, imageData, setImageData } = useContext(GlobalContext);
   // const [setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
@@ -135,19 +135,17 @@ const NammaSpecials = () => {
 
   }, [])
 
- 
+
 
 
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">
       <div className='h-full absolute w-full top-0 bottom-0 z-[1] flex justify-center'>
-        <Image src="/assets/images/bg-pattern1.svg" alt="banner-bg" width={100} height={100} className="h-full absolute top-0 bottom-0 z-[1]" />
+        <Image src="/assets/images/bg-pattern1.svg" alt="banner-bg" width={400} height={100} className="h-full absolute left-[24px] top-0 bottom-0 z-[1]" />
       </div>
       <div className="text-center flex justify-center">
-        <Image src="/assets/images/namma-special.svg" width={100} height={100} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
+        <Image src="/assets/images/namma-special.svg" width={167} height={58} alt="banner-bg" className="absolute top-[-18px] z-[2]" />
       </div>
-
-
       <>
         {(load || nammaSpecialItemsData?.length === 0) ? <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
           {Array(6).fill(0).map((_, index) => (
@@ -177,7 +175,7 @@ const NammaSpecials = () => {
               lineItems={lineItems}
               setLineItems={setLineItems}
               // setIsItemAdded={false}
-              setIsItemAdded={() => {}}
+              setIsItemAdded={() => { }}
               modifierList={modifierList}
             />
           }
@@ -232,7 +230,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       }
       return prevData
     });
- 
+
   }
 
 
@@ -284,8 +282,8 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
-      {image?.image_data?.url ? 
-      <Image src={image?.image_data?.url ? image?.image_data?.url : '#'} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
+      {image?.image_data?.url ?
+        <Image src={image?.image_data?.url ? image?.image_data?.url : '#'} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
         <Image src={placeHolder} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
 
@@ -318,7 +316,7 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
       </>}
 
     </div>
- 
+
   </div>
 })
 
