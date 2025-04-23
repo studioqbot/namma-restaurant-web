@@ -8,13 +8,14 @@ import { getDataFromLocalStorage, isEmptyObj, setDataInLocalStorage } from '@/ut
 import { LineItems, ModifierDataType, OrderDetailsType } from '@/constants/types';
 import { useRouter } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
-import placeHolder from '../../../../public/assets/images/place-holder.png'
+import placeHolder from '../../../../public/assets/images/place-holder.png';
 import Image from 'next/image';
 import Skeleton from 'react-loading-skeleton';
-import "react-loading-skeleton/dist/skeleton.css";
+import 'react-loading-skeleton/dist/skeleton.css';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface NammaSpecialCardProps {
-  data: NammaSpecialItems
+  data: NammaSpecialItems;
   image: ImageType | undefined;
   lineItems: LineItems[];
   setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
@@ -23,15 +24,12 @@ interface NammaSpecialCardProps {
 }
 
 const NammaSpecials = () => {
-
-  const { lineItems, setLineItems, nammaSpecialItemsData,
-    setNammaSpecialItemsData, imageData, setImageData } = useContext(GlobalContext);
+  const { lineItems, setLineItems, nammaSpecialItemsData, setNammaSpecialItemsData, imageData, setImageData } = useContext(GlobalContext);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
-  const [shuffledItems, setShuffledItems] = useState<NammaSpecialItems[]>([]); // <-- added
-
+  const [shuffledItems, setShuffledItems] = useState<NammaSpecialItems[]>([]);
   const dataLimit = 6;
-  const router = useRouter()
+  const router = useRouter();
 
   const getNammaSpeacialDatas = async () => {
     try {
@@ -40,12 +38,12 @@ const NammaSpecials = () => {
         custom_attribute_filters: [
           {
             bool_filter: true,
-            custom_attribute_definition_id: "P6DTBZV62JU2X2AXJQL34JH6"
-          }
-        ]
-      }
+            custom_attribute_definition_id: 'P6DTBZV62JU2X2AXJQL34JH6',
+          },
+        ],
+      };
       const response = await nammaSpecialItems(body);
-      setLoad(false)
+      setLoad(false);
       if (response?.status === 200) {
         setNammaSpecialItemsData(response?.data?.items);
         setDataInLocalStorage('NammaSpecialItemsData', response?.data?.items);
@@ -59,9 +57,9 @@ const NammaSpecials = () => {
 
   const getNammaSpeacialItemsImage = async () => {
     try {
-      const params = { types: 'IMAGE' }
+      const params = { types: 'IMAGE' };
       const response = await catalogItems(params);
-      setLoad(false)
+      setLoad(false);
       if (response?.status === 200) {
         setImageData(response?.data?.objects);
         setDataInLocalStorage('ImageData', response?.data?.objects);
@@ -71,7 +69,7 @@ const NammaSpecials = () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const getModifierListData = async () => {
     try {
@@ -83,7 +81,7 @@ const NammaSpecials = () => {
         setMofierList(response?.data?.objects);
         const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
-      };
+      }
     } catch (error) {
       console.log('Error', error);
     }
@@ -103,62 +101,39 @@ const NammaSpecials = () => {
     if (imageDatas && imageDatas?.length > 0) {
       setImageData(imageDatas);
     }
-  }
+  };
 
   useEffect(() => {
     getNammaSpeacialDataFromLocal();
     const dateData: Dayjs | null = getDataFromLocalStorage('DateHome');
     if (((dayjs(dateData).isSame() || dayjs(dateData).isBefore()) || !dateData)) {
-      setLoad(true)
+      setLoad(true);
       getNammaSpeacialDatas();
       getNammaSpeacialItemsImage();
       getModifierListData();
     }
   }, []);
 
-  // <-- shuffle items every 1 min
-  // useEffect(() => {
-  //   if (nammaSpecialItemsData?.length > 0) {
-  //     const shuffleArray = (array: NammaSpecialItems[]) => {
-  //       const arr = [...array];
-  //       for (let i = arr.length - 1; i > 0; i--) {
-  //         const j = Math.floor(Math.random() * (i + 1));
-  //         [arr[i], arr[j]] = [arr[j], arr[i]];
-  //       }
-  //       return arr;
-  //     };
+  useEffect(() => {
+    const shuffleArray = (array: NammaSpecialItems[]) => {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
 
-  //     setShuffledItems(shuffleArray(nammaSpecialItemsData));
+    if (nammaSpecialItemsData?.length > 0) {
+      setShuffledItems(shuffleArray(nammaSpecialItemsData));
 
-  //     const interval = setInterval(() => {
-  //       setShuffledItems(shuffleArray(nammaSpecialItemsData));
-  //     }, 1000); // shuffle every 1 minute 60000
+      const interval = setInterval(() => {
+        setShuffledItems(shuffleArray(nammaSpecialItemsData));
+      }, 5000); // 60 seconds
 
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [nammaSpecialItemsData]);
-  // -->
-
-useEffect(() => {
-  const shuffleArray = (array: NammaSpecialItems[]) => {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+      return () => clearInterval(interval);
     }
-    return arr;
-  };
-
-  if (nammaSpecialItemsData?.length > 0) {
-    setShuffledItems(shuffleArray(nammaSpecialItemsData)); // initial shuffle
-
-    const interval = setInterval(() => {
-      setShuffledItems(shuffleArray(nammaSpecialItemsData)); // re-shuffle every 60 sec
-    }, 1000);
-
-    return () => clearInterval(interval); // cleanup
-  }
-}, [nammaSpecialItemsData]); // <== key part, this should run only when source data changes
+  }, [nammaSpecialItemsData]);
 
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">
@@ -181,24 +156,35 @@ useEffect(() => {
             </div>
           ))}
         </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
-          {shuffledItems?.map((data) => { // <-- replaced original loop
-            const image: ImageType | undefined = imageData?.find((img) => {
-              if (data?.item_data?.image_ids?.length) {
-                return img?.id === data?.item_data?.image_ids[0]
-              }
-              return null
-            });
-
-            return <NammaSpecialCard
-              key={data?.id}
-              image={image}
-              data={data}
-              lineItems={lineItems}
-              setLineItems={setLineItems}
-              setIsItemAdded={() => { }}
-              modifierList={modifierList}
-            />
-          })}
+          <AnimatePresence mode="popLayout">
+            {shuffledItems?.map((data) => {
+              const image: ImageType | undefined = imageData?.find((img) => {
+                if (data?.item_data?.image_ids?.length) {
+                  return img?.id === data?.item_data?.image_ids[0];
+                }
+                return null;
+              });
+              return (
+                <motion.div
+                  key={data?.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <NammaSpecialCard
+                    image={image}
+                    data={data}
+                    lineItems={lineItems}
+                    setLineItems={setLineItems}
+                    setIsItemAdded={() => { }}
+                    modifierList={modifierList}
+                  />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>}
 
         <div className="text-center relative z-10">
@@ -215,7 +201,7 @@ useEffect(() => {
 };
 
 const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
-  const { image, data } = props
+  const { image, data } = props;
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
@@ -223,13 +209,12 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
         <Image src={image?.image_data?.url ? image?.image_data?.url : '#'} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" /> :
         <Image src={placeHolder} width={100} height={100} alt="card-img" className="w-[163px] h-[163px] rounded-[15px]" />}
     </div>
-
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
     <div className="flex flex-col items-center justify-between mt-auto">
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
     </div>
-  </div>
-})
+  </div>;
+});
 
-NammaSpecialCard.displayName = "NammaSpecialCard";
+NammaSpecialCard.displayName = 'NammaSpecialCard';
 export default NammaSpecials;
