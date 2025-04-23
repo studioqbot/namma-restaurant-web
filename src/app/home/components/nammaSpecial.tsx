@@ -129,7 +129,7 @@ const NammaSpecials = () => {
 
       const interval = setInterval(() => {
         setShuffledItems(shuffleArray(nammaSpecialItemsData));
-      }, 5000); // 60 seconds
+      }, 10000); // 60 seconds
 
       return () => clearInterval(interval);
     }
@@ -168,10 +168,10 @@ const NammaSpecials = () => {
                 <motion.div
                   key={data?.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0.5, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
+                  exit={{ opacity: 0.5, scale: 0.5 }}
+                  transition={{ duration: 3 }}
                 >
                   <NammaSpecialCard
                     image={image}
