@@ -20,19 +20,16 @@ interface NammaSpecialCardProps {
   setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
   setIsItemAdded: React.Dispatch<React.SetStateAction<boolean>>;
   modifierList: ModifierDataType[];
-
 }
-
 
 const NammaSpecials = () => {
 
-
-
   const { lineItems, setLineItems, nammaSpecialItemsData,
     setNammaSpecialItemsData, imageData, setImageData } = useContext(GlobalContext);
-  // const [setIsItemAdded] = useState(false);
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
+  const [shuffledItems, setShuffledItems] = useState<NammaSpecialItems[]>([]); // <-- added
+
   const dataLimit = 6;
   const router = useRouter()
 
@@ -44,7 +41,6 @@ const NammaSpecials = () => {
           {
             bool_filter: true,
             custom_attribute_definition_id: "P6DTBZV62JU2X2AXJQL34JH6"
-            // custom_attribute_definition_id: "MOY2QZ3ECH5SURG6SRQB3UEJ"
           }
         ]
       }
@@ -56,53 +52,42 @@ const NammaSpecials = () => {
         const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       }
-
-
     } catch (error) {
       console.log('Error', error);
-
     }
   };
-
-  console.log('modifierList', modifierList);
-
 
   const getNammaSpeacialItemsImage = async () => {
     try {
       const params = { types: 'IMAGE' }
       const response = await catalogItems(params);
       setLoad(false)
-
       if (response?.status === 200) {
         setImageData(response?.data?.objects);
         setDataInLocalStorage('ImageData', response?.data?.objects);
         const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       }
-
-
     } catch (error) {
       console.log(error);
     }
   }
+
   const getModifierListData = async () => {
     try {
       const params = { types: 'MODIFIER_LIST' };
       const response = await catalogItems(params);
       setLoad(false);
-
       if (response?.status === 200) {
         setDataInLocalStorage('ModifierListData', response?.data?.objects);
         setMofierList(response?.data?.objects);
         const currentTimePlusOneWeek = dayjs().add(1, 'week').toDate();
         setDataInLocalStorage('DateHome', currentTimePlusOneWeek);
       };
-
     } catch (error) {
       console.log('Error', error);
     }
   };
-
 
   const getNammaSpeacialDataFromLocal = () => {
     const imageDatas: ImageType[] | null = getDataFromLocalStorage('ImageData');
@@ -115,11 +100,9 @@ const NammaSpecials = () => {
     if (modifierListDatas && modifierListDatas?.length > 0) {
       setMofierList(modifierListDatas);
     }
-
     if (imageDatas && imageDatas?.length > 0) {
       setImageData(imageDatas);
     }
-
   }
 
   useEffect(() => {
@@ -131,12 +114,51 @@ const NammaSpecials = () => {
       getNammaSpeacialItemsImage();
       getModifierListData();
     }
+  }, []);
 
+  // <-- shuffle items every 1 min
+  // useEffect(() => {
+  //   if (nammaSpecialItemsData?.length > 0) {
+  //     const shuffleArray = (array: NammaSpecialItems[]) => {
+  //       const arr = [...array];
+  //       for (let i = arr.length - 1; i > 0; i--) {
+  //         const j = Math.floor(Math.random() * (i + 1));
+  //         [arr[i], arr[j]] = [arr[j], arr[i]];
+  //       }
+  //       return arr;
+  //     };
 
-  }, [])
+  //     setShuffledItems(shuffleArray(nammaSpecialItemsData));
 
+  //     const interval = setInterval(() => {
+  //       setShuffledItems(shuffleArray(nammaSpecialItemsData));
+  //     }, 1000); // shuffle every 1 minute 60000
 
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [nammaSpecialItemsData]);
+  // -->
 
+useEffect(() => {
+  const shuffleArray = (array: NammaSpecialItems[]) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
+  if (nammaSpecialItemsData?.length > 0) {
+    setShuffledItems(shuffleArray(nammaSpecialItemsData)); // initial shuffle
+
+    const interval = setInterval(() => {
+      setShuffledItems(shuffleArray(nammaSpecialItemsData)); // re-shuffle every 60 sec
+    }, 1000);
+
+    return () => clearInterval(interval); // cleanup
+  }
+}, [nammaSpecialItemsData]); // <== key part, this should run only when source data changes
 
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">
@@ -159,8 +181,7 @@ const NammaSpecials = () => {
             </div>
           ))}
         </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
-          {nammaSpecialItemsData?.length > 0 && nammaSpecialItemsData?.map((data) => {
-
+          {shuffledItems?.map((data) => { // <-- replaced original loop
             const image: ImageType | undefined = imageData?.find((img) => {
               if (data?.item_data?.image_ids?.length) {
                 return img?.id === data?.item_data?.image_ids[0]
@@ -174,16 +195,11 @@ const NammaSpecials = () => {
               data={data}
               lineItems={lineItems}
               setLineItems={setLineItems}
-              // setIsItemAdded={false}
               setIsItemAdded={() => { }}
               modifierList={modifierList}
             />
-          }
-
-          )}
+          })}
         </div>}
-
-
 
         <div className="text-center relative z-10">
           <button
@@ -198,87 +214,8 @@ const NammaSpecials = () => {
   );
 };
 
-
 const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
-  // const { image, data, lineItems, setLineItems, setIsItemAdded } = props
-  const { image, data, lineItems, setLineItems } = props
-  const [quantity, setQuantity] = useState(0);
-  const [isAdded, setIsAdded] = useState(false);
-  const { setCartItemCount, cartItemCount, orderDetails, setUpdateLineItem,
-    isCartOpen, updateLineItem, setFieldToClear, setIsCountDecreased, setOrderDetails } = useContext(GlobalContext);
-  // const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  // const [modifierListData, setModifierListData] = useState<ModifierType[]>([]);
-  // const [selectedOption, setSelectedOption] = useState<string>('');
-
-  const matchedItem: (LineItems | undefined) = useMemo(() => {
-    return lineItems?.find(
-      (dataItem: LineItems) => dataItem?.catalog_object_id === data?.item_data?.variations[0]?.id
-    );
-  }, [lineItems, data]);
-
-  const handleCountIncrement = async (quantityVal: string | undefined) => {
-    // setIsItemAdded(true)
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-
-    setQuantity(count + 1);
-    setCartItemCount(cartItemCount + 1);
-    setLineItems((prevData: LineItems[]) => {
-      const items = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-      if (items) {
-        items.quantity = String(count + 1);
-        return prevData;
-      }
-      return prevData
-    });
-
-  }
-
-
-  const handleQuantityDecrement = (quantityVal: string | undefined) => {
-    // setIsItemAdded(true);
-    const count = quantityVal ? parseInt(quantityVal) : quantity;
-    setCartItemCount(cartItemCount - 1);
-    if (count == 1) {
-      setIsCountDecreased(true)
-      setIsAdded(false);
-
-
-      const updateItem = orderDetails?.line_items?.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id) as LineItems | undefined;;
-      setFieldToClear((prevData) => [...prevData, `line_items[${updateItem?.uid}]`] as string[])
-      const removeLineItem = lineItems?.filter((item) => item?.catalog_object_id !== data?.item_data?.variations[0]?.id);
-      setLineItems(removeLineItem);
-
-
-      const removeUpdateLineItem = updateLineItem?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setUpdateLineItem(removeUpdateLineItem);
-
-      const removeLineItemUpdate = orderDetails?.line_items?.filter((item: LineItems) => item?.uid !== updateItem?.uid);
-      setOrderDetails((prevData: OrderDetailsType) => {
-        return { ...prevData, line_items: removeLineItemUpdate };
-      });
-
-    } else {
-
-      setLineItems((prevData: LineItems[]) => {
-        const item = prevData.find((obj: LineItems) => obj.catalog_object_id === data?.item_data?.variations[0]?.id);
-        if (item) {
-          item.quantity = String(count - 1);
-          return prevData;
-        }
-        return prevData;
-      });
-
-    };
-
-    if (matchedItem?.quantity) {
-      setQuantity(parseInt(matchedItem?.quantity) - 1);
-    } else {
-      setQuantity(quantity - 1)
-    };
-  };
-
-
-
+  const { image, data } = props
 
   return <div className="flex flex-col items-center rounded-lg text-center">
     <div className="relative overflow-hidden mb-4">
@@ -290,36 +227,9 @@ const NammaSpecialCard = React.memo((props: NammaSpecialCardProps) => {
     <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data?.item_data?.name}</h3>
     <div className="flex flex-col items-center justify-between mt-auto">
       <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">$ {data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
-
-      {isCartOpen && <>
-        {(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[12px]">
-          <button
-            className="px-3 py-1 text-red-600 hover:bg-gray-100"
-            onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
-          >
-            -
-          </button>
-          <span className="px-3 py-1"> {matchedItem ? matchedItem?.quantity : quantity}</span>
-          <button
-            className="px-3 py-1 text-red-600 hover:bg-gray-100"
-            onClick={() => {
-              handleCountIncrement(matchedItem?.quantity)
-            }}
-          >
-            +
-          </button>
-        </div> :
-
-          <></>
-
-        }
-      </>}
-
     </div>
-
   </div>
 })
 
 NammaSpecialCard.displayName = "NammaSpecialCard";
 export default NammaSpecials;
-
