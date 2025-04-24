@@ -44,7 +44,7 @@ function Header() {
   useEffect(() => {
     const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
     if (isMobileDevice) {
-      window.location.href = 'https://namma-restaurant-mobile-sjsf.vercel.app/';
+      window.location.href = 'https://namma-restaurant-mobile.vercel.app/';
 
     }
 
