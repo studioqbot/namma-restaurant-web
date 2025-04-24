@@ -115,26 +115,28 @@ const NammaSpecials = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const shuffleArray = (array: NammaSpecialItems[]) => {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    };
-
-    if (nammaSpecialItemsData?.length > 0) {
-      setShuffledItems(shuffleArray(nammaSpecialItemsData));
-
-      const interval = setInterval(() => {
-        setShuffledItems(shuffleArray(nammaSpecialItemsData));
-      }, 1000 * 60); // 10 seconds
-
-      return () => clearInterval(interval);
+useEffect(() => {
+  const shuffleArray = (array: NammaSpecialItems[]) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-  }, [nammaSpecialItemsData]);
+    return arr.slice(0, 6); // Return only the first 6 items
+  };
+
+  if (nammaSpecialItemsData?.length > 0) {
+    setShuffledItems(shuffleArray(nammaSpecialItemsData));
+
+    const interval = setInterval(() => {
+      setShuffledItems(shuffleArray(nammaSpecialItemsData));
+    }, 1000 * 60); // 60 seconds
+
+    return () => clearInterval(interval);
+  }
+}, [nammaSpecialItemsData]);
+
+
 
   return (
     <div className="max-w-6xl mx-auto px-[35px] py-[70px] pb-[30px] bg-white relative rounded-[22px] mt-[-100px]">

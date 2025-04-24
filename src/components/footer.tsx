@@ -44,10 +44,6 @@ function Footer() {
                     <span>Join with us on WhatsApp</span>
                   </a>
                 </div>
-
-
-
-
               </div>
               <div className="flex items-center text-[14px] text-[#222A4A] gap-[3px] mt-[5px]">
                 <a
