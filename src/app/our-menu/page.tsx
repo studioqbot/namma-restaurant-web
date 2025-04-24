@@ -428,9 +428,7 @@ const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
     return (
         <div className="flex items-center justify-between py-2 relative">
             <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[-1]' />
-            {/* <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">{data?.item_data?.name}</span> */}
-            {/* <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span> */}
-
+      
 
             {(!!data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount &&
                 !isNaN(data.item_data.variations[0].item_variation_data.price_money.amount) &&
@@ -448,91 +446,6 @@ const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
 
 
 
-            {/**
-             * 
-             *  <div className="flex items-center bg-[#eee1d1] gap-4 pl-[11px]">
-                <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">${data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount / 100}</span>
-
-                {isCartOpen && <>{(isAdded || (matchedItem && !isEmptyObj(matchedItem))) ? <div className="flex items-center min-w-[100px] border border-[#A02621] rounded-[100px] overflow-hidden text-[#A02621] text-[12px]">
-                    <button
-                        onClick={() => handleQuantityDecrement(matchedItem?.quantity)}
-                        className="px-3 py-1 text-red-600 hover:bg-gray-100"
-                    >
-                        -
-                    </button>
-                    <span className="px-3 py-1 text-red-600">
-                        {matchedItem ? matchedItem?.quantity : quantity}
-                    </span>
-                    <button
-                        onClick={() => {
-                            handleCountIncrement(matchedItem?.quantity)
-                        }}
-                        className="px-3 py-1 text-red-600 hover:bg-gray-100"
-                    >
-                        +
-                    </button>
-                </div> : <button
-                    onClick={() => {
-
-
-                        handleAddClick()
-                    }}
-                    className="py-[4px] min-w-[100px] border border-[#A02621] rounded-[100px] overflow-hidden text-[#A02621] text-[12px]"
-                >
-                    Add123
-                </button>}
-                </>}
-            </div> */}
-            {/* {isModalOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]"
-                    onClick={() => setIsModalOpen(false)}
-                >
-                    <div
-                        className="bg-white rounded-lg w-[330px] p-[30px] relative"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="w-full flex flex-col items-start justify-center">
-                            <h2 className="text-lg font-semibold text-gray-800 mb-[10px]">Customization</h2>
-                            {modifierListData && modifierListData?.length && modifierListData.map((modifier: ModifierType) => (
-                                <div
-                                    key={modifier?.id}
-                                    className="flex items-center justify-between w-full py-[10px] relative"
-                                >
-                                    <span className='absolute w-full border-b border-dotted border-[#222A4A] z-[1]' />
-                                    <span className=" bg-white min-w-[100px] relative z-[2] ">{modifier?.modifier_data?.name}</span>
-                                    <div className="bg-white relative z-[2] flex pl-[10px]">
-
-                                        <input
-                                            type='radio'
-                                            id={modifier?.modifier_data?.name}
-                                            name="customization"
-                                            value={modifier?.modifier_data?.name}
-                                            checked={selectedOption === modifier?.modifier_data?.name}
-                                            onChange={() => handleCheckboxChange(modifier?.modifier_data?.name, modifier?.id)}
-                                            className="hidden peer"
-                                        />
-
-                                        <label
-                                            htmlFor={modifier?.modifier_data?.name}
-                                            className="w-5 h-5 border border-[#222A4A] rounded-full flex items-center justify-center cursor-pointer peer-checked:border-[#A02621] peer-checked:bg-[#A02621]"
-                                        >
-                                            <div className="w-2.5 h-2.5 bg-white rounded-full peer-checked:bg-[#A02621]"></div>
-                                        </label>
-                                    </div>
-
-
-
-                                </div>
-                            ))}
-
-                            <div className='w-full flex justify-end mt-4' onClick={() => setIsModalOpen(false)}>
-                                <button className='bg-[#FFC300] px-[32px] py-[5px] rounded-[100px] text-[14px] font-bold text-[#A02621] relative'>Confirm</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )} */}
         </div>
     );
 });
