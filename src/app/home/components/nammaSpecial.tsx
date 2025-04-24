@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useContext, useEffect, useState } from 'react';
 import { ImageType, NammaSpecialItems } from '../type';
 import { nammaSpecialItems, catalogItems } from '@/services/apiServices';
@@ -28,7 +28,7 @@ const NammaSpecials = () => {
   const [load, setLoad] = useState(false);
   const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
   const [shuffledItems, setShuffledItems] = useState<NammaSpecialItems[]>([]);
-  const dataLimit = 6;
+  const dataLimit = 10;
   const router = useRouter();
 
   const getNammaSpeacialDatas = async () => {
@@ -43,6 +43,7 @@ const NammaSpecials = () => {
         ],
       };
       const response = await nammaSpecialItems(body);
+      console.log({ response })
       setLoad(false);
       if (response?.status === 200) {
         setNammaSpecialItemsData(response?.data?.items);
@@ -129,7 +130,7 @@ const NammaSpecials = () => {
 
       const interval = setInterval(() => {
         setShuffledItems(shuffleArray(nammaSpecialItemsData));
-      }, 10000); // 60 seconds
+      }, 1000 * 60); // 10 seconds
 
       return () => clearInterval(interval);
     }
@@ -145,7 +146,7 @@ const NammaSpecials = () => {
       </div>
       <>
         {(load || nammaSpecialItemsData?.length === 0) ? <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-          {Array(6).fill(0).map((_, index) => (
+          {Array(10).fill(0).map((_, index) => (
             <div key={index} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: '30px' }}>
               <div style={{ display: "flex", flexDirection: "column", alignItems: 'center' }}>
                 <Skeleton height={150} width={150} style={{ borderRadius: "12px", marginBottom: '20px' }} />
@@ -157,7 +158,7 @@ const NammaSpecials = () => {
           ))}
         </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
           <AnimatePresence mode="popLayout">
-            {shuffledItems?.map((data) => {
+            {shuffledItems?.map((data, i) => {
               const image: ImageType | undefined = imageData?.find((img) => {
                 if (data?.item_data?.image_ids?.length) {
                   return img?.id === data?.item_data?.image_ids[0];
@@ -166,12 +167,11 @@ const NammaSpecials = () => {
               });
               return (
                 <motion.div
-                  key={data?.id}
-                  layout
-                  initial={{ opacity: 0.5, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0.5, scale: 0.5 }}
-                  transition={{ duration: 3 }}
+                  key={i}
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 2 }} // Smooth transition for opacity
                 >
                   <NammaSpecialCard
                     image={image}
@@ -185,6 +185,7 @@ const NammaSpecials = () => {
               );
             })}
           </AnimatePresence>
+
         </div>}
 
         <div className="text-center relative z-10">
