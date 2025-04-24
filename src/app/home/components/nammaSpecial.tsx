@@ -1,11 +1,11 @@
 'use client'
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ImageType, NammaSpecialItems } from '../type';
 import { nammaSpecialItems, catalogItems } from '@/services/apiServices';
 import GlobalContext from '@/constants/global-context';
 import { CatelogFilterBody } from '../page';
-import { getDataFromLocalStorage, isEmptyObj, setDataInLocalStorage } from '@/utils/genericUtilties';
-import { LineItems, ModifierDataType, OrderDetailsType } from '@/constants/types';
+import { getDataFromLocalStorage, setDataInLocalStorage } from '@/utils/genericUtilties';
+import { LineItems, ModifierDataType } from '@/constants/types';
 import { useRouter } from 'next/navigation';
 import dayjs, { Dayjs } from 'dayjs';
 import placeHolder from '../../../../public/assets/images/place-holder.png';
