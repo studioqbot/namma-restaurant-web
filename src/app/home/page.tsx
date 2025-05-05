@@ -1,7 +1,7 @@
 
 import React from 'react';
-import Banner from './components/banner';
-import NammaSpecials from './components/nammaSpecial';
+import Banner from './component/banner';
+import NammaSpecials from './component/nammaSpecial';
 
 
 export interface CatelogFilterBody {
