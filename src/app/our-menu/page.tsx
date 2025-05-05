@@ -72,28 +72,41 @@ const OurMenu = () => {
     const limit = 100;
 
     const getSearchCatalogItemData = async () => {
-        const requestBody: any = { sort_order: "DESC" };
-
-        if (categoryIds?.length > 0) requestBody.category_ids = categoryIds;
-        if (searchText?.length > 0) requestBody.text_filter = searchText;
+        // const requestBody: any = {};
+        // if (categoryIds?.length > 0) requestBody.category_ids = categoryIds;
+        // if (searchText?.length > 0) requestBody.text_filter = searchText;
+        // requestBody.sort_order = "DESC";
 
         try {
             const listMenuDataWithCategory: any[] = [];
-            const filterKeys = ['id', 'item_data']; // Define filter keys
+            const filterKeys = ['id', 'item_data'];
+
+            const requestBody: any = {
+                sort_order: "DESC",
+                // category_ids : [],
+                category_ids : ['LZLUMRZKOMIQCDAHV44TWMTB'],
+                text_filter : 'Chicken'
+                // text_filter : ''
+            };
+
+            // if (categoryIds?.length > 0) {
+            //     requestBody.category_ids = categoryIds;
+            // }
+            // if (searchText?.length > 0) {
+            //     requestBody.text_filter = searchText;
+            // }
+
             const response = await fetch("/api/search-catalog-item", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                 body: JSON.stringify({}),
+                body: JSON.stringify(requestBody), // ✅ Always present, even if just { sort_order: "DESC" }
             });
 
             const resData = await response.json();
-
             const { items } = resData;
             console.log({ items });
-            if (Array.isArray(items)) {
-                console.log("items", items);
 
-                // Filter based on filterKeys
+            if (Array.isArray(items)) {
                 const filteredItems = items.map(item => {
                     const filteredItem: any = {};
                     filterKeys.forEach((key) => {
@@ -104,31 +117,18 @@ const OurMenu = () => {
                     return filteredItem;
                 });
 
-                console.log("filteredItems", filteredItems);
-
                 filteredItems.forEach((item: any) => {
                     const { id, item_data: { name, variations, product_type, reporting_category } } = item;
-                    const { item_data } = item;
-                    console.log('item_data105105', item_data)
 
                     variations.forEach((variation: any) => {
-                        // Destructure price_money from variation
                         const { item_variation_data: { price_money } } = variation;
                         const { amount, currency } = price_money;
 
-                        // Push id, name, and pricing info to the list
                         listMenuDataWithCategory.push({
                             id,
                             name,
                             reporting_category,
-                            category_id: reporting_category.id,
-                            /** 
-                            product_type: product_type.toLowerCase()
-                                .replace(/_([a-z])/g, (match: string, p1: string) => p1.toUpperCase())
-                                .replace(/^./, (str: string) => str.toUpperCase())
-                                .replace(/([a-z])([A-Z])/g, '$1 $2'),
-
-                            */
+                            category_id: reporting_category?.id,
                             product_type,
                             amount: '$' + (amount / 100).toFixed(2),
                             currency
@@ -137,9 +137,8 @@ const OurMenu = () => {
                 });
             }
 
-            // Set item list after fetching data
             setItemList(listMenuDataWithCategory);
-            console.log("listMenuDataWithCategory", listMenuDataWithCategory, itemList);
+            console.log("listMenuDataWithCategory", listMenuDataWithCategory);
 
         } catch (error) {
             console.log("Error fetching catalog items", error);
