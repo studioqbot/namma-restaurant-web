@@ -62,22 +62,28 @@ const OurMenu = () => {
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const [modifierIds, setModifierIds] = useState<ModifierIds[]>([]);
     const [fieldToClear, setFieldToClear] = useState<string[]>([]);
-    const [itemList, setItemList] = useState<string[]>([]);
+    const [itemList, setItemList] = useState<any[]>([]);
+    //    const [categoryIds, setCategoryIds] = useState<string[]>(['LZLUMRZKOMIQCDAHV44TWMTB']); // Default category ID
+    const [categoryIds, setCategoryIds] = useState<string[]>(['']); // Default category ID
+    // const [textFilter, setTextFilter] = useState<string>("chicken"); // Default search filter text
+    const [searchText, setSearchText] = useState<string>(""); // Default search filter text
+
     const [cursor, setCursor] = useState<string>("");
     const limit = 100;
 
     const getSearchCatalogItemData = async () => {
+        const requestBody: any = { sort_order: "DESC" };
+
+        if (categoryIds?.length > 0) requestBody.category_ids = categoryIds;
+        if (searchText?.length > 0) requestBody.text_filter = searchText;
+
         try {
             const listMenuDataWithCategory: any[] = [];
             const filterKeys = ['id', 'item_data']; // Define filter keys
             const response = await fetch("/api/search-catalog-item", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    sort_order: "DESC",
-                    category_ids: ['LZLUMRZKOMIQCDAHV44TWMTB'],
-                    text_filter: "chicken", // optional
-                }),
+                 body: JSON.stringify({}),
             });
 
             const resData = await response.json();
@@ -101,7 +107,9 @@ const OurMenu = () => {
                 console.log("filteredItems", filteredItems);
 
                 filteredItems.forEach((item: any) => {
-                    const { id, item_data: { name, variations, category_id } } = item;
+                    const { id, item_data: { name, variations, product_type, reporting_category } } = item;
+                    const { item_data } = item;
+                    console.log('item_data105105', item_data)
 
                     variations.forEach((variation: any) => {
                         // Destructure price_money from variation
@@ -112,7 +120,16 @@ const OurMenu = () => {
                         listMenuDataWithCategory.push({
                             id,
                             name,
-                            category_id,
+                            reporting_category,
+                            category_id: reporting_category.id,
+                            /** 
+                            product_type: product_type.toLowerCase()
+                                .replace(/_([a-z])/g, (match: string, p1: string) => p1.toUpperCase())
+                                .replace(/^./, (str: string) => str.toUpperCase())
+                                .replace(/([a-z])([A-Z])/g, '$1 $2'),
+
+                            */
+                            product_type,
                             amount: '$' + (amount / 100).toFixed(2),
                             currency
                         });
@@ -120,7 +137,9 @@ const OurMenu = () => {
                 });
             }
 
-            console.log("listMenuDataWithCategory", listMenuDataWithCategory);
+            // Set item list after fetching data
+            setItemList(listMenuDataWithCategory);
+            console.log("listMenuDataWithCategory", listMenuDataWithCategory, itemList);
 
         } catch (error) {
             console.log("Error fetching catalog items", error);
@@ -131,8 +150,12 @@ const OurMenu = () => {
 
     useEffect(() => {
         getSearchCatalogItemData();
-        console.log({ itemList })
-    }, []);
+    }, []);  // Will re-fetch data when either categoryIds or textFilter changes
+
+    // Use another useEffect to log itemList when it changes
+    // useEffect(() => {
+    //     console.log("itemList updated:", itemList);
+    // }, [itemList]);
 
     const getModifierListData = async () => {
         try {
