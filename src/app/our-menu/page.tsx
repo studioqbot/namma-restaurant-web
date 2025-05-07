@@ -36,7 +36,25 @@ interface OurMenuItemsType {
     setFieldToClear: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
+type CatalogObject = {
+  type: string;
+  id: string;
+  item_data?: {
+    name: string;
+    categories?: {
+      id: string;
+      ordinal: number;
+    }[];
+  };
+};
+
+type CategoryMap = { [key: string]: { id: string; ordinal: number } };
+
 const OurMenu = () => {
+
+    const [menuItems, setMenuItems] = useState<any[]>([]);
+    const [cursor2, setCursor2] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
     const {
         isOrderUpdate,
         setOrderDetails,
@@ -71,7 +89,134 @@ const OurMenu = () => {
     const [cursor, setCursor] = useState<string>("");
     const limit = 100;
 
+const fetchMenu = async (cursorParam: string | null = null) => {
+  setLoading(true);
+  try {
+    const url = cursorParam ? `/api/category-list?cursor=${cursorParam}` : `/api/category-list`;
+    console.log('Fetching from URL:', url);
+
+    const response = await fetch(url);
+    const data: { cursor?: string; objects?: CatalogObject[] } = await response.json();
+
+    console.log('API Response:', data);
+    console.log('Fetched items count:', data?.objects?.length || 0);
+    console.log('Next cursor:', data?.cursor);
+
+    const newItems: CatalogObject[] = (data?.objects || []).filter(
+      (obj: CatalogObject) => obj.type === 'ITEM'
+    );
+
+    setMenuItems(prev => [...prev, ...newItems]);
+    // setCursor(data?.cursor || null);
+
+    // Extract unique categories with proper types
+    const categoryMap: CategoryMap = {};
+    for (const item of newItems) {
+      const categories = item.item_data?.categories || [];
+      for (const category of categories) {
+        if (!categoryMap[category.id]) {
+          categoryMap[category.id] = category;
+        }
+      }
+    }
+
+    const uniqueCategories = Object.values(categoryMap);
+    console.log('Unique Categories:', uniqueCategories);
+    console.log('Total Unique Categories:', uniqueCategories.length);
+
+    // Optionally store categories:
+    // setCategories(uniqueCategories);
+  } catch (error) {
+    console.error('Failed to load menu:', error);
+  } finally {
+    setLoading(false);
+    console.log('Loading complete');
+  }
+};
+
+
     const getSearchCatalogItemData = async () => {
+        const patchRetrieve = async function (ids: string[]) {
+            const response = await fetch("/api/batch-retrieve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    object_ids: ids,
+                }),
+            });
+
+            const patchData = await response.json();
+
+            // Find the first CATEGORY and return its name
+            const category = patchData?.related_objects?.find((obj: any) => obj.type === "CATEGORY");
+            const categoryName = category?.category_data?.name || null;
+
+            return categoryName;
+        };
+
+        try {
+            const listOurMenu: any[] = [];
+            const filterKeys = ['id', 'item_data'];
+
+            const requestBody: any = {
+                sort_order: "DESC",
+                // category_ids : [],
+                category_ids: [],
+                text_filter: 'Chicken'
+                // text_filter : ''
+            };
+
+            const response = await fetch("/api/search-catalog-item", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody), // ✅ Always present, even if just { sort_order: "DESC" }
+            });
+
+            const resData = await response.json();
+            const { items } = resData;
+            console.log({ items });
+
+            if (Array.isArray(items)) {
+                const filteredItems = items.map(item => {
+                    const filteredItem: any = {};
+                    filterKeys.forEach((key) => {
+                        if (key in item) {
+                            filteredItem[key] = item[key];
+                        }
+                    });
+                    return filteredItem;
+                });
+
+                filteredItems.forEach(async (item: any) => {
+                    const { id, item_data: { name, variations, product_type, reporting_category } } = item;
+
+                    variations.forEach(async (variation: any) => {
+                        const { item_variation_data: { price_money } } = variation;
+                        const { amount, currency } = price_money;
+
+                        listOurMenu.push({
+                            id,
+                            name,
+                            product_type,
+                            amount: '$ ' + (amount / 100).toFixed(2),
+                            currency,
+                            category_id: reporting_category?.id,
+                            category_name: await patchRetrieve([id]),
+                        });
+                    });
+                });
+            }
+
+            setItemList(listOurMenu);
+            console.log("listOurMenu", listOurMenu);
+
+        } catch (error) {
+            console.log("Error fetching catalog items", error);
+        }
+    };
+
+
+    const ourMenu = async () => {
 
         const patchRetrieve = async function (ids: string[]) {
             const response = await fetch("/api/batch-retrieve", {
@@ -152,10 +297,9 @@ const OurMenu = () => {
         }
     };
 
-
-
     useEffect(() => {
         getSearchCatalogItemData();
+        fetchMenu()
     }, []);  // Will re-fetch data when either categoryIds or textFilter changes
 
     // Use another useEffect to log itemList when it changes
