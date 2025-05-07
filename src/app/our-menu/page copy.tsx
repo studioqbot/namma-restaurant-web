@@ -72,24 +72,10 @@ const OurMenu = () => {
     const limit = 100;
 
     const getSearchCatalogItemData = async () => {
-
-        const patchRetrieve = async function (ids: string[]) {
-            const response = await fetch("/api/batch-retrieve", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    object_ids: ids,
-                }),
-            });
-
-            const patchData = await response.json();
-
-            // Find the first CATEGORY and return its name
-            const category = patchData?.related_objects?.find((obj: any) => obj.type === "CATEGORY");
-            const categoryName = category?.category_data?.name || null;
-
-            return categoryName;
-        };
+        // const requestBody: any = {};
+        // if (categoryIds?.length > 0) requestBody.category_ids = categoryIds;
+        // if (searchText?.length > 0) requestBody.text_filter = searchText;
+        // requestBody.sort_order = "DESC";
 
         try {
             const listMenuDataWithCategory: any[] = [];
@@ -98,9 +84,9 @@ const OurMenu = () => {
             const requestBody: any = {
                 sort_order: "DESC",
                 // category_ids : [],
-                category_ids: ['NAJJVRBV3UIWFOKMYAV6ULED'],
-                text_filter: 'Chicken'
-                // text_filter : ''
+                category_ids: [],
+                // text_filter : 'Chicken'
+                text_filter: ''
             };
 
             const response = await fetch("/api/search-catalog-item", {
@@ -121,31 +107,52 @@ const OurMenu = () => {
                             filteredItem[key] = item[key];
                         }
                     });
+
                     return filteredItem;
                 });
 
-                filteredItems.forEach(async (item: any) => {
+
+                         
+
+                filteredItems.forEach((item: any) => {
                     const { id, item_data: { name, variations, product_type, reporting_category } } = item;
 
                     variations.forEach(async (variation: any) => {
                         const { item_variation_data: { price_money } } = variation;
                         const { amount, currency } = price_money;
 
+                        const response123 = await fetch("/api/batch-retrieve", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                object_ids: [reporting_category?.id],
+                            }),
+                        });
+
+                        const data = await response123.json(); // <- Important step
+                        // console.log({ response123: data })
+
+
+
                         listMenuDataWithCategory.push({
                             id,
                             name,
-                            product_type,
-                            amount: '$ ' + (amount / 100).toFixed(2),
-                            currency,
+                            reporting_category,
                             category_id: reporting_category?.id,
-                            category_name: await patchRetrieve([id]),
+                            category_details: data,
+                            product_type,
+                            amount: '$' + (amount / 100).toFixed(2),
+                            currency
                         });
                     });
                 });
             }
 
+
+
+
             setItemList(listMenuDataWithCategory);
-            console.log("listMenuDataWithCategory", listMenuDataWithCategory);
+            console.log("listMenuDataWithCategory123", listMenuDataWithCategory);
 
         } catch (error) {
             console.log("Error fetching catalog items", error);
@@ -555,4 +562,5 @@ const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
 });
 
 OurMenuItems.displayName = "OurMenuItems";
+
 export default OurMenu;
