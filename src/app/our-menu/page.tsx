@@ -58,7 +58,7 @@ type CatalogObject = {
 };
 
 type CategoryWithName = {
-  id: string;
+//   id: string;
   name: string;
 };
 
@@ -164,9 +164,14 @@ const fetchMenu = async (cursorParam: string | null = null) => {
 
       // Create the category map with categoryId as the key
       categoryMap[categoryId] = {
-        id: categoryId,
+        // id: categoryId,
         name: name || 'Unknown',
       };
+
+    //     categoryMap[categoryId] = {
+    //     // id: categoryId,
+    //     name: name || 'Unknown',
+    //   };
     }
 
     // Convert category map to an array of objects
@@ -187,8 +192,6 @@ const fetchMenu = async (cursorParam: string | null = null) => {
 };
 
     const getSearchCatalogItemData = async () => {
-
-
         try {
             const listOurMenu: any[] = [];
             const filterKeys = ['id', 'item_data'];
