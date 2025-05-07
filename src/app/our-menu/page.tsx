@@ -142,7 +142,6 @@ const fetchMenu = async (cursorParam: string | null = null) => {
     );
 
     setMenuItems(prev => [...prev, ...newItems]);
-    // setCursor(data?.cursor || null);
 
     // Extract unique category IDs
     const categoryMap: CategoryMap = {};
@@ -162,24 +161,20 @@ const fetchMenu = async (cursorParam: string | null = null) => {
     for (const categoryId of categoryIdSet) {
       const name = await patchRetrieve([categoryId]); // Get name using your existing function
 
-      // Create the category map with categoryId as the key
-      categoryMap[categoryId] = {
-        // id: categoryId,
-        name: name || 'Unknown',
-      };
-
-    //     categoryMap[categoryId] = {
-    //     // id: categoryId,
-    //     name: name || 'Unknown',
-    //   };
+      // Only add category if the name is not already in the map
+      if (!Object.values(categoryMap).some((category) => category.name === name)) {
+        categoryMap[categoryId] = {
+          name: name || 'Unknown',
+        };
+      }
     }
 
-    // Convert category map to an array of objects
+    // Convert category map to an array of unique name objects
     const categoryArray = Object.values(categoryMap);
 
-    console.log('Category Array:', categoryArray);
+    console.log('Category Array with Unique Names:', categoryArray);
 
-    // Return the array of category objects
+    // Return the array of unique name categories
     return categoryArray;
 
   } catch (error) {
@@ -190,6 +185,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
     console.log('Loading complete');
   }
 };
+
 
     const getSearchCatalogItemData = async () => {
         try {
