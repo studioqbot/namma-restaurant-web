@@ -105,7 +105,7 @@ const OurMenu = () => {
 
     const [cursor, setCursor] = useState<string>("");
     const limit = 100;
-
+ const [categories, setCategories] = useState<{ name: string }[]>([]);
 
   const patchRetrieve = async function (ids: string[]) {
     const response = await fetch("/api/batch-retrieve", {
@@ -174,6 +174,8 @@ const fetchMenu = async (cursorParam: string | null = null) => {
 
     console.log('Category Array with Unique Names:', categoryArray);
 
+
+  setCategories(categoryArray);
     // Return the array of unique name categories
     return categoryArray;
 
@@ -377,175 +379,25 @@ const fetchMenu = async (cursorParam: string | null = null) => {
         }
     };
 
-    const getCatalofItemAndCAtegoryData = async () => {
-        try {
-            const params = { types: "ITEM", limit: limit };
-            const response = await catalogItems(params);
-            if (response?.status === 200) {
-                setDataInLocalStorage("CatalogItemsData", response?.data?.objects);
-                const currentTimePlusFiveMinutes = dayjs().add(1, "day").toDate();
-
-                setDataInLocalStorage("Date", currentTimePlusFiveMinutes);
-
-                setCatalogCategoryAndItem(response?.data?.objects);
-                setCursor(response?.data?.cursor);
-            }
-        } catch (error) {
-            console.log("Error", error);
-        }
-    };
-
-    const getCatalofItemAndCAtegoryDataPage2 = async () => {
-        try {
-            const params = { types: "ITEM", cursor: cursor, limit: limit };
-            const response = await catalogItems(params);
-            if (response?.status === 200) {
-                if (response?.data?.cursor) {
-                    setCursor(response?.data?.cursor);
-                } else {
-                    const currentTimePlusFiveMinutes = dayjs().add(1, "day").toDate();
-                    setDataInLocalStorage("DatePage2", currentTimePlusFiveMinutes);
-                    setCursor("");
-                }
-                const itemData = [
-                    ...catalogCategoryAndItem,
-                    ...response?.data?.objects,
-                ];
-                setDataInLocalStorage("CatalogItemsData", itemData);
-
-                setCatalogCategoryAndItem(itemData);
-            }
-        } catch (error) {
-            console.log("Error", error);
-        }
-    };
-
-    const handleCategoryTabs = async (categoryItem: CategoryDataType) => {
-        setActiveMenu(categoryItem?.category_data?.name);
-        setCatalogCategory([categoryItem]);
-    };
-
-    const getOurMenuDatasFromLocal = () => {
-        const itemAndCategoryData: CatalogItemsType[] | null =
-            getDataFromLocalStorage("CatalogItemsData");
-        const categoryData: CategoryDataType[] | null = getDataFromLocalStorage(
-            "CatalogCategoryData"
-        );
-        const modifierData: ModifierDataType[] | null =
-            getDataFromLocalStorage("ModifierListData");
-
-        if (itemAndCategoryData && itemAndCategoryData?.length) {
-            setCatalogCategoryAndItem(itemAndCategoryData);
-        }
-        if (categoryData && categoryData?.length) {
-            setCatalogCategory(categoryData);
-            setCatalogCategoryTab(categoryData);
-        }
-        if (modifierData && modifierData?.length) {
-            setMofierList(modifierData);
-        }
-    };
 
     useEffect(() => {
         const dateData: Dayjs | null = getDataFromLocalStorage("Date");
 
-        if (activeMenu === "All") {
-            getOurMenuDatasFromLocal();
-        }
+      
 
         if (dayjs(dateData).isSame() || dayjs(dateData).isBefore() || !dateData) {
             if (activeMenu === "All") {
-                getCatalofItemAndCAtegoryData();
+              
                 getCatalofCategoryData();
                 getModifierListData();
             }
         }
     }, []);
 
-    useEffect(() => {
-        const dateData: Dayjs | null = getDataFromLocalStorage("DatePage2");
-        if (
-            cursor &&
-            (dayjs(dateData).isSame() || dayjs(dateData).isBefore() || !dateData)
-        ) {
-            getCatalofItemAndCAtegoryDataPage2();
-        }
-    }, [cursor]);
 
-    const orderCreate = async () => {
-        setGlobalLoading(true);
-        const body: OrderCreateBody = {
-            order: {
-                location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-                line_items: lineItems,
-                modifiers: modifierIds,
-                pricing_options: {
-                    auto_apply_taxes: true,
-                    auto_apply_discounts: true,
-                },
-            },
-        };
-        if (modifierIds?.length > 0) {
-            delete body?.order?.modifiers;
-        }
-        try {
-            const response = await orderCreateApi(body);
-            setGlobalLoading(false);
-            if (response?.status === 200) {
-                setIsOrderUpdate("created");
-                setOrderDetails(response?.data?.order);
-                setLineItems(response?.data?.order?.line_items || []);
-                setDataInLocalStorage("OrderId", response?.data?.order?.id);
-                setIsOrdered(true);
-            }
-        } catch (error) {
-            setGlobalLoading(false);
-            console.log("Error", error);
-        }
-    };
 
-    const orderUpdate = async () => {
-        setGlobalLoading(true);
-        const body: OrderUpdateBodyAdd = {
-            fields_to_clear: fieldToClear,
-            order: {
-                location_id: process.env.NEXT_PUBLIC_LOCATION_ID,
-                line_items: updateLineItem,
 
-                pricing_options: {
-                    auto_apply_taxes: true,
-                    auto_apply_discounts: true,
-                },
-                version: orderDetails?.version,
-            },
-        };
-        try {
-            const response = await orderUpdateApi(body, orderDetails?.id);
-            setGlobalLoading(false);
-            if (response?.status === 200) {
-                setIsOrdered(true);
-                setOrderDetails(response?.data?.order);
-                setLineItems(response?.data?.order?.line_items || []);
-                setIsOrderUpdate("updated");
-                setUpdateLineItem([]);
-                setFieldToClear([]);
-            }
-        } catch (error) {
-            setGlobalLoading(false);
-            console.log("Error", error);
-        }
-    };
 
-    useEffect(() => {
-        if (lineItems?.length === 0) {
-            // removeItemFrmLocalStorage(["OrderId"]);
-        }
-        if (isOrderUpdate === "create") {
-            orderCreate();
-        } else if (isOrderUpdate && isItemAdded) {
-            orderUpdate();
-        }
-    }, [isOrderUpdate]);
 
     return (
         <div className="w-full">
@@ -555,6 +407,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                     <span className="absolute bottom-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className="text-[#A02621] text-[27px] leading-[31px] font-semibold font-unbounded bg-[#eee1d1] absolute pr-[10px] top-[-14px] left-0">
                         Our Menu
+
                     </span>
 
                     <div className="flex flex-row items-center overflow-x-auto whitespace-nowrap justify-between w-full">
@@ -574,26 +427,21 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                             </span>
                         </button>
 
-                        {catalogCategoryTab?.map((item) => {
+                        {categories?.map((item, i) => {
                             // Mark 'Namma Menu' as not top level
-                            if (item?.category_data?.name === "Namma Menu") {
-                                item.category_data.is_top_level = false;
-                            }
-                            // Check if category_data exists and is_top_level is true
-                            if (!item?.category_data?.is_top_level) return null;
-                            // if (!category?.category_data?.loca) return null;
+                           
 
                             return (
                                 <button
-                                    key={item?.id}
-                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item?.category_data?.name
+                                    key={i}
+                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item?.name
                                         ? "text-[#A02621] font-semibold"
                                         : "text-[#222A4A]"
                                         }`}
-                                    onClick={() => handleCategoryTabs(item)}
+                                    // onClick={() => handleCategoryTabs(item)}
                                 >
                                     {/* {item.id}{item?.category_data?.name}7799 */}
-                                    {item?.category_data?.name}
+                                    {item?.name}
                                     <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">
                                         |
                                     </span>
@@ -625,7 +473,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                                             <div className="p-6">
                                                 <div className="mb-8">
                                                     <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
-                                                        {category?.category_data?.name}
+                                                        {category?.category_data?.name} 123
                                                     </h2>
                                                     <div className="space-y-2">
                                                         {catalogItems?.map((item: CatalogItemsType) => (
@@ -675,7 +523,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                                             <div className="p-6">
                                                 <div className="mb-8">
                                                     <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
-                                                        {category?.category_data?.name}
+                                                        {category?.category_data?.name} 234
                                                     </h2>
                                                     <div className="space-y-2">
                                                         {catalogItems?.map((item: CatalogItemsType) => (
@@ -718,7 +566,7 @@ const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
 
                         <>
                             <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
-                                {data?.item_data?.name}
+                                {data?.item_data?.name}123
                             </span>
                             <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
                                 $
