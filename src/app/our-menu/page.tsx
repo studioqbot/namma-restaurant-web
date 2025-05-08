@@ -84,16 +84,18 @@ const OurMenu = () => {
                             All <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] pl-[4] pr-[4]">|</span>
                         </button>
 
-                        {categories.map((item, i) => (
-                            <button
-                                key={i}
-                                className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item.name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
-                                onClick={() => setActiveMenu(item.name)}
-                            >
-                                {item.name}
-                                <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
-                            </button>
-                        ))}
+                        {categories
+                            .filter(item => item.name !== "Namma Menu") // Filter out "Namma Menu"
+                            .map((item, i) => (
+                                <button
+                                    key={i}
+                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item.name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
+                                    onClick={() => setActiveMenu(item.name)}
+                                >
+                                    {item.name}
+                                    <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
+                                </button>
+                            ))}
                     </div>
                 </div>
 
@@ -107,7 +109,7 @@ const OurMenu = () => {
                                         {category.category_name}
                                     </h2>
                                     <div className="space-y-2">
-                                        {category.items?.map((item:any, i:any) => (
+                                        {category.items?.map((item: any, i: any) => (
                                             !!item.amount && (
                                                 <div
                                                     key={i}
@@ -137,7 +139,7 @@ const OurMenu = () => {
                                         {category.category_name}
                                     </h2>
                                     <div className="space-y-2">
-                                        {category.items?.map((item:any, i:any) => (
+                                        {category.items?.map((item: any, i: any) => (
                                             !!item.amount && (
                                                 <div
                                                     key={i}

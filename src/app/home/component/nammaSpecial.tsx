@@ -24,35 +24,58 @@ const NammaSpecials = () => {
   const [shuffledItems, setShuffledItems] = useState<any[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoad(true);
-      try {
-        const response = await fetchMenuHotSelling(); // Fetching data
+  const fetchData = async () => {
+    setLoad(true);
+    try {
+      const response = await fetchMenuHotSelling(); // Fetching data
 
-        if (response) {
-          // Transform the response into the format needed
-          const transformedItems = response.flatMap(category =>
-            category.items.map(item => ({
-              item_data: {
-                id: item.item_id, // Item ID from response
-                name: item.name, // Item name from response
-                image: item.image, // Image URL from response
-                price: item.amount, // Price from response
-                category: category.category_name // Category name from response
-              }
-            }))
-          );
-          setNammaSpecialItemsData(transformedItems); // Set the transformed items
-        }
-      } catch (error) {
-        console.error('Error fetching hot selling menu:', error);
-      } finally {
-        setLoad(false);
+      if (response) {
+        // Transform the response into the format needed
+        const transformedItems = response.flatMap(category =>
+          category.items.map(item => ({
+            item_data: {
+              id: item.item_id, // Item ID from response
+              name: item.name, // Item name from response
+              image: item.image, // Image URL from response
+              price: item.amount, // Price from response
+              category: category.category_name // Category name from response
+            }
+          }))
+        );
+        setNammaSpecialItemsData(transformedItems); // Set the transformed items
+
+        // Save to cache with timestamp
+        const cacheData = {
+          data: transformedItems,
+          timestamp: new Date().getTime(),
+        };
+        localStorage.setItem('nammaSpecialsData', JSON.stringify(cacheData));
       }
-    };
+    } catch (error) {
+      console.error('Error fetching hot selling menu:', error);
+    } finally {
+      setLoad(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    // Check cache first
+    const cachedData = localStorage.getItem('nammaSpecialsData');
+    if (cachedData) {
+      const parsedData = JSON.parse(cachedData);
+      const cacheAge = new Date().getTime() - parsedData.timestamp;
+
+      if (cacheAge < 1000 * 60 * 60 * 24) {
+        // Data is less than 24 hours old, use it from cache
+        setNammaSpecialItemsData(parsedData.data);
+      } else {
+        // Cache expired, fetch new data
+        fetchData();
+      }
+    } else {
+      // No cached data, fetch new data
+      fetchData();
+    }
   }, []);
 
   useEffect(() => {

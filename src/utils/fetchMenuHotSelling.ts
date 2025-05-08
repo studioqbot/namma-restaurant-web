@@ -120,8 +120,6 @@ export const fetchMenuHotSelling = async (
       })
     );
 
-    console.log("Grouped Hot Selling Menu.....", groupedMenu);
-
     return groupedMenu;
   } catch (error) {
     console.error("Failed to load hot selling menu:", error);
