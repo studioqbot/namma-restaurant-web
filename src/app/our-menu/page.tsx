@@ -81,20 +81,56 @@ const OurMenu = () => {
         }
     };
 
-
+ const getCachedData = (key: string, ttl: number) => {
+        const cachedData = localStorage.getItem(key);
+        if (cachedData) {
+            const { data, timestamp } = JSON.parse(cachedData);
+            const currentTime = new Date().getTime();
+            if (currentTime - timestamp < ttl) {
+                return data; // Return cached data if it's still valid
+            }
+        }
+        return null; // Return null if no valid cache
+    };
 
     useEffect(() => {
-        fetchMenu().then((cats: any) => {
-            console.log({cats})
-            if (cats) setCategories(cats);
-        });
+        // Try to load categories from cache (localStorage)
+        const cachedCategories = getCachedData("categories", 24 * 60 * 60 * 1000); // Cache for 24 hours
+        if (cachedCategories) {
+            console.log("Using cached categories", cachedCategories);
+            setCategories(cachedCategories);
+        } else {
+            fetchMenu().then((cats: any) => {
+                console.log({ cats });
+                if (cats) {
+                    setCategories(cats);
+                    // Store the categories in localStorage with timestamp
+                    localStorage.setItem(
+                        "categories",
+                        JSON.stringify({ data: cats, timestamp: new Date().getTime() })
+                    );
+                }
+            });
+        }
 
-        fetchMenuItemList().then((menuList: any) => {
-            if (menuList) setItemList(menuList);
-        });
+        // Try to load menu items from cache (localStorage)
+        const cachedMenuItems = getCachedData("menuItems", 24 * 60 * 60 * 1000); // Cache for 24 hours
+        if (cachedMenuItems) {
+            console.log("Using cached menu items", cachedMenuItems);
+            setItemList(cachedMenuItems);
+        } else {
+            fetchMenuItemList().then((menuList: any) => {
+                if (menuList) {
+                    setItemList(menuList);
+                    // Store the menu items in localStorage with timestamp
+                    localStorage.setItem(
+                        "menuItems",
+                        JSON.stringify({ data: menuList, timestamp: new Date().getTime() })
+                    );
+                }
+            });
+        }
     }, []);
-
-
 
     return (
         <div className="w-full">
