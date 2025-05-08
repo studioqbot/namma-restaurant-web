@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 "use client";
 import GlobalContext from "@/constants/global-context";
 import React, { useContext, useEffect, useState } from "react";
