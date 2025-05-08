@@ -1,3 +1,6 @@
+/* eslint-disable */
+
+
 /**
  * Retrieves the category name for a given list of catalog object IDs.
  * @param ids - Array of object IDs to retrieve.

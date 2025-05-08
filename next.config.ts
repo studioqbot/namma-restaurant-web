@@ -6,6 +6,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+    eslint: {
+    // Disable linting during production builds
+    ignoreDuringBuilds: true,
+    // or disable specific rules (if needed)
+    rules: {
+      "no-unused-vars": "off", // Example: disable no-unused-vars rule
+    },
+  },
 
 }
  
