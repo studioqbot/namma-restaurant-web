@@ -4,9 +4,8 @@ import axios, { AxiosResponse } from 'axios';
 const SQUARE_API_URL = process.env.NEXT_PUBLIC_APP_SQUARE_API_URL;
 const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQUARE_ACCESS_TOKEN_PROD;
 
-// Define a more specific type if available
+// Define a more specific type if known
 interface SquareCatalogObject {
-  // Add more properties if known, for now use index signature
   [key: string]: unknown;
 }
 
@@ -15,8 +14,15 @@ interface SquareCatalogResponse {
   cursor?: string | null;
 }
 
-export async function GET(req: NextRequest) {
-  let allItems: SquareCatalogObject[] = [];
+export async function GET(_req: NextRequest): Promise<NextResponse> {
+  if (!SQUARE_API_URL || !SQUARE_ACCESS_TOKEN) {
+    return NextResponse.json(
+      { error: 'Missing Square configuration in environment variables' },
+      { status: 500 }
+    );
+  }
+
+  const allItems: SquareCatalogObject[] = [];
   let cursor: string | null = null;
 
   try {
@@ -35,18 +41,18 @@ export async function GET(req: NextRequest) {
 
       const { objects = [], cursor: nextCursor } = response.data;
 
-      allItems = [...allItems, ...objects];
-      cursor = nextCursor || null;
+      allItems.push(...objects);
+      cursor = nextCursor ?? null;
 
-      console.log(`Fetched ${objects.length} items. Next cursor: ${cursor}`);
+      console.info(`Fetched ${objects.length} items. Next cursor: ${cursor}`);
     } while (cursor);
 
     return NextResponse.json({ objects: allItems });
   } catch (error: unknown) {
-    let errorMessage = 'Unknown error';
+    let errorMessage: unknown = 'Unknown error';
 
     if (axios.isAxiosError(error)) {
-      errorMessage = error.response?.data || error.message;
+      errorMessage = error.response?.data ?? error.message;
     } else if (error instanceof Error) {
       errorMessage = error.message;
     }
