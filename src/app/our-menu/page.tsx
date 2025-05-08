@@ -1,11 +1,5 @@
 "use client";
 import GlobalContext from "@/constants/global-context";
-import {
-    CatalogItemsType,
-    LineItems,
-    ModifierDataType,
-    ModifierIds,
-} from "@/constants/types";
 import React, { useContext, useEffect, useState } from "react";
 import { fetchMenu } from "../../utils/fetcMenu";
 import { fetchMenuItemList } from "../../utils/fetchMenuItemList";
@@ -17,18 +11,9 @@ type CategoryWithName = {
 const OurMenu = () => {
     const [categories, setCategories] = useState<CategoryWithName[]>([]);
     const [itemList, setItemList] = useState<any[]>([]);
-    const [isItemAdded, setIsItemAdded] = useState(false);
-    const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
-    const [modifierIds, setModifierIds] = useState<ModifierIds[]>([]);
-    const [fieldToClear, setFieldToClear] = useState<string[]>([]);
-
     const {
-        lineItems,
-        setLineItems,
         activeMenu,
         setActiveMenu,
-        updateLineItem,
-        setUpdateLineItem,
     } = useContext(GlobalContext);
 
     const getCachedData = (key: string, ttl: number) => {
@@ -109,7 +94,6 @@ const OurMenu = () => {
                     </div>
                 </div>
 
-                {/* Menu content */}
                 {/* Menu content */}
                 <div className="grid grid-cols-12 gap-[40px]">
                     <div className="col-span-6">
