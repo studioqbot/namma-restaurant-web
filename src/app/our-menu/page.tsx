@@ -2,27 +2,14 @@
 import GlobalContext from "@/constants/global-context";
 import {
     CatalogItemsType,
-    CategoryDataType,
     LineItems,
     ModifierDataType,
     ModifierIds,
-    OrderCreateBody,
-    OrderUpdateBodyAdd,
 } from "@/constants/types";
-import {
-    catalogItems,
-    orderCreateApi,
-    orderUpdateApi,
-} from "@/services/apiServices";
-import {
-    getDataFromLocalStorage,
-    // removeItemFrmLocalStorage,
-    setDataInLocalStorage,
-} from "@/utils/genericUtilties";
-import dayjs, { Dayjs } from "dayjs";
+
 import React, { use, useContext, useEffect, useState } from "react";
-
-
+import { patchRetrieve } from "../../utils/patchRetrieve"
+import { patchRetrieveByCatId } from '../../utils/patchRetrieveByCatId';
 interface OurMenuItemsType {
     data: CatalogItemsType;
     setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
@@ -36,61 +23,41 @@ interface OurMenuItemsType {
     setFieldToClear: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-// type CatalogObject = {
-//     type: string;
-//     id: string;
-//     item_data?: {
-//         name: string;
-//         categories?: {
-//             id: string;
-//             ordinal: number;
-//         }[];
-//     };
-// };
-// type CategoryMap = { [key: string]: { id: string; ordinal: number,   name: string; } };
+
 type CatalogObject = {
-  type: string;
-  id: string;
-  item_data?: {
-    name: string;
-    categories?: { id: string; ordinal: number }[];
-  };
+    type: string;
+    id: string;
+    item_data?: {
+        name: string;
+        categories?: { id: string; ordinal: number }[];
+    };
 };
 
 type CategoryWithName = {
-//   id: string;
-  name: string;
+    //   id: string;
+    name: string;
 };
 
 type CategoryMap = {
-  [id: string]: CategoryWithName;
+    [id: string]: CategoryWithName;
 };
 
 
 const OurMenu = () => {
 
     const [menuItems, setMenuItems] = useState<any[]>([]);
-    const [cursor2, setCursor2] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const {
-        isOrderUpdate,
-        setOrderDetails,
         lineItems,
         setLineItems,
         catalogCategoryAndItem,
-        setCatalogCategoryAndItem,
         catalogCategory,
         setCatalogCategory,
         catalogCategoryTab,
-        setCatalogCategoryTab,
         activeMenu,
         setActiveMenu,
-        setIsOrderUpdate,
-        orderDetails,
         updateLineItem,
-        setUpdateLineItem,
-        setIsOrdered,
-        setGlobalLoading,
+        setUpdateLineItem,     
     } = useContext(GlobalContext);
 
     const [isItemAdded, setIsItemAdded] = useState(false);
@@ -98,95 +65,70 @@ const OurMenu = () => {
     const [modifierIds, setModifierIds] = useState<ModifierIds[]>([]);
     const [fieldToClear, setFieldToClear] = useState<string[]>([]);
     const [itemList, setItemList] = useState<any[]>([]);
-    //    const [categoryIds, setCategoryIds] = useState<string[]>(['LZLUMRZKOMIQCDAHV44TWMTB']); // Default category ID
-    const [categoryIds, setCategoryIds] = useState<string[]>(['']); // Default category ID
-    // const [textFilter, setTextFilter] = useState<string>("chicken"); // Default search filter text
-    const [searchText, setSearchText] = useState<string>(""); // Default search filter text
-
-    const [cursor, setCursor] = useState<string>("");
-    const limit = 100;
- const [categories, setCategories] = useState<{ name: string }[]>([]);
-
-  const patchRetrieve = async function (ids: string[]) {
-    const response = await fetch("/api/batch-retrieve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            object_ids: ids,
-        }),
-    });
-
-    const patchData = await response.json();
-
-    // Find the first CATEGORY and return its name
-    const category = patchData?.objects?.[0]; // Adjusted to reference `objects` directly
-    const categoryName = category?.category_data?.name || null;
-
-    // console.log({ patchData, categoryName });
-    return categoryName; // Ensure you return the category name
-};
+    const [selectMenu, setSelectMenu] = useState<string>('');
+    const [categories, setCategories] = useState<{ name: string }[]>([]);
 
 
-const fetchMenu = async (cursorParam: string | null = null) => {
-  setLoading(true);
-  try {
-    const url = cursorParam ? `/api/category-list?cursor=${cursorParam}` : `/api/category-list`;
-    console.log('Fetching from URL:', url);
+    const fetchMenu = async (cursorParam: string | null = null) => {
+        setLoading(true);
+        try {
+            const url = cursorParam ? `/api/category-list?cursor=${cursorParam}` : `/api/category-list`;
+            console.log('Fetching from URL:', url);
 
-    const response = await fetch(url);
-    const data: { cursor?: string; objects?: CatalogObject[] } = await response.json();
+            const response = await fetch(url);
+            const data: { cursor?: string; objects?: CatalogObject[] } = await response.json();
 
-    // Extract new items
-    const newItems: CatalogObject[] = (data?.objects || []).filter(
-      (obj: CatalogObject) => obj.type === 'ITEM'
-    );
+            // Extract new items
+            const newItems: CatalogObject[] = (data?.objects || []).filter(
+                (obj: CatalogObject) => obj.type === 'ITEM'
+            );
 
-    setMenuItems(prev => [...prev, ...newItems]);
+            setMenuItems(prev => [...prev, ...newItems]);
 
-    // Extract unique category IDs
-    const categoryMap: CategoryMap = {};
-    const categoryIdSet: Set<string> = new Set();
+            // Extract unique category IDs
+            const categoryMap: CategoryMap = {};
+            const categoryIdSet: Set<string> = new Set();
 
-    // Collect unique category IDs
-    for (const item of newItems) {
-      const categories = item.item_data?.categories || [];
-      for (const category of categories) {
-        if (!categoryIdSet.has(category.id)) {
-          categoryIdSet.add(category.id);
+            // Collect unique category IDs
+            for (const item of newItems) {
+                const categories = item.item_data?.categories || [];
+                for (const category of categories) {
+                    if (!categoryIdSet.has(category.id)) {
+                        categoryIdSet.add(category.id);
+                    }
+                }
+            }
+
+            // Fetch names using patchRetrieve for all unique category IDs
+            for (const categoryId of categoryIdSet) {
+                const name = await patchRetrieveByCatId([categoryId]); // Get name using your existing function
+
+                // Only add category if the name is not already in the map
+                if (!Object.values(categoryMap).some((category) => category.name === name)) {
+                    categoryMap[categoryId] = {
+                        name: name || 'Unknown',
+                    };
+                }
+            }
+
+            // Convert category map to an array of unique name objects
+            const categoryArray = Object.values(categoryMap);
+
+            console.log('Category Array with Unique Names:', categoryArray);
+
+
+            setCategories(categoryArray);
+            // Return the array of unique name categories
+            return categoryArray;
+
+        } catch (error) {
+            console.error('Failed to load menu:', error);
+            return null; // Return null or empty if there's an error
+        } finally {
+            setLoading(false);
+            console.log('Loading complete');
         }
-      }
-    }
-
-    // Fetch names using patchRetrieve for all unique category IDs
-    for (const categoryId of categoryIdSet) {
-      const name = await patchRetrieve([categoryId]); // Get name using your existing function
-
-      // Only add category if the name is not already in the map
-      if (!Object.values(categoryMap).some((category) => category.name === name)) {
-        categoryMap[categoryId] = {
-          name: name || 'Unknown',
-        };
-      }
-    }
-
-    // Convert category map to an array of unique name objects
-    const categoryArray = Object.values(categoryMap);
-
-    console.log('Category Array with Unique Names:', categoryArray);
-
-
-  setCategories(categoryArray);
-    // Return the array of unique name categories
-    return categoryArray;
-
-  } catch (error) {
-    console.error('Failed to load menu:', error);
-    return null; // Return null or empty if there's an error
-  } finally {
-    setLoading(false);
-    console.log('Loading complete');
-  }
-};
+    };
 
 
     const getSearchCatalogItemData = async () => {
@@ -251,151 +193,19 @@ const fetchMenu = async (cursorParam: string | null = null) => {
         }
     };
 
+    const hanldeListMenu = (name: string) => {
+        setSelectMenu(name)
+        console.log('Fn:hanldeListMenu', { itemList : itemList.includes })
+        console.log({ ClickedMenu: name })
+    }
 
-    const ourMenu = async () => {
 
-        const patchRetrieve = async function (ids: string[]) {
-            const response = await fetch("/api/batch-retrieve", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    object_ids: ids,
-                }),
-            });
 
-            const patchData = await response.json();
-
-            // Find the first CATEGORY and return its name
-            const category = patchData?.related_objects?.find((obj: any) => obj.type === "CATEGORY");
-            const categoryName = category?.category_data?.name || null;
-
-            return categoryName;
-        };
-
-        try {
-            const listMenuDataWithCategory: any[] = [];
-            const filterKeys = ['id', 'item_data'];
-
-            const requestBody: any = {
-                sort_order: "DESC",
-                // category_ids : [],
-                category_ids: ['NAJJVRBV3UIWFOKMYAV6ULED'],
-                text_filter: 'Chicken'
-                // text_filter : ''
-            };
-
-            const response = await fetch("/api/search-catalog-item", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody), // ✅ Always present, even if just { sort_order: "DESC" }
-            });
-
-            const resData = await response.json();
-            const { items } = resData;
-            console.log({ items });
-
-            if (Array.isArray(items)) {
-                const filteredItems = items.map(item => {
-                    const filteredItem: any = {};
-                    filterKeys.forEach((key) => {
-                        if (key in item) {
-                            filteredItem[key] = item[key];
-                        }
-                    });
-                    return filteredItem;
-                });
-
-                filteredItems.forEach(async (item: any) => {
-                    const { id, item_data: { name, variations, product_type, reporting_category } } = item;
-
-                    variations.forEach(async (variation: any) => {
-                        const { item_variation_data: { price_money } } = variation;
-                        const { amount, currency } = price_money;
-
-                        listMenuDataWithCategory.push({
-                            id,
-                            name,
-                            product_type,
-                            amount: '$ ' + (amount / 100).toFixed(2),
-                            currency,
-                            category_id: reporting_category?.id,
-                            category_name: await patchRetrieve([id]),
-                        });
-                    });
-                });
-            }
-
-            setItemList(listMenuDataWithCategory);
-            console.log("listMenuDataWithCategory", listMenuDataWithCategory);
-
-        } catch (error) {
-            console.log("Error fetching catalog items", error);
-        }
-    };
 
     useEffect(() => {
         getSearchCatalogItemData();
         fetchMenu()
     }, []);  // Will re-fetch data when either categoryIds or textFilter changes
-
-    // Use another useEffect to log itemList when it changes
-    // useEffect(() => {
-    //     console.log("itemList updated:", itemList);
-    // }, [itemList]);
-
-    const getModifierListData = async () => {
-        try {
-            const params = { types: "MODIFIER_LIST" };
-            const response = await fetch("/api/search-catalog-item", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    text_filter: "Dosa",
-                    types: ["ITEM"],
-                }),
-            });
-
-            console.log("response", response);
-        } catch (error) {
-            console.log("Error", error);
-        }
-    };
-
-    const getCatalofCategoryData = async () => {
-        try {
-            const params = { types: "CATEGORY" };
-            const response = await catalogItems(params);
-            if (response?.status === 200) {
-                setDataInLocalStorage("CatalogCategoryData", response?.data?.objects);
-                const currentTimePlusFiveMinutes = dayjs().add(1, "day").toDate();
-                setDataInLocalStorage("Date", currentTimePlusFiveMinutes);
-                setCatalogCategory(response?.data?.objects);
-                setCatalogCategoryTab(response?.data?.objects);
-            }
-        } catch (error) {
-            console.log("Error", error);
-        }
-    };
-
-
-    useEffect(() => {
-        const dateData: Dayjs | null = getDataFromLocalStorage("Date");
-
-      
-
-        if (dayjs(dateData).isSame() || dayjs(dateData).isBefore() || !dateData) {
-            if (activeMenu === "All") {
-              
-                getCatalofCategoryData();
-                getModifierListData();
-            }
-        }
-    }, []);
-
-
-
 
 
 
@@ -429,7 +239,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
 
                         {categories?.map((item, i) => {
                             // Mark 'Namma Menu' as not top level
-                           
+
 
                             return (
                                 <button
@@ -438,7 +248,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                                         ? "text-[#A02621] font-semibold"
                                         : "text-[#222A4A]"
                                         }`}
-                                    // onClick={() => handleCategoryTabs(item)}
+                                    onClick={() => hanldeListMenu(item?.name)}
                                 >
                                     {/* {item.id}{item?.category_data?.name}7799 */}
                                     {item?.name}
@@ -476,7 +286,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                                                         {category?.category_data?.name} 123
                                                     </h2>
                                                     <div className="space-y-2">
-                                                        {catalogItems?.map((item: CatalogItemsType) => (
+                                                        {/** catalogItems?.map((item: CatalogItemsType) => (
                                                             <OurMenuItems
                                                                 key={item?.id}
                                                                 data={item}
@@ -490,7 +300,7 @@ const fetchMenu = async (cursorParam: string | null = null) => {
                                                                 setModifierIds={setModifierIds}
                                                                 setFieldToClear={setFieldToClear}
                                                             />
-                                                        ))}
+                                                        ))*/}
                                                     </div>
                                                 </div>
                                             </div>
