@@ -78,7 +78,7 @@ const OurMenu = () => {
                             className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === "All" ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
                             onClick={() => setActiveMenu("All")}
                         >
-                            All <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px]">|</span>
+                            All <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] pl-[4] pr-[4]">|</span>
                         </button>
 
                         {categories.map((item, i) => (
