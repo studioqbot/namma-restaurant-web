@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 
 const SQUARE_API_URL = process.env.NEXT_PUBLIC_APP_SQUARE_API_URL;
-const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQURAE_ACCESS_TOKEN_PROD;
+const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQUARE_ACCESS_TOKEN_PROD;
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const body = await req.json(); // Expecting: { object_ids: string[] }
 
     const response = await axios.post(
       `${SQUARE_API_URL}/v2/catalog/batch-retrieve`,
       {
-        object_ids: body.object_ids, // Required
+        object_ids: body.object_ids,
         include_related_objects: true,
         include_category_path_to_root: true,
         include_deleted_objects: false,
@@ -34,13 +34,19 @@ export async function POST(req: NextRequest) {
         'Content-Type': 'application/json',
       },
     });
-  } catch (error: any) {
-    const squareError = error?.response?.data || { message: error.message };
+  } catch (error) {
+    const squareError =
+      axios.isAxiosError(error) && error.response?.data
+        ? error.response.data
+        : { message: (error as Error).message };
 
     console.error('Square API error:', squareError);
 
     return new NextResponse(
-      JSON.stringify({ error: 'Failed to retrieve catalog items', details: squareError }),
+      JSON.stringify({
+        error: 'Failed to retrieve catalog items',
+        details: squareError,
+      }),
       {
         status: 500,
         headers: {
@@ -54,7 +60,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function OPTIONS() {
+export async function OPTIONS(): Promise<NextResponse> {
   return new NextResponse(null, {
     status: 204,
     headers: {
