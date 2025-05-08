@@ -3,6 +3,7 @@ import GlobalContext from "@/constants/global-context";
 import React, { useContext, useEffect, useState } from "react";
 import { fetchMenu } from "../../utils/fetcMenu";
 import { fetchMenuItemList } from "../../utils/fetchMenuItemList";
+import { fetchMenuHotSelling } from "../../utils/fetchMenuHotSelling";
 
 type CategoryWithName = {
     name: string;
@@ -27,6 +28,8 @@ const OurMenu = () => {
     };
 
     useEffect(() => {
+
+        fetchMenuHotSelling();
         const cachedCategories = getCachedData("categories", 24 * 60 * 60 * 1000);
         if (cachedCategories) {
             setCategories(cachedCategories);
