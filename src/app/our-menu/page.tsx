@@ -1,4 +1,3 @@
-// File: app/our-menu/page.tsx
 "use client";
 import GlobalContext from "@/constants/global-context";
 import {
@@ -8,35 +7,16 @@ import {
     ModifierIds,
 } from "@/constants/types";
 import React, { useContext, useEffect, useState } from "react";
-import { patchRetrieve } from "@/utils/patchRetrieve";
-// import { fetchMenu, CategoryWithName } from "@/utils/fetchMenu";
-import { fetchMenu } from '../../utils/fetcMenu';
-import { fetchMenuItemList } from '../../utils/fetchMenuItemList';
-
-interface OurMenuItemsType {
-    data: CatalogItemsType;
-    setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
-    lineItems: LineItems[];
-    setUpdateLineItem: React.Dispatch<React.SetStateAction<LineItems[]>>;
-    updateLineItem: LineItems[];
-    setIsItemAdded: React.Dispatch<React.SetStateAction<boolean>>;
-    modifierList: ModifierDataType[] | undefined;
-    modifierIds: ModifierIds[];
-    setModifierIds: React.Dispatch<React.SetStateAction<ModifierIds[]>>;
-    setFieldToClear: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-
+import { fetchMenu } from "../../utils/fetcMenu";
+import { fetchMenuItemList } from "../../utils/fetchMenuItemList";
 
 type CategoryWithName = {
-    //   id: string;
     name: string;
 };
 
 const OurMenu = () => {
     const [categories, setCategories] = useState<CategoryWithName[]>([]);
     const [itemList, setItemList] = useState<any[]>([]);
-    const [selectMenu, setSelectMenu] = useState<string>("");
     const [isItemAdded, setIsItemAdded] = useState(false);
     const [modifierList, setMofierList] = useState<ModifierDataType[]>([]);
     const [modifierIds, setModifierIds] = useState<ModifierIds[]>([]);
@@ -45,66 +25,30 @@ const OurMenu = () => {
     const {
         lineItems,
         setLineItems,
-        catalogCategoryAndItem,
-        catalogCategory,
-        setCatalogCategory,
-        catalogCategoryTab,
         activeMenu,
         setActiveMenu,
         updateLineItem,
         setUpdateLineItem,
     } = useContext(GlobalContext);
 
-    const handleListMenu = (name: string) => {
-        setSelectMenu(name);
-
-        if (name === "All") {
-            console.log("Fn:handleListMenu - Showing All Items");
-            console.log("All Items:", itemList);
-            // Optionally reset to full list
-            // setItemList(originalFullList); ← if you're maintaining a separate full list
-            return;
-        }
-
-        const filteredItems = itemList.filter((item) => {
-            console.log({ cat_name: item.category_name, name });
-            return item.category_name === name;
-        });
-
-        const hasCategory = filteredItems.length > 0;
-
-        console.log("Fn:handleListMenu", { hasCategory });
-
-        if (hasCategory) {
-            console.log("Filtered Items:", filteredItems);
-            // setItemList(filteredItems); ← optionally update displayed items
-        }
-    };
-
- const getCachedData = (key: string, ttl: number) => {
+    const getCachedData = (key: string, ttl: number) => {
         const cachedData = localStorage.getItem(key);
         if (cachedData) {
             const { data, timestamp } = JSON.parse(cachedData);
             const currentTime = new Date().getTime();
-            if (currentTime - timestamp < ttl) {
-                return data; // Return cached data if it's still valid
-            }
+            if (currentTime - timestamp < ttl) return data;
         }
-        return null; // Return null if no valid cache
+        return null;
     };
 
     useEffect(() => {
-        // Try to load categories from cache (localStorage)
-        const cachedCategories = getCachedData("categories", 24 * 60 * 60 * 1000); // Cache for 24 hours
+        const cachedCategories = getCachedData("categories", 24 * 60 * 60 * 1000);
         if (cachedCategories) {
-            console.log("Using cached categories", cachedCategories);
             setCategories(cachedCategories);
         } else {
             fetchMenu().then((cats: any) => {
-                console.log({ cats });
                 if (cats) {
                     setCategories(cats);
-                    // Store the categories in localStorage with timestamp
                     localStorage.setItem(
                         "categories",
                         JSON.stringify({ data: cats, timestamp: new Date().getTime() })
@@ -113,16 +57,13 @@ const OurMenu = () => {
             });
         }
 
-        // Try to load menu items from cache (localStorage)
-        const cachedMenuItems = getCachedData("menuItems", 24 * 60 * 60 * 1000); // Cache for 24 hours
+        const cachedMenuItems = getCachedData("menuItems", 24 * 60 * 60 * 1000);
         if (cachedMenuItems) {
-            console.log("Using cached menu items", cachedMenuItems);
             setItemList(cachedMenuItems);
         } else {
             fetchMenuItemList().then((menuList: any) => {
                 if (menuList) {
                     setItemList(menuList);
-                    // Store the menu items in localStorage with timestamp
                     localStorage.setItem(
                         "menuItems",
                         JSON.stringify({ data: menuList, timestamp: new Date().getTime() })
@@ -131,6 +72,11 @@ const OurMenu = () => {
             });
         }
     }, []);
+
+    // Filtered list by selected category
+    const filteredList = activeMenu === "All"
+        ? itemList
+        : itemList.filter((item) => item.category_name === activeMenu);
 
     return (
         <div className="w-full">
@@ -145,93 +91,91 @@ const OurMenu = () => {
                     <div className="flex flex-row items-center overflow-x-auto whitespace-nowrap justify-between w-full">
                         <button
                             className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === "All" ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
-                            onClick={() => {
-                                setCatalogCategory([...catalogCategoryTab]);
-                                setActiveMenu("All");
-                            }}
+                            onClick={() => setActiveMenu("All")}
                         >
                             All <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px]">|</span>
                         </button>
-                        
+
                         {categories.map((item, i) => (
-                                             
                             <button
                                 key={i}
                                 className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item.name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
-                                onClick={() => handleListMenu(item.name)}
+                                onClick={() => setActiveMenu(item.name)}
                             >
                                 {item.name}
                                 <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
                             </button>
-                    
                         ))}
                     </div>
                 </div>
 
                 {/* Menu content */}
+                {/* Menu content */}
                 <div className="grid grid-cols-12 gap-[40px]">
-                    {/* {[0, 1].map((mod,i) => (
-                        <div key={mod} className="col-span-6">
-                            <div className="p-6">
-                                {catalogCategory
-                                    ?.filter((_, index) => index % 2 === mod)
-                                    ?.map((category) => {
-                                        if (category?.category_data?.name === "Namma Menu") {
-                                            category.category_data.is_top_level = false;
-                                        }
-                                        if (!category?.category_data?.is_top_level) return null;
-
-                                        const catalogItems = catalogCategoryAndItem?.filter(
-                                            (itemData: CatalogItemsType) => itemData?.item_data?.category_id === category?.id
-                                        );
-
-                                        return (
-                                            <div key={category?.id} className="mb-8">
-                                                <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1]">
-                                                    {category?.category_data?.name}
-                                                </h2>
-                                                <div className="space-y-2">
-                                                    {catalogItems?.map((item: CatalogItemsType) => (
-                                                        <OurMenuItems
-                                                            key={item?.id}
-                                                            data={item}
-                                                            lineItems={lineItems}
-                                                            setLineItems={setLineItems}
-                                                            setUpdateLineItem={setUpdateLineItem}
-                                                            updateLineItem={updateLineItem}
-                                                            setIsItemAdded={setIsItemAdded}
-                                                            modifierList={modifierList}
-                                                            modifierIds={modifierIds}
-                                                            setModifierIds={setModifierIds}
-                                                            setFieldToClear={setFieldToClear}
-                                                        />
-                                                    ))}
+                    <div className="col-span-6">
+                        <div className="p-6">
+                            {filteredList.slice(0, Math.ceil(filteredList.length / 2)).map((category, i) => (
+                                <div key={i} className="mb-8">
+                                    <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
+                                        {category.category_name}
+                                    </h2>
+                                    <div className="space-y-2">
+                                        {category.items?.map((item:any, i:any) => (
+                                            !!item.amount && (
+                                                <div
+                                                    key={i}
+                                                    className="flex items-center justify-between py-2 relative"
+                                                >
+                                                    <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
+                                                    <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
+                                                        {item.name}
+                                                    </span>
+                                                    <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
+                                                        {item.amount}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                            </div>
+                                            )
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))} */}
+                    </div>
+
+                    <div className="col-span-6">
+                        <div className="p-6">
+                            {filteredList.slice(Math.ceil(filteredList.length / 2)).map((category) => (
+                                <div key={category.category_name} className="mb-8">
+                                    <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
+                                        {category.category_name}
+                                    </h2>
+                                    <div className="space-y-2">
+                                        {category.items?.map((item:any, i:any) => (
+                                            !!item.amount && (
+                                                <div
+                                                    key={i}
+                                                    className="flex items-center justify-between py-2 relative"
+                                                >
+                                                    <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
+                                                    <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
+                                                        {item.name}
+                                                    </span>
+                                                    <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
+                                                        {item.amount}
+                                                    </span>
+                                                </div>
+                                            )
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     );
 };
 
-const OurMenuItems = React.memo(({ data }: OurMenuItemsType) => {
-    return !!data?.item_data?.variations[0]?.item_variation_data?.price_money?.amount ? (
-        <div className="flex items-center justify-between py-2 relative">
-            <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
-            <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
-                {data?.item_data?.name}
-            </span>
-            <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
-                $ {(data.item_data.variations[0].item_variation_data.price_money.amount / 100).toFixed(2)}
-            </span>
-        </div>
-    ) : null;
-});
-
-OurMenuItems.displayName = "OurMenuItems";
 export default OurMenu;
