@@ -181,11 +181,22 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
       })
     );
 
+    // Calculate total categories and total items
+    const totalCategories = groupedArray.length;
+    const totalItems = groupedArray.reduce((sum, category) => sum + category.total_items, 0);
+
+    // Construct final response
+    const responseData = {
+      total_categories: totalCategories,
+      total_items: totalItems,
+      categories: groupedArray,
+    };
+
     // Cache the result
-    cachedData = groupedArray;
+    cachedData = responseData;
     cacheTimestamp = now;
 
-    return NextResponse.json(groupedArray);
+    return NextResponse.json(responseData);
   } catch (error: unknown) {
     const errorMessage =
       axios.isAxiosError(error)
