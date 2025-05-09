@@ -8,6 +8,8 @@ import { fetchMenuItemList } from "../../utils/fetchMenuItemList";
 import { fetchMenuHotSelling } from "../../utils/fetchMenuHotSelling";
 
 type CategoryWithName = {
+    category_name: string;
+    category_id: string;
     name: string;
 };
 
@@ -17,64 +19,43 @@ const OurMenu = () => {
     const [loading, setLoading] = useState(true); // Loader state
 
     const { activeMenu, setActiveMenu } = useContext(GlobalContext);
-
-    const getCachedData = (key: string, ttl: number) => {
-        const cachedData = localStorage.getItem(key);
-        if (cachedData) {
-            const { data, timestamp } = JSON.parse(cachedData);
-            const currentTime = new Date().getTime();
-            if (currentTime - timestamp < ttl) return data;
-        }
-        return null;
-    };
-
-    const loadData = async () => {
-        try {
-            fetchMenuHotSelling();
-
-            const cachedCategories = getCachedData("categories", 24 * 60 * 60 * 1000);
-            if (cachedCategories) {
-                setCategories(cachedCategories);
-            } else {
-                const cats = await fetchMenu();
-                if (cats) {
-                    setCategories(cats);
-                    localStorage.setItem(
-                        "categories",
-                        JSON.stringify({ data: cats, timestamp: new Date().getTime() })
-                    );
-                }
-            }
-
-            const cachedItems = getCachedData("menuItems", 24 * 60 * 60 * 1000);
-            if (cachedItems) {
-                setItemList(cachedItems);
-            } else {
-                const menuList = await fetchMenuItemList();
-                if (menuList) {
-                    setItemList(menuList);
-                    localStorage.setItem(
-                        "menuItems",
-                        JSON.stringify({ data: menuList, timestamp: new Date().getTime() })
-                    );
-                }
-            }
-
-            setLoading(false);
-        } catch (error) {
-            console.error("Error loading menu data:", error);
-            setLoading(false);
-        }
-    };
-
+    console.log({ activeMenu })
     useEffect(() => {
-        loadData();
-    }, []);
 
-    const filteredList =
+        const fetchMenuList = async () => {
+            try {
+                const response = await fetch('api/menu-list');
+                const data = await response.json();
+                // console.log("newmenu",data)
+                setCategories(data.categoryList);
+                setLoading(false)
+            } catch (error) {
+                console.error('Error fetching menu list:', error);
+            }
+        };
+        const fetchItemList = async () => {
+            try {
+                const response = await fetch('api/item-list');
+                const data = await response.json();
+                // console.log("newmenulist",data)
+                setItemList(data.menu_items);
+                setLoading(false)
+
+
+            } catch (error) {
+                console.error('Error fetching menu list:', error);
+            }
+        };
+        fetchItemList();
+        fetchMenuList();
+    }, []);
+    // console.log("newmenulist", itemList)
+    console.log("newmenucategories", categories)
+
+    const filteredList = 
         activeMenu === "All"
             ? itemList
-            : itemList.filter((item) => item.category_name === activeMenu);
+            : itemList.filter((item) => item.category_id === activeMenu);
 
     if (loading) {
         return (
@@ -103,14 +84,14 @@ const OurMenu = () => {
                         </button>
 
                         {categories
-                            .filter((item) => item.name !== "Namma Menu")
-                            .map((item, i) => (
+                            // .filter((item) => item.name !== "Namma Menu")
+                            .map((menu, i) => (
                                 <button
                                     key={i}
-                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === item.name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
-                                    onClick={() => setActiveMenu(item.name)}
+                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === menu.category_name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
+                                    onClick={() => setActiveMenu(menu.category_name)}
                                 >
-                                    {item.name}
+                                    {menu.category_name}
                                     <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
                                 </button>
                             ))}
@@ -126,7 +107,7 @@ const OurMenu = () => {
                                 .map((category, i) => (
                                     <div key={i} className="mb-8">
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
-                                            {category.category_name}
+                                            {category.category_id}
                                         </h2>
                                         <div className="space-y-2">
                                             {category.items?.map((item: any, i: any) => (
@@ -158,7 +139,7 @@ const OurMenu = () => {
                                 .map((category) => (
                                     <div key={category.category_name} className="mb-8">
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
-                                            {category.category_name}
+                                            {category.category_id}
                                         </h2>
                                         <div className="space-y-2">
                                             {category.items?.map((item: any, i: any) => (

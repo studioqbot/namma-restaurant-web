@@ -151,7 +151,7 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     const responseData = {
       total_categories: totalCategories,
       total_items: totalItems,
-      categories: groupedArray,
+      menu_items: groupedArray,
     };
 
     // Cache the result
