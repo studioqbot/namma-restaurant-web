@@ -15,6 +15,11 @@ import { fetchMenuHotSelling } from '../../../utils/fetchMenuHotSelling';
 import placeHolder from '../../../../public/assets/images/place-holder.png';
 
 interface ItemData {
+  amount: string;
+  ecom_image_uris: string ;
+  price: string;
+  name: string;
+  image: string ;
   item_data: {
     id: string;
     name: string;
@@ -25,6 +30,7 @@ interface ItemData {
 }
 
 interface NammaSpecialCardProps {
+  price: any;
   data: ItemData;
   lineItems: LineItems[];
   setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
@@ -33,58 +39,35 @@ interface NammaSpecialCardProps {
 
 const NammaSpecials = () => {
   const { lineItems, setLineItems } = useContext(GlobalContext);
-  const [load, setLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [nammaSpecialItemsData, setNammaSpecialItemsData] = useState<ItemData[]>([]);
   const [shuffledItems, setShuffledItems] = useState<ItemData[]>([]);
   const router = useRouter();
 
-  const fetchData = async () => {
-    setLoad(true);
-    try {
-      const response = await fetchMenuHotSelling();
-      if (response) {
-        const transformedItems: ItemData[] = response.flatMap((category: any) =>
-          category.items.map((item: any) => ({
-            item_data: {
-              id: item.item_id,
-              name: item.name,
-              image: item.image,
-              price: item.amount,
-              category: category.category_name,
-            },
-          }))
-        );
 
-        setNammaSpecialItemsData(transformedItems);
-        localStorage.setItem(
-          'nammaSpecialsData',
-          JSON.stringify({ data: transformedItems, timestamp: Date.now() })
-        );
-      }
-    } catch (error) {
-      console.error('Error fetching hot selling menu:', error);
-    } finally {
-      setLoad(false);
-    }
-  };
++
 
-  useEffect(() => {
-    const cached = localStorage.getItem('nammaSpecialsData');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      const cacheAge = Date.now() - parsed.timestamp;
+    useEffect(() => {
+                setLoading(true);
 
-      if (cacheAge < 1000 * 60 * 60 * 24) {
-        setNammaSpecialItemsData(parsed.data);
-      } else {
-        fetchData();
-      }
-    } else {
-      fetchData();
-    }
-  }, []);
+        const fetcHotSellingList = async () => {
+            try {
+                const response = await fetch('api/hot-selling');
+                const data = await response.json();
+                
+                setNammaSpecialItemsData(data.hot_selling_items);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching menu list:', error);
+            }
+        };
 
-  useEffect(() => {
+        fetcHotSellingList();
+    }, []);
+
+    console.log({nammaSpecialItemsData})
+
+    useEffect(() => {
     const shuffleArray = (array: ItemData[]) => {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -125,17 +108,16 @@ const NammaSpecials = () => {
         />
       </div>
 
-      {load || nammaSpecialItemsData.length === 0 ? (
+      {loading || nammaSpecialItemsData.length === 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '30px' }}
             >
-              <Skeleton height={150} width={150} style={{ borderRadius: '12px', marginBottom: '20px' }} />
+              <Skeleton height={200} width={200} style={{ borderRadius: '12px', marginBottom: '20px' }} />
               <Skeleton height={14} width={100} style={{ marginBottom: '6px' }} />
               <Skeleton height={14} width={70} style={{ marginBottom: '15px' }} />
-              <Skeleton height={34} width={100} style={{ borderRadius: '100px' }} />
             </div>
           ))}
         </div>
@@ -178,12 +160,12 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
   return (
     <div className="flex flex-col items-center rounded-lg text-center">
       <div className="relative overflow-hidden mb-4">
-        {data.item_data.image ? (
+        {data.ecom_image_uris ? (
           <Image
-            src={data.item_data.image}
+            src={data.ecom_image_uris[0]}
             width={100}
             height={100}
-            alt={data.item_data.name}
+            alt={data.name}
             className="w-[163px] h-[163px] rounded-[15px]"
           />
         ) : (
@@ -196,10 +178,10 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
           />
         )}
       </div>
-      <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data.item_data.name}</h3>
+      <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data.name}</h3>
       <div className="flex flex-col items-center justify-between mt-auto">
         <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">
-          {data.item_data.price}
+          {data.amount}
         </span>
       </div>
     </div>
