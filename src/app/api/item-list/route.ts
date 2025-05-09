@@ -54,45 +54,7 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Function to retrieve category name by category ID (patch retrieval)
-  const patchRetrieve = async (ids: string[]): Promise<string | null> => {
-    try {
-      const response = await fetch('/api/batch-retrieve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ object_ids: ids }),
-      });
 
-      const patchData = await response.json();
-      const category = patchData?.related_objects?.find(
-        (obj: any) => obj.type === 'CATEGORY'
-      );
-
-      return category?.category_data?.name || null;
-    } catch (error) {
-      console.error('Error in patchRetrieve:', error);
-      return null;
-    }
-  };
-
-  const patchRetrieveByCatId = async (ids: string[]): Promise<string | null> => {
-    try {
-      const response = await fetch("/api/batch-retrieve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ object_ids: ids }),
-      });
-
-      const patchData = await response.json();
-      const category = patchData?.objects?.[0]; // Direct access to objects array
-      const categoryName = category?.category_data?.name || null;
-
-      return categoryName;
-    } catch (error) {
-      console.error("Error in patchRetrieveByCatId:", error);
-      return null;
-    }
-  };
 
   // Return cached data if still valid
   const now = Date.now();
