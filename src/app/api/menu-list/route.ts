@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from 'next/server';
 import axios, { AxiosResponse } from 'axios';
 
@@ -80,7 +79,7 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
 
     const category_ids = Array.from(categoryIdSet);
     if (category_ids.length === 0) {
-      return NextResponse.json({ objects: [] });
+      return NextResponse.json({ objects: allItems });
     }
 
     // Step 3: Call batch-retrieve to get full category objects
@@ -104,19 +103,24 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     const allObjects = batchResponse.data.objects || [];
 
     // Step 4: Filter only CATEGORY objects
-    const categories = allObjects.filter((obj: any) => obj.type === 'CATEGORY');
+    const categories = allObjects.filter((obj: any) => obj.type === 'CATEGORY' && !obj.is_deleted);
 
-    // Step 5: Map filtered categories to only include id and category_data.name
-    const formattedCategories = categories.map((category: any) => ({
-      id: category.id,
-      'category_data.name': category.category_data?.name,
+    // Step 5: Map filtered categories to include id and category_data.name
+    const categoryList = categories.map((category: any) => ({
+      category_id: category.id,
+      category_name: category.category_data?.name,
     }));
 
-    // Step 6: Cache and return
-    cachedData = { objects: formattedCategories };
+    // Step 6: If categoryList is empty, return all items (original data)
+    if (categoryList.length === 0) {
+      return NextResponse.json({ objects: allItems });
+    }
+
+    // Step 7: Cache and return the filtered data
+    cachedData = { categoryList };
     cacheTimestamp = now;
 
-    return NextResponse.json({ objects: formattedCategories });
+    return NextResponse.json({ categoryList });
   } catch (error: unknown) {
     const errorMessage =
       axios.isAxiosError(error)
