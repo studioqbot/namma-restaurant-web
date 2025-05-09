@@ -32,6 +32,24 @@ interface SquareCatalogResponse {
   cursor?: string | null;
 }
 
+// Utility to get nested value using dot-notation
+function getByPath(obj: any, path: string): any {
+  return path.split('.').reduce((acc, key) => {
+    if (acc === undefined || acc === null) return undefined;
+    if (/^\d+$/.test(key)) return acc[parseInt(key, 10)];
+    return acc[key];
+  }, obj);
+}
+
+// Map dot-paths to custom response keys
+const requiredFields: Record<string, string> = {
+  // 'item_data.reporting_category.id': 'category_id',
+  // 'item_data.name': 'name',
+  // Add more like:
+  // 'item_data.variations.0.item_variation_data.price_money.amount': 'amount',
+  // 'item_data.variations.0.item_variation_data.price_money.currency': 'currency',
+};
+
 export async function GET(_req: NextRequest): Promise<NextResponse> {
   if (!SQUARE_API_URL || !SQUARE_ACCESS_TOKEN) {
     return NextResponse.json(
@@ -42,14 +60,14 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
 
   const now = Date.now();
   if (cachedData && now - cacheTimestamp < CACHE_TTL) {
-    return NextResponse.json(cachedData);
+    return NextResponse.json({ objects: cachedData });
   }
 
   const allItems: SquareCatalogObject[] = [];
   let cursor: string | null = null;
 
   try {
-    // Step 1: Use cursor to fetch all catalog items
+    // Fetch catalog items
     do {
       const response: AxiosResponse<SquareCatalogResponse> = await axios.get(
         `${SQUARE_API_URL}/v2/catalog/list`,
@@ -68,49 +86,28 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
       cursor = nextCursor ?? null;
     } while (cursor);
 
-    // Step 2: Extract unique category_ids from ITEMs
-    const categoryIdSet = new Set<string>();
-
-    for (const obj of allItems) {
-      if (obj.type === 'ITEM' && !obj.is_deleted) {
-        const id = obj.item_data?.reporting_category?.id;
-        if (id) categoryIdSet.add(id);
-      }
-    }
-
-    const category_ids = Array.from(categoryIdSet);
-    if (category_ids.length === 0) {
-      return NextResponse.json({ objects: [] });
-    }
-
-    // Step 3: Call batch-retrieve to get full category objects
-    const batchResponse = await axios.post(
-      `${SQUARE_API_URL}/v2/catalog/batch-retrieve`,
-      {
-        object_ids: category_ids,
-        include_related_objects: true,
-        include_category_path_to_root: true,
-        include_deleted_objects: false,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Square-Version': '2025-04-16',
-          Authorization: `Bearer ${SQUARE_ACCESS_TOKEN}`,
-        },
-      }
+    // Filter only ITEMs
+    const filteredItems = allItems.filter(
+      (obj) => obj.type === 'ITEM' && !obj.is_deleted
     );
 
-    const allObjects = batchResponse.data.objects || [];
+    // Build simplified objects with custom keys
+    const simplified = filteredItems.map((item) => {
+      const result: Record<string, any> = {};
+      for (const [path, customKey] of Object.entries(requiredFields)) {
+        const value = getByPath(item, path);
+        if (value !== undefined) {
+          result[customKey] = value;
+        }
+      }
+      return result;
+    });
 
-    // Step 4: Filter only CATEGORY objects
-    const categories = allObjects.filter((obj: any) => obj.type === 'CATEGORY');
-
-    // Step 5: Cache and return
-    cachedData = { objects: categories };
+    // Cache and return
+    cachedData = simplified;
     cacheTimestamp = now;
 
-    return NextResponse.json({ objects: categories });
+    return NextResponse.json({ objects: simplified });
   } catch (error: unknown) {
     const errorMessage =
       axios.isAxiosError(error)
@@ -122,7 +119,7 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     console.error('Square API error:', errorMessage);
 
     return NextResponse.json(
-      { error: 'Failed to fetch category data from Square API', details: errorMessage },
+      { error: 'Failed to fetch data from Square API', details: errorMessage },
       { status: 500 }
     );
   }
