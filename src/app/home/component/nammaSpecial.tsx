@@ -24,18 +24,19 @@ interface ItemData {
     id: string;
     name: string;
     image: string;
-    price: string;
+    // price: string;
     category: string;
   };
 }
 
-interface NammaSpecialCardProps {
-  price: any;
+type NammaSpecialCardProps = {
   data: ItemData;
   lineItems: LineItems[];
   setLineItems: React.Dispatch<React.SetStateAction<LineItems[]>>;
-  setIsItemAdded: React.Dispatch<React.SetStateAction<boolean>>;
-}
+  setIsItemAdded: () => void;
+  // price: string; // 👈 This is the missing prop
+};
+
 
 const NammaSpecials = () => {
   const { lineItems, setLineItems } = useContext(GlobalContext);
