@@ -1,217 +1,129 @@
-  /* eslint-disable */
-  import { NextRequest, NextResponse } from 'next/server';
-  import axios, { AxiosResponse } from 'axios';
+/* eslint-disable */
+import { NextRequest, NextResponse } from 'next/server';
+import axios, { AxiosResponse } from 'axios';
 
-  const SQUARE_API_URL = process.env.NEXT_PUBLIC_APP_SQUARE_API_URL;
-  const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQUARE_ACCESS_TOKEN_PROD;
+const SQUARE_API_URL = process.env.NEXT_PUBLIC_APP_SQUARE_API_URL;
+const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQUARE_ACCESS_TOKEN_PROD;
 
-  // Simple in-memory cache
-  let cachedData: any = null;
-  let cacheTimestamp: number = 0;
-  const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+let cachedData: any = null;
+let cacheTimestamp: number = 0;
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-  function getNested(obj: any, path: string): any {
-    return path.split('.').reduce((o, key) => (o == null ? undefined : o[key]), obj);
-  }
-
-
-
-  interface SquareCatalogObject {
-    type: string;
-    is_deleted?: boolean;
-    item_data?: {
-      reporting_category?: { id?: string };
-      name?: string;
-      variations?: {
-        item_variation_data?: {
-          price_money?: {
-            amount?: number;
-            currency?: string;
-          };
+interface SquareCatalogObject {
+  type: string;
+  id?: string;
+  is_deleted?: boolean;
+  item_data?: {
+    reporting_category?: { id?: string };
+    name?: string;
+    variations?: {
+      item_variation_data?: {
+        price_money?: {
+          amount?: number;
+          currency?: string;
         };
-      }[];
-    };
-  }
-
-  interface SquareCatalogResponse {
-    objects?: SquareCatalogObject[];
-    cursor?: string | null;
-  }
-
-  // interface MenuItem {
-  //   [key: string]: string | number | undefined;
-  // }
-  interface MenuItem {
-    [key: string]: any;  // This will allow any string key with any value
-  }
-
-  interface GroupedCategory {
-    category_id: string;
-    items: MenuItem[];
-  }
-
-  export async function GET(_req: NextRequest): Promise<NextResponse> {
-    if (!SQUARE_API_URL || !SQUARE_ACCESS_TOKEN) {
-      return NextResponse.json(
-        { error: 'Missing Square configuration in environment variables' },
-        { status: 500 }
-      );
-    }
-  const patchRetrieve = async (ids: string[]): Promise<string | null> => {
-      console.log('This fn from patchRetrieve.....')
-    try {
-      const response = await fetch('/api/batch-retrieve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ object_ids: ids }),
-      });
-
-      const patchData = await response.json();
-
-      const category = patchData?.related_objects?.find(
-        (obj: any) => obj.type === 'CATEGORY'
-      );
-
-      return category?.category_data?.name || null;
-    } catch (error) {
-      console.error('Error in patchRetrieve:', error);
-      return null;
-    }
+      };
+    }[];
   };
+}
 
-    const patchRetrieveByCatId = async (ids: string[]): Promise<string | null> => {
-    
-      try {
-      const response = await fetch("/api/batch-retrieve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ object_ids: ids }),
-      });
+interface SquareCatalogResponse {
+  objects?: SquareCatalogObject[];
+  cursor?: string | null;
+}
 
-      const patchData = await response.json();
+export async function GET(_req: NextRequest): Promise<NextResponse> {
+  if (!SQUARE_API_URL || !SQUARE_ACCESS_TOKEN) {
+    return NextResponse.json(
+      { error: 'Missing Square configuration in environment variables' },
+      { status: 500 }
+    );
+  }
 
-      const category = patchData?.objects?.[0]; // Direct access to objects array
-      const categoryName = category?.category_data?.name || null;
+  const now = Date.now();
+  if (cachedData && now - cacheTimestamp < CACHE_TTL) {
+    return NextResponse.json(cachedData);
+  }
 
-      return categoryName;
-    } catch (error) {
-      console.error("Error in patchRetrieveByCatId:", error);
-      return null;
-    }
-  };
+  const allItems: SquareCatalogObject[] = [];
+  let cursor: string | null = null;
 
-    // Return cached data if still valid
-    const now = Date.now();
-    if (cachedData && now - cacheTimestamp < CACHE_TTL) {
-      return NextResponse.json(cachedData);
-    }
-
-    // Required data paths, if it's empty, get all data
-    const requiredData: string[] = [
-      'item_data.reporting_category.id',
-      // 'item_data.name',
-      // 'item_data.variations.0.item_variation_data.price_money.amount',
-      // 'item_data.variations.0.item_variation_data.price_money.currency',
-    ];
-
-    const allItems: SquareCatalogObject[] = [];
-    let cursor: string | null = null;
-
-    try {
-      // Fetch all catalog data
-      do {
-        const response: AxiosResponse<SquareCatalogResponse> = await axios.get(
-          `${SQUARE_API_URL}/v2/catalog/list`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'Square-Version': '2025-04-16',
-              Authorization: `Bearer ${SQUARE_ACCESS_TOKEN}`,
-            },
-            params: cursor ? { cursor } : {},
-          }
-        );
-
-        const { objects = [], cursor: nextCursor } = response.data;
-        allItems.push(...objects);
-        cursor = nextCursor ?? null;
-      } while (cursor);
-
-      // Group items by category_id
-      const groupedMap: { [category_id: string]: MenuItem[] } = {};
-
-      for (const obj of allItems) {
-        if (obj.type !== 'ITEM' || obj.is_deleted) continue;
-
-        const item: MenuItem = {};
-        let categoryId = 'uncategorized';
-
-        // If requiredData is empty, extract all available data
-  // If requiredData is empty, extract all available data
-  if (requiredData.length === 0) {
-    // Extract all keys from item_data
-    if (obj.item_data) {
-      for (const key in obj.item_data) {
-        if (obj.item_data && Object.prototype.hasOwnProperty.call(obj.item_data, key)) {
-          // Type assertion to tell TypeScript that `key` is a valid key of `item_data`
-          item[key as keyof typeof obj.item_data] = obj.item_data[key as keyof typeof obj.item_data];
+  try {
+    // Step 1: Use cursor to fetch all catalog items
+    do {
+      const response: AxiosResponse<SquareCatalogResponse> = await axios.get(
+        `${SQUARE_API_URL}/v2/catalog/list`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Square-Version': '2025-04-16',
+            Authorization: `Bearer ${SQUARE_ACCESS_TOKEN}`,
+          },
+          params: cursor ? { cursor } : {},
         }
+      );
+
+      const { objects = [], cursor: nextCursor } = response.data;
+      allItems.push(...objects);
+      cursor = nextCursor ?? null;
+    } while (cursor);
+
+    // Step 2: Extract unique category_ids from ITEMs
+    const categoryIdSet = new Set<string>();
+
+    for (const obj of allItems) {
+      if (obj.type === 'ITEM' && !obj.is_deleted) {
+        const id = obj.item_data?.reporting_category?.id;
+        if (id) categoryIdSet.add(id);
       }
     }
 
-    // Extract reporting category id or default to 'uncategorized'
-    categoryId = obj.item_data?.reporting_category?.id || 'uncategorized';
-  }
-  else {
-          // Extract specific required data
-          for (const path of requiredData) {
-            const val = getNested(obj, path);
-            if (val !== undefined) {
-              const key = path === 'item_data.reporting_category.id'
-                ? 'category_id'
-                : path.split('.').pop()!;
-
-              if (key === 'category_id') categoryId = val;
-              item[key] = val;
-            }
-          }
-        }
-
-        if (!groupedMap[categoryId]) {
-          groupedMap[categoryId] = [];
-        }
-
-        groupedMap[categoryId].push(item);
-      }
-
-      // Convert to array format
-      const groupedArray: GroupedCategory[] = Object.entries(groupedMap).map(
-        ([category_id, items]) => ({
-          category_id,
-          category_name1: patchRetrieve([category_id]),
-          category_name: patchRetrieveByCatId([category_id]),
-          items,
-        })
-      );
-
-      // Cache the result
-      cachedData = groupedArray;
-      cacheTimestamp = now;
-
-      return NextResponse.json(groupedArray);
-    } catch (error: unknown) {
-      const errorMessage =
-        axios.isAxiosError(error)
-          ? error.response?.data ?? error.message
-          : error instanceof Error
-          ? error.message
-          : 'Unknown error';
-
-      console.error('Square API error:', errorMessage);
-
-      return NextResponse.json(
-        { error: 'Failed to fetch from Square API', details: errorMessage },
-        { status: 500 }
-      );
+    const category_ids = Array.from(categoryIdSet);
+    if (category_ids.length === 0) {
+      return NextResponse.json({ objects: [] });
     }
+
+    // Step 3: Call batch-retrieve to get full category objects
+    const batchResponse = await axios.post(
+      `${SQUARE_API_URL}/v2/catalog/batch-retrieve`,
+      {
+        object_ids: category_ids,
+        include_related_objects: true,
+        include_category_path_to_root: true,
+        include_deleted_objects: false,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Square-Version': '2025-04-16',
+          Authorization: `Bearer ${SQUARE_ACCESS_TOKEN}`,
+        },
+      }
+    );
+
+    const allObjects = batchResponse.data.objects || [];
+
+    // Step 4: Filter only CATEGORY objects
+    const categories = allObjects.filter((obj: any) => obj.type === 'CATEGORY');
+
+    // Step 5: Cache and return
+    cachedData = { objects: categories };
+    cacheTimestamp = now;
+
+    return NextResponse.json({ objects: categories });
+  } catch (error: unknown) {
+    const errorMessage =
+      axios.isAxiosError(error)
+        ? error.response?.data ?? error.message
+        : error instanceof Error
+        ? error.message
+        : 'Unknown error';
+
+    console.error('Square API error:', errorMessage);
+
+    return NextResponse.json(
+      { error: 'Failed to fetch category data from Square API', details: errorMessage },
+      { status: 500 }
+    );
   }
+}
