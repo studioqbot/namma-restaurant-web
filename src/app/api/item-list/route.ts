@@ -14,8 +14,6 @@ function getNested(obj: any, path: string): any {
   return path.split('.').reduce((o, key) => (o == null ? undefined : o[key]), obj);
 }
 
-
-
 interface SquareCatalogObject {
   type: string;
   is_deleted?: boolean;
@@ -38,15 +36,13 @@ interface SquareCatalogResponse {
   cursor?: string | null;
 }
 
-// interface MenuItem {
-//   [key: string]: string | number | undefined;
-// }
 interface MenuItem {
   [key: string]: any;  // This will allow any string key with any value
 }
 
 interface GroupedCategory {
   category_id: string;
+  total_items: number;  // Add total items count
   items: MenuItem[];
 }
 
@@ -57,48 +53,46 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
-const patchRetrieve = async (ids: string[]): Promise<string | null> => {
-    console.log('This fn from patchRetrieve.....')
-  try {
-    const response = await fetch('/api/batch-retrieve', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ object_ids: ids }),
-    });
 
-    const patchData = await response.json();
+  // Function to retrieve category name by category ID (patch retrieval)
+  const patchRetrieve = async (ids: string[]): Promise<string | null> => {
+    try {
+      const response = await fetch('/api/batch-retrieve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ object_ids: ids }),
+      });
 
-    const category = patchData?.related_objects?.find(
-      (obj: any) => obj.type === 'CATEGORY'
-    );
+      const patchData = await response.json();
+      const category = patchData?.related_objects?.find(
+        (obj: any) => obj.type === 'CATEGORY'
+      );
 
-    return category?.category_data?.name || null;
-  } catch (error) {
-    console.error('Error in patchRetrieve:', error);
-    return null;
-  }
-};
+      return category?.category_data?.name || null;
+    } catch (error) {
+      console.error('Error in patchRetrieve:', error);
+      return null;
+    }
+  };
 
   const patchRetrieveByCatId = async (ids: string[]): Promise<string | null> => {
-  
     try {
-    const response = await fetch("/api/batch-retrieve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ object_ids: ids }),
-    });
+      const response = await fetch("/api/batch-retrieve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ object_ids: ids }),
+      });
 
-    const patchData = await response.json();
+      const patchData = await response.json();
+      const category = patchData?.objects?.[0]; // Direct access to objects array
+      const categoryName = category?.category_data?.name || null;
 
-    const category = patchData?.objects?.[0]; // Direct access to objects array
-    const categoryName = category?.category_data?.name || null;
-
-    return categoryName;
-  } catch (error) {
-    console.error("Error in patchRetrieveByCatId:", error);
-    return null;
-  }
-};
+      return categoryName;
+    } catch (error) {
+      console.error("Error in patchRetrieveByCatId:", error);
+      return null;
+    }
+  };
 
   // Return cached data if still valid
   const now = Date.now();
@@ -146,23 +140,17 @@ const patchRetrieve = async (ids: string[]): Promise<string | null> => {
       const item: MenuItem = {};
       let categoryId = 'uncategorized';
 
-      // If requiredData is empty, extract all available data
-// If requiredData is empty, extract all available data
-if (requiredData.length === 0) {
-  // Extract all keys from item_data
-  if (obj.item_data) {
-    for (const key in obj.item_data) {
-      if (obj.item_data && Object.prototype.hasOwnProperty.call(obj.item_data, key)) {
-        // Type assertion to tell TypeScript that `key` is a valid key of `item_data`
-        item[key as keyof typeof obj.item_data] = obj.item_data[key as keyof typeof obj.item_data];
-      }
-    }
-  }
-
-  // Extract reporting category id or default to 'uncategorized'
-  categoryId = obj.item_data?.reporting_category?.id || 'uncategorized';
-}
- else {
+      if (requiredData.length === 0) {
+        // Extract all keys from item_data
+        if (obj.item_data) {
+          for (const key in obj.item_data) {
+            if (obj.item_data && Object.prototype.hasOwnProperty.call(obj.item_data, key)) {
+              item[key as keyof typeof obj.item_data] = obj.item_data[key as keyof typeof obj.item_data];
+            }
+          }
+        }
+        categoryId = obj.item_data?.reporting_category?.id || 'uncategorized';
+      } else {
         // Extract specific required data
         for (const path of requiredData) {
           const val = getNested(obj, path);
@@ -184,12 +172,11 @@ if (requiredData.length === 0) {
       groupedMap[categoryId].push(item);
     }
 
-    // Convert to array format
+    // Convert to array format and add total_items
     const groupedArray: GroupedCategory[] = Object.entries(groupedMap).map(
       ([category_id, items]) => ({
         category_id,
-        category_name1: patchRetrieve([category_id]),
-        category_name: patchRetrieveByCatId([category_id]),
+        total_items: items.length, // Add total length of items
         items,
       })
     );
