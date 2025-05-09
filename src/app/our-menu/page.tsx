@@ -3,9 +3,6 @@
 
 import GlobalContext from "@/constants/global-context";
 import React, { useContext, useEffect, useState } from "react";
-import { fetchMenu } from "../../utils/fetcMenu";
-import { fetchMenuItemList } from "../../utils/fetchMenuItemList";
-import { fetchMenuHotSelling } from "../../utils/fetchMenuHotSelling";
 
 type CategoryWithName = {
     category_name: string;
@@ -16,43 +13,40 @@ type CategoryWithName = {
 const OurMenu = () => {
     const [categories, setCategories] = useState<CategoryWithName[]>([]);
     const [itemList, setItemList] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true); // Loader state
+    const [loading, setLoading] = useState(true);
 
     const { activeMenu, setActiveMenu } = useContext(GlobalContext);
-    console.log({ activeMenu })
-    useEffect(() => {
 
+    useEffect(() => {
         const fetchMenuList = async () => {
             try {
                 const response = await fetch('api/menu-list');
                 const data = await response.json();
-                // console.log("newmenu",data)
                 setCategories(data.categoryList);
-                setLoading(false)
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching menu list:', error);
             }
         };
+
         const fetchItemList = async () => {
             try {
                 const response = await fetch('api/item-list');
                 const data = await response.json();
-                // console.log("newmenulist",data)
                 setItemList(data.menu_items);
-                setLoading(false)
-
-
+                setLoading(false);
             } catch (error) {
-                console.error('Error fetching menu list:', error);
+                console.error('Error fetching item list:', error);
             }
         };
+
         fetchItemList();
         fetchMenuList();
     }, []);
-    // console.log("newmenulist", itemList)
-    console.log("newmenucategories", categories)
 
-    const filteredList = 
+    const categoryNameMap = new Map(categories.map(cat => [cat.category_id, cat.category_name]));
+
+    const filteredList =
         activeMenu === "All"
             ? itemList
             : itemList.filter((item) => item.category_id === activeMenu);
@@ -83,18 +77,16 @@ const OurMenu = () => {
                             All <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] pl-[4] pr-[4]">|</span>
                         </button>
 
-                        {categories
-                            // .filter((item) => item.name !== "Namma Menu")
-                            .map((menu, i) => (
-                                <button
-                                    key={i}
-                                    className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === menu.category_name ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
-                                    onClick={() => setActiveMenu(menu.category_name)}
-                                >
-                                    {menu.category_name}
-                                    <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
-                                </button>
-                            ))}
+                        {categories.map((menu, i) => (
+                            <button
+                                key={i}
+                                className={`text-[#222A4A] leading-[29px] text-[13px] ${activeMenu === menu.category_id ? "text-[#A02621] font-semibold" : "text-[#222A4A]"}`}
+                                onClick={() => setActiveMenu(menu.category_id)}
+                            >
+                                {menu.category_name}
+                                <span className="text-[#222A4A] h-[18px] overflow-hidden mt-[-5px] px-[5px]">|</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -107,13 +99,13 @@ const OurMenu = () => {
                                 .map((category, i) => (
                                     <div key={i} className="mb-8">
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
-                                            {category.category_id}
+                                            {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
                                         <div className="space-y-2">
-                                            {category.items?.map((item: any, i: any) => (
+                                            {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
-                                                        key={i}
+                                                        key={j}
                                                         className="flex items-center justify-between py-2 relative"
                                                     >
                                                         <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
@@ -136,16 +128,16 @@ const OurMenu = () => {
                         <div className="p-6">
                             {filteredList
                                 .slice(Math.ceil(filteredList.length / 2))
-                                .map((category) => (
-                                    <div key={category.category_name} className="mb-8">
+                                .map((category, i) => (
+                                    <div key={i} className="mb-8">
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded">
-                                            {category.category_id}
+                                            {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
                                         <div className="space-y-2">
-                                            {category.items?.map((item: any, i: any) => (
+                                            {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
-                                                        key={i}
+                                                        key={j}
                                                         className="flex items-center justify-between py-2 relative"
                                                     >
                                                         <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
