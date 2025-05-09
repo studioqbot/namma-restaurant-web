@@ -8,10 +8,13 @@ const SQUARE_ACCESS_TOKEN = process.env.NEXT_PUBLIC_APP_SQUARE_ACCESS_TOKEN_PROD
 // Simple in-memory cache
 let cachedData: any = null;
 let cacheTimestamp: number = 0;
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 function getNested(obj: any, path: string): any {
-  return path.split('.').reduce((o, key) => (o == null ? undefined : o[key]), obj);
+  return path.split('.').reduce((o, key) => {
+    if (o === undefined || o === null) return undefined;
+    return Array.isArray(o) && !isNaN(Number(key)) ? o[Number(key)] : o[key];
+  }, obj);
 }
 
 interface SquareCatalogObject {
@@ -20,6 +23,7 @@ interface SquareCatalogObject {
   item_data?: {
     reporting_category?: { id?: string };
     name?: string;
+    ecom_image_uris?: string[];
     variations?: {
       item_variation_data?: {
         price_money?: {
@@ -27,6 +31,7 @@ interface SquareCatalogObject {
           currency?: string;
         };
       };
+      custom_attribute_values?: any;
     }[];
   };
 }
@@ -37,14 +42,11 @@ interface SquareCatalogResponse {
 }
 
 interface MenuItem {
-  [key: string]: any;  // This will allow any string key with any value
+  [key: string]: any;
 }
 
-interface GroupedCategory {
-  category_id: string;
-  total_items: number;  // Add total items count
-  items: MenuItem[];
-}
+// Replace with your actual custom attribute key
+const HOTSELLING_CUSTOM_ATTRIBUTE_KEY = 'Square:41d1d16b-e6b0-46b0-af4d-4b044b5e02b2';
 
 export async function GET(_req: NextRequest): Promise<NextResponse> {
   if (!SQUARE_API_URL || !SQUARE_ACCESS_TOKEN) {
@@ -54,24 +56,22 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Return cached data if still valid
   const now = Date.now();
   if (cachedData && now - cacheTimestamp < CACHE_TTL) {
     return NextResponse.json(cachedData);
   }
 
-  // Required data paths, if it's empty, get all data
   const requiredData: string[] = [
-    // 'item_data',
     'item_data.reporting_category.id',
     'item_data.name',
     'item_data.variations.0.item_variation_data.price_money.amount',
     'item_data.variations.0.item_variation_data.price_money.currency',
-    'item_data.variations.0.custom_attribute_values',
+    `item_data.variations.0.custom_attribute_values.${HOTSELLING_CUSTOM_ATTRIBUTE_KEY}`,
     'item_data.ecom_image_uris',
   ];
 
   const allItems: SquareCatalogObject[] = [];
+  const menuItems: MenuItem[] = [];
   let cursor: string | null = null;
 
   try {
@@ -94,67 +94,37 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
       cursor = nextCursor ?? null;
     } while (cursor);
 
-    // Group items by category_id
-    const groupedMap: { [category_id: string]: MenuItem[] } = {};
-
+    // Process and filter items
     for (const obj of allItems) {
       if (obj.type !== 'ITEM' || obj.is_deleted) continue;
 
+      const variations = obj.item_data?.variations;
+      const customAttributes =
+        variations?.[0]?.custom_attribute_values?.[HOTSELLING_CUSTOM_ATTRIBUTE_KEY];
+
+      if (!customAttributes?.boolean_value) continue; // skip if not hot selling
+
       const item: MenuItem = {};
-      let categoryId = 'uncategorized';
 
-      if (requiredData.length === 0) {
-        if (obj.item_data) {
-          for (const key in obj.item_data) {
-            if (obj.item_data && Object.prototype.hasOwnProperty.call(obj.item_data, key)) {
-              item[key as keyof typeof obj.item_data] = obj.item_data[key as keyof typeof obj.item_data];
-            }
-          }
-        }
-        categoryId = obj.item_data?.reporting_category?.id || 'uncategorized';
-      } else {
-        for (const path of requiredData) {
-          const val = getNested(obj, path);
-          if (val !== undefined) {
-            const key = path === 'item_data.reporting_category.id'
-              ? 'category_id'
-              : path.split('.').pop()!;
+      for (const path of requiredData) {
+        const val = getNested(obj, path);
+        if (val !== undefined) {
+          const key = path === 'item_data.reporting_category.id'
+            ? 'category_id'
+            : path.split('.').pop()!;
 
-            if (key === 'category_id') categoryId = val;
-
-            // ✅ Format amount as $ 14.99
-            if (key === 'amount' && typeof val === 'number') {
-              item[key] = `$ ${(val / 100).toFixed(2)}`;
-            } else {
-              item[key] = val;
-            }
-          }
+          item[key] = (key === 'amount' && typeof val === 'number')
+            ? `$ ${(val / 100).toFixed(2)}`
+            : val;
         }
       }
 
-      if (!groupedMap[categoryId]) {
-        groupedMap[categoryId] = [];
-      }
-
-      groupedMap[categoryId].push(item);
+      menuItems.push(item);
     }
 
-    // Convert to array format and add total_items
-    const groupedArray: GroupedCategory[] = Object.entries(groupedMap).map(
-      ([category_id, items]) => ({
-        category_id,
-        total_items: items.length,
-        items,
-      })
-    );
-
-    const totalCategories = groupedArray.length;
-    const totalItems = groupedArray.reduce((sum, category) => sum + category.total_items, 0);
-
     const responseData = {
-      total_categories: totalCategories,
-      total_items: totalItems,
-      menu_items: groupedArray,
+      total_items: menuItems.length,
+      hot_selling_items: menuItems,
     };
 
     cachedData = responseData;
