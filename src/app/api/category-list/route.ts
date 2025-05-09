@@ -17,7 +17,18 @@ function getNested(obj: any, path: string): any {
 interface SquareCatalogObject {
   type: string;
   is_deleted?: boolean;
-  item_data?: Record<string, any>; // Use Record<string, any> to allow any keys
+  item_data?: {
+    reporting_category?: { id?: string };
+    name?: string;
+    variations?: {
+      item_variation_data?: {
+        price_money?: {
+          amount?: number;
+          currency?: string;
+        };
+      };
+    }[];
+  };
 }
 
 interface SquareCatalogResponse {
@@ -48,16 +59,15 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(cachedData);
   }
 
+  // Required data paths, if it's empty, get all data
   const requiredData: string[] = [
-    // Add any specific required paths here
-  ];
-
-  const allItems: SquareCatalogObject[] = [
-    'item_data.reporting_category.id',
+    // 'item_data.reporting_category.id',
     // 'item_data.name',
     // 'item_data.variations.0.item_variation_data.price_money.amount',
     // 'item_data.variations.0.item_variation_data.price_money.currency',
   ];
+
+  const allItems: SquareCatalogObject[] = [];
   let cursor: string | null = null;
 
   try {
@@ -140,8 +150,8 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
       axios.isAxiosError(error)
         ? error.response?.data ?? error.message
         : error instanceof Error
-          ? error.message
-          : 'Unknown error';
+        ? error.message
+        : 'Unknown error';
 
     console.error('Square API error:', errorMessage);
 
