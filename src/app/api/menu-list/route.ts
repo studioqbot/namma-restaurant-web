@@ -79,7 +79,7 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
 
     const category_ids = Array.from(categoryIdSet);
     if (category_ids.length === 0) {
-      return NextResponse.json({ objects: allItems });
+      return NextResponse.json({ objects: allItems, total_length: allItems.length });
     }
 
     // Step 3: Call batch-retrieve to get full category objects
@@ -113,14 +113,14 @@ export async function GET(_req: NextRequest): Promise<NextResponse> {
 
     // Step 6: If categoryList is empty, return all items (original data)
     if (categoryList.length === 0) {
-      return NextResponse.json({ objects: allItems });
+      return NextResponse.json({ objects: allItems, total_length: allItems.length });
     }
 
-    // Step 7: Cache and return the filtered data
-    cachedData = { categoryList };
+    // Step 7: Cache and return the filtered data with total length
+    cachedData = { categoryList, total_length: categoryList.length };
     cacheTimestamp = now;
 
-    return NextResponse.json({ categoryList });
+    return NextResponse.json({ categoryList, total_length: categoryList.length });
   } catch (error: unknown) {
     const errorMessage =
       axios.isAxiosError(error)
