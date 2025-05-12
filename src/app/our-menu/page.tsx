@@ -101,20 +101,20 @@ const OurMenu = () => {
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] rounded text-amber-700">
                                             {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
-                                        <div className="space-y-2">
+                                     <div className="space-y-2 w-[280px] sm:w-full ">
                                             {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
                                                         key={j}
                                                         className="flex justify-between items-start py-2 relative overflow-x-hidden"
                                                     >
-                                                      
+                                                        <span className="hidden md:block  absolute top-[16px] w-full border-b border-dotted border-[#222A4A] z-[-1]" />
 
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px] break-words whitespace-normal max-w-[80%] overflow-x-hidden">
                                                             {item.name}
                                                         </span>
-  <span className="absolute top-[15px] w-full border-b border-dotted border-[#222A4A] z-[-1]" />
-                                                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium whitespace-nowrap">
+
+                                                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium whitespace-nowrap min-w-[80px] text-right">
                                                             {item.amount}
                                                         </span>
                                                     </div>
@@ -134,21 +134,21 @@ const OurMenu = () => {
                                 .slice(Math.ceil(filteredList.length / 2))
                                 .map((category, i) => (
                                     <div key={i} className="mb-8">
-                                        <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] p-2 rounded text-amber-700">
+                                        <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] py-2 rounded text-amber-700">
                                             {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
-                                        <div className="space-y-2">
+                                          <div className="space-y-2 w-[280px] sm:w-full">
                                             {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
                                                         key={j}
                                                         className="flex items-center justify-between py-2 relative"
                                                     >
-                                                        <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
+                                                        <span className="hidden md:block  absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px]">
                                                             {item.name}
                                                         </span>
-                                                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium">
+                                                        <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium min-w-[80px] text-right">
                                                             {item.amount}
                                                         </span>
                                                     </div>
