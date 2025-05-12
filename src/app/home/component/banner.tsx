@@ -8,7 +8,7 @@ import Image from 'next/image';
 function Banner() {
     const router = useRouter()
     return (
-        <main className=' container w-full relative pt-[55px]'>
+        <main className=' container w-full relative pt-0 md:pt-[55px]'>
 
 
             <section className="grid grid-cols-1 lg:grid-cols-4 gap-[40px]">

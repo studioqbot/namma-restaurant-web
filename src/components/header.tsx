@@ -60,6 +60,7 @@ function Header() {
   return (
     <header className="w-full py-[22px] z-10 relative">
       <div className="container">
+
         <nav className="flex justify-between items-center">
           <button className="flex items-center" onClick={() => router.push('/home')}>
             <Image
@@ -67,7 +68,14 @@ function Header() {
               alt="Logo"
               width={235}
               height={60}
-              className="h-[60px]"
+              className="h-[60px] hidden md:block"
+            />
+            <Image
+              src="/assets/images/Logo.svg"
+              alt="Logo"
+              width={150}
+              height={55}
+              className="pl-[10px] h-[50px] block md:hidden"
             />
           </button>
 
@@ -87,7 +95,7 @@ function Header() {
           </div>
 
           {/* Mobile Hamburger */}
-          <button className="md:hidden text-[#222A4A] text-3xl mr-10" onClick={() => setIsMenuOpen(true)}>
+          <button className="md:hidden text-[#222A4A] text-3xl mr-5" onClick={() => setIsMenuOpen(true)}>
             ☰
           </button>
         </nav>
@@ -123,6 +131,19 @@ function Header() {
               >
                 Call to Order
               </Link>
+              <button
+                onClick={() =>
+                  window.open(
+                    'https://order.nammarestaurant.com/',
+                    '_blank',
+                    'noopener,noreferrer'
+                  )
+                }
+                className="inline-block px-5 py-2 bg-[#A02621] text-white font-semibold rounded mt-1 w-[140px] md:hidden"
+              >
+                Order online
+              </button>
+
             </nav>
           </div>
         </div>

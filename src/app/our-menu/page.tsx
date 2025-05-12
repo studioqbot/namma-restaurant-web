@@ -63,7 +63,7 @@ const OurMenu = () => {
         <div className="w-full">
             <div className="container px-[10px]">
                 {/* Tabs */}
-                <div className="w-full flex items-center py-[20px] relative mt-[55px] mb-[60px]">
+                <div className="w-full flex items-center py-[20px] relative px-[10px] md:px-0 md:mt-[55px] md:mb-[60px]">
                     <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className="absolute bottom-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className="text-[#A02621] text-[27px] leading-[31px] font-semibold font-unbounded bg-[#eee1d1] absolute pr-[10px] top-[-14px] left-0">
@@ -93,7 +93,7 @@ const OurMenu = () => {
                 {/* Menu content - Responsive grid */}
                 <div className="grid grid-cols-12 gap-[40px] overflow-x-hidden">
                     <div className="col-span-12 md:col-span-6">
-                        <div className="p-6 n">
+                        <div className="p-6 ">
                             {filteredList
                                 .slice(0, Math.ceil(filteredList.length / 2))
                                 .map((category, i) => (
