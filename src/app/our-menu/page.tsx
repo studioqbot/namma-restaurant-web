@@ -61,7 +61,7 @@ const OurMenu = () => {
 
     return (
         <div className="w-full">
-            <div className="container">
+            <div className="container px-[10px]">
                 {/* Tabs */}
                 <div className="w-full flex items-center py-[20px] relative mt-[55px] mb-[60px]">
                     <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
@@ -91,9 +91,9 @@ const OurMenu = () => {
                 </div>
 
                 {/* Menu content - Responsive grid */}
-                <div className="grid grid-cols-12 gap-[40px]">
+                <div className="grid grid-cols-12 gap-[40px] overflow-x-hidden">
                     <div className="col-span-12 md:col-span-6">
-                        <div className="p-6">
+                        <div className="p-6 n">
                             {filteredList
                                 .slice(0, Math.ceil(filteredList.length / 2))
                                 .map((category, i) => (

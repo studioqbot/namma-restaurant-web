@@ -14,6 +14,7 @@ function Footer() {
         <div className='container'>
           <div className='w-full flex items-center flex-col justify-between py-[35px] relative :after'>
             <div className='flex flex-col'>
+                <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
               <div className="flex flex-wrap gap-[3px] text-[14px] text-[#222A4A] font-normal justify-center">
                 <Link href="/">Home</Link>
                 <span>|</span>
@@ -94,13 +95,15 @@ function Footer() {
           </div>
         </div>
       </footer>
-<footer className="w-full bottom-0 hidden md:block">
+      
+      <footer className="w-full mt-[45px] w-full bottom-0 hidden md:block">
         {/* <div className='container pb-[50px] bottom-[100px] relative'> */}
         <div className='container pb-[50px] relative'>
           <div className='w-full items-center'>
             <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 text-center items-center justify-items-center">
               {/* other content of NM */}
+                    <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
               <div className="col-span-4 pt-[30px]  ">
                 <div className="block lg:hidden text-center">
                   <Link href="/" className="py-">Home</Link>

@@ -161,7 +161,7 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
             width={100}
             height={100}
             alt={data.name}
-            className=" w-[250]   sm:w-[250px] md:w-[163px] h-[163px] rounded-[15px]"
+            className=" w-[163]   sm:w-[163] md:w-[163px] h-[163px] rounded-[15px]"
           />
         ) : (
           <Image
