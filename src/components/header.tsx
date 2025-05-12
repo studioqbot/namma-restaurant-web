@@ -32,12 +32,12 @@ function Header() {
   };
 
   useEffect(() => {
-    const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-    const redirectUrl = process.env.NEXT_PUBLIC_APP_MOBILE_URL;
+    // const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+    // const redirectUrl = process.env.NEXT_PUBLIC_APP_MOBILE_URL;
 
-    if (isMobileDevice && redirectUrl) {
-      window.location.href = redirectUrl;
-    }
+    // if (isMobileDevice && redirectUrl) {
+    //   window.location.href = redirectUrl;
+    // }
 
     const checkIfOpen = () => {
       const now = dayjs();
