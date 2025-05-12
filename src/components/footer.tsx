@@ -11,45 +11,41 @@ function Footer() {
         <div className='container pb-[50px] bottom-[100px] relative'>
           <div className='w-full items-center'>
             <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 text-center items-center justify-items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 text-center items-center justify-items-center">
               {/* other content of NM */}
-              <div className="col-span-4  pt-[30]">
-                <div className="flex flex-wrap gap-[3px] text-[14px] text-[#222A4A] font-normal">
-                  <Link href="/">Home</Link>
-                  <span>|</span>
+              <div className="col-span-4 pt-[30px]">
+                 <Link href="/" className="py-">Home</Link>
+                 <span className="px-2">|</span>
                   <Link href="/menu" className="hover:text-gray-900">Our Menu</Link>
-                  <span >|</span>
+                 <span className="px-2">|</span>
                   <Link href="/contact" className="hover:text-gray-900">Contact us</Link>
-                  <span >|</span>
-                  <a href="https://maps.google.com/?q=181+Ranch+Dr,+Milpitas+95035"
+                  <span className="hidden md:block">|</span>
+                <div className="flex flex-col items-center md:flex-row md:justify-start flex-wrap gap-[3px] text-[14px] text-[#222A4A] font-normal text-center md:text-left">
+                 
+                  <a
+                    href="https://maps.google.com/?q=181+Ranch+Dr,+Milpitas+95035"
                     className="underline font-bold"
                     target="_blank"
-                    rel="noopener noreferrer">
+                    rel="noopener noreferrer"
+                  >
                     181 Ranch Dr, Milpitas 95035
                   </a>
-
-                  {/* <div style={{ backgroundColor: 'red', display: 'inline-block', padding: '5px', borderRadius: '8px' }}> */}
-
                 </div>
-                <div className='flex flex-col'>
 
-                  <div className="flex items-center text-[14px] text-[#222A4A] gap-[3px] mt-[5px]">
-                    <a
-                      href="mailto:reachusnamma@gmail.com"
-                      className="text-[14px] text-[#222A4A]"
-                    >
+                <div className="flex flex-col items-center md:items-start text-center md:text-left mt-[5px]">
+                  <div className="flex flex-col sm:flex-row items-center text-[14px] text-[#222A4A] gap-[5px]">
+                    <a href="mailto:reachusnamma@gmail.com" className="text-[14px] text-[#222A4A]">
                       reachusnamma@gmail.com
                     </a>
-                    <span>|</span>
-                    <span><Link href="tel:+14086493417">408-649-3417</Link> &  <Link href="tel:+14086493418">408-649-3418</Link></span>
-
-
-
+                    <span className="hidden sm:inline">|</span>
+                    <span>
+                      <Link href="tel:+14086493417">408-649-3417</Link> &{' '}
+                      <Link href="tel:+14086493418">408-649-3418</Link>
+                    </span>
                   </div>
                 </div>
-
-
               </div>
+
               {/* social media */}
               <div className="col-span-3 flex justify-start  pt-[30]">
                 <div className="flex flex-col text-left">
