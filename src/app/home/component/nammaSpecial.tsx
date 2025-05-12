@@ -77,7 +77,7 @@ const NammaSpecials = () => {
   return (
     <section className="container">
       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
-      <div className="justify-center flex relative top-[40] z-[1]">
+      <div className="justify-center flex relative top-[40px] z-[1]">
         <Image
           src="/assets/images/namma-special.svg"
           width={167}
@@ -161,7 +161,7 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
             width={100}
             height={100}
             alt={data.name}
-            className=" w-[163]   sm:w-[163] md:w-[163px] h-[163px] rounded-[15px]"
+            className=" w-[163px]   sm:w-[163px] md:w-[163px] h-[163px] rounded-[15px]"
           />
         ) : (
           <Image
