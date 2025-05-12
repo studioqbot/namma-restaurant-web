@@ -9,14 +9,14 @@ const FlavorJourney = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
           {/* Left side - Image fully visible */}
           <div className="col-span-12 md:col-span-6 flex justify-center">
-     
+
             <div className="relative w-full">
               <Image
                 src="/assets/images/journey-bg.svg"
                 alt="Journey"
-                width={800}  // use your image's actual width in pixels
-                height={600} // use your image's actual height in pixels
-                className="object-contain"
+                width={290}  // use your image's actual width in pixels
+                height={100} // use your image's actual height in pixels
+
               />
             </div>
           </div>
@@ -26,15 +26,21 @@ const FlavorJourney = () => {
             <h3 className="text-black text-[25px] leading-[38px] font-unbounded mb-[15px]">
               A Journey Through <br /> India{"'"}s Flavors
             </h3>
-            <p className="text-[#222A4A] text-[13px] leading-[27px] mb-[30px]">
+            {/* <p className="text-[#222A4A] text-[13px] leading-[27px] mb-[30px]">
+              South Indian cuisine is a vibrant celebration of traditions, flavors, and heritage that has been perfected over centuries. Each region offers its own distinct culinary treasures, making South Indian food a delightful mosaic of tastes and aromas. Tamil Nadu enchants with its bold and fiery Chettinad spices, Kerala captivates with its coconut-rich curries and fresh seafood, Andhra Pradesh excites with its tangy tamarind and spicy chilies, and Karnataka charms with its balanced flavors, from the comforting Rasam to the aromatic Bisibele Bath.
+            </p> */}
+            <p className="text-[#222A4A] text-sm leading-7 mb-6">
               South Indian cuisine is a vibrant celebration of traditions, flavors, and heritage that has been perfected over centuries. Each region offers its own distinct culinary treasures, making South Indian food a delightful mosaic of tastes and aromas. Tamil Nadu enchants with its bold and fiery Chettinad spices, Kerala captivates with its coconut-rich curries and fresh seafood, Andhra Pradesh excites with its tangy tamarind and spicy chilies, and Karnataka charms with its balanced flavors, from the comforting Rasam to the aromatic Bisibele Bath.
             </p>
             <p className="text-[#222A4A] text-sm leading-7 mb-6">
-              At Namma Restaurant, we honor this incredible diversity by bringing together dishes that truly capture the essence of South Indian cooking...
+              At Namma Restaurant, we honor this incredible diversity by bringing together dishes that truly capture the essence of South Indian cooking. Our menu is crafted to celebrate the traditional recipes and authentic flavors of the region, from the golden crispness of a perfectly made Dosa to the hearty warmth of a bowl of Sambar or the indulgent richness of a Malabar-style curry.
             </p>
-            <p className="text-[#222A4A] text-[13px] leading-[27px] mb-[30px]">
+            <p className="text-[#222A4A] text-sm leading-7 mb-6">
+              Every dish we serve is a reflection of South India's culinary heritage, a tribute to the passion and care that go into every meal. Whether you’re rediscovering old favorites or exploring something new, our food promises to take you on a flavorful journey through the heart of South India.
+            </p>
+            {/* <p className="text-[#222A4A] text-[13px] leading-[27px] mb-[30px]">
               Every dish we serve is a reflection of South India{"'"}s culinary heritage, a tribute to the passion and care that go into every meal. Whether you’re rediscovering old favorites or exploring something new, our food promises to take you on a flavorful journey through the heart of South India.
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

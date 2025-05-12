@@ -34,10 +34,10 @@ async function HomePage() {
         {/* RIGHT COLUMN - 60% */}
         <div className="w-full lg:w-[60%]">
           {/* For small device hidden */}
-          <div className="pl-[40] relative bottom-0 lg:bottom-[70px] h-[auto] pb-[150px] hidden lg:block">
+          <div className="pl-[40] relative bottom-0 lg:bottom-[70px] h-[auto] hidden lg:block">
             <ImageSlider />
           </div>
-          <div className="relative top-[-125]  hidden lg:block">
+          <div className="relative w-[800px] h-[100px] top=[200px] hidden lg:block">
             <FlavorJourney />
           </div>
         </div>

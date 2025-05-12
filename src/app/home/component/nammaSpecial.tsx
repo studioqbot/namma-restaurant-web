@@ -115,7 +115,7 @@ const NammaSpecials = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10 pt-[50px]">
             <AnimatePresence mode="popLayout">
               {shuffledItems.map((data, index) => (
                 <motion.div
