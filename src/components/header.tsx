@@ -142,7 +142,7 @@ function Header() {
                 }
                 className="inline-block px-5 py-2 bg-[#A02621] text-white font-semibold rounded mt-1 w-[140px] md:hidden"
               >
-                Order online
+                Order Online
               </button>
 
             </nav>

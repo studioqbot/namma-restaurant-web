@@ -77,7 +77,7 @@ const NammaSpecials = () => {
   return (
     <section className="container">
       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
-      <div className="justify-center flex relative top-[40px] z-[1]">
+      <div className="justify-center flex relative top-[40] z-[1]">
         <Image
           src="/assets/images/namma-special.svg"
           width={167}
@@ -139,7 +139,7 @@ const NammaSpecials = () => {
 
         <div className="text-center relative">
           <button
-            className="w-full max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
+            className="w-[100px] max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
             onClick={() => router.push('/our-menu')}
           >
             Explore Full Menu
