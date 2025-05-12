@@ -76,15 +76,15 @@ const NammaSpecials = () => {
 
   return (
     <section className="container">
-       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
-       <div className="justify-center flex relative top-[40] z-[1]">
-          <Image
-            src="/assets/images/namma-special.svg"
-            width={167}
-            height={58}
-            alt="Namma Specials"
-          />
-        </div>
+      {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
+      <div className="justify-center flex relative top-[40] z-[1]">
+        <Image
+          src="/assets/images/namma-special.svg"
+          width={167}
+          height={58}
+          alt="Namma Specials"
+        />
+      </div>
       <div className="max-w-6xl mx-auto py-[40px] bg-white relative rounded-[22px] overflow-hidden">
 
         {/* Background pattern image with fill */}
@@ -98,7 +98,7 @@ const NammaSpecials = () => {
         </div>
 
         {/* Title image */}
-       
+
 
         {/* Content Section */}
         {loading || nammaSpecialItemsData.length === 0 ? (
@@ -115,7 +115,7 @@ const NammaSpecials = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[20px] relative z-10 pt-[50px]">
             <AnimatePresence mode="popLayout">
               {shuffledItems.map((data, index) => (
                 <motion.div
@@ -129,7 +129,7 @@ const NammaSpecials = () => {
                     data={data}
                     lineItems={lineItems}
                     setLineItems={setLineItems}
-                    setIsItemAdded={() => {}}
+                    setIsItemAdded={() => { }}
                   />
                 </motion.div>
               ))}
@@ -137,14 +137,15 @@ const NammaSpecials = () => {
           </div>
         )}
 
-        <div className="text-center relative z-10">
+        <div className="text-center relative">
           <button
-            className="w-full max-w-md py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[15px] font-medium"
+            className="w-full max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
             onClick={() => router.push('/our-menu')}
           >
             Explore Full Menu
           </button>
         </div>
+
       </div>
     </section>
   );
@@ -153,7 +154,7 @@ const NammaSpecials = () => {
 const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
   return (
     <div className="flex flex-col items-center rounded-lg text-center">
-      <div className="relative overflow-hidden mb-4">
+      <div className="relative overflow-hidden mb-3">
         {data.ecom_image_uris ? (
           <Image
             src={data.ecom_image_uris[0]}
@@ -172,7 +173,7 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
           />
         )}
       </div>
-      <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data.name}</h3>
+      <h3 className="text-[12px] text-[#222A4A] font-medium px-[26px]">{data.name}</h3>
       <div className="flex flex-col items-center justify-between mt-auto">
         <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">
           {data.amount}
