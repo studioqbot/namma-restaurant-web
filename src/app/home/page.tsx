@@ -26,7 +26,7 @@ async function HomePage() {
           <Banner />
           {/* Show ImageSlider only on small devices */}
  
-          <div className="relative top-[60]">
+          <div className="relative mb-[100] ">
             <NammaSpecials />
           </div>
         </div>
@@ -37,7 +37,7 @@ async function HomePage() {
           <div className="pl-[40] relative top-[-90] hidden lg:block">
             <ImageSlider />
           </div>
-          <div className="relative top-[-125]">
+          <div className="relative top-[-125]  hidden lg:block">
             <FlavorJourney />
           </div>
         </div>

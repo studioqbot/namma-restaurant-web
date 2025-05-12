@@ -75,14 +75,14 @@ const NammaSpecials = () => {
   }, [nammaSpecialItemsData]);
 
   return (
-    <section className="container w-auto">
-       <div className="text-center flex justify-center relative bottom-[0]" style={{background:'red'}}>
+    <section className="container">
+       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
+       <div className="justify-center flex relative top-[40] z-[1]">
           <Image
             src="/assets/images/namma-special.svg"
             width={167}
             height={58}
             alt="Namma Specials"
-            className="absolute top-[-18px]"
           />
         </div>
       <div className="max-w-6xl mx-auto py-[40px] bg-white relative rounded-[22px] overflow-hidden">
@@ -102,7 +102,7 @@ const NammaSpecials = () => {
 
         {/* Content Section */}
         {loading || nammaSpecialItemsData.length === 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }} className="relative z-10">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }} className="relative">
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={index}
@@ -160,7 +160,7 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
             width={100}
             height={100}
             alt={data.name}
-            className="w-[163px] h-[163px] rounded-[15px]"
+            className=" w-[250]   sm:w-[250px] md:w-[163px] h-[163px] rounded-[15px]"
           />
         ) : (
           <Image
