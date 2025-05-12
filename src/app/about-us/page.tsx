@@ -5,10 +5,10 @@ const OurMenu = () => {
 
 
     return (
-        <div className="w-full">
-            <div className="container">
+        <div className="w-full ">
+            <div className="container  px-[25px] md:px-0">
                 {/* Title Start */}
-                <div className='w-full flex items-center py-[20px] relative mt-[55px] mb-[30px]'>
+                <div className='w-full flex items-center py-0 sm:py-[20px] relative mt-[55px] mb-[30px]'>
                     <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
                     <span className='text-[#A02621] text-[27px] leading-[31px] font-semibold font-unbounded bg-[#eee1d1] absolute pr-[10px] top-[-14px] left-0'>Our Story</span>
                 </div>
