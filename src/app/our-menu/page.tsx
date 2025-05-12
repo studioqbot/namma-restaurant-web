@@ -108,12 +108,12 @@ const OurMenu = () => {
                                                         key={j}
                                                         className="flex justify-between items-start py-2 relative overflow-x-hidden"
                                                     >
-                                                        <span className="absolute w-full border-b border-dotted border-[#222A4A] z-[-1]" />
+                                                      
 
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px] break-words whitespace-normal max-w-[80%] overflow-x-hidden">
                                                             {item.name}
                                                         </span>
-
+  <span className="absolute top-[15px] w-full border-b border-dotted border-[#222A4A] z-[-1]" />
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium whitespace-nowrap">
                                                             {item.amount}
                                                         </span>
