@@ -40,8 +40,6 @@ export interface GroupedMenu {
 }
 
 export const fetchMenuItemList = async (cursorParam: string | null = null): Promise<GroupedMenu[] | null> => {
-  console.log("FetchMenuList.....");
-
   try {
     const url = cursorParam ? `/api/category-list?cursor=${cursorParam}` : `/api/category-list`;
     const response = await fetch(url);
@@ -100,8 +98,6 @@ export const fetchMenuItemList = async (cursorParam: string | null = null): Prom
       category_name,
       items,
     }));
-
-    console.log("GroupedMenuList.....", groupedMenu);
 
     return groupedMenu;
   } catch (error) {

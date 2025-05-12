@@ -46,9 +46,7 @@ export interface GroupedMenu {
 export const fetchMenuHotSelling = async (
   cursorParam: string | null = null
 ): Promise<GroupedMenu[] | null> => {
-  console.log("FetchMenuList (Hot Selling Only).....");
-
-  try {
+   try {
     const url = cursorParam ? `/api/category-list?cursor=${cursorParam}` : `/api/category-list`;
     const response = await fetch(url);
     const data: { cursor?: string; objects?: CatalogObject[] } = await response.json();

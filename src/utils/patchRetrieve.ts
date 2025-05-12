@@ -7,7 +7,6 @@
  * @returns The name of the first category found or null.
  */
 export const patchRetrieve = async (ids: string[]): Promise<string | null> => {
-    console.log('This fn from patchRetrieve.....')
   try {
     const response = await fetch('/api/batch-retrieve', {
       method: 'POST',
