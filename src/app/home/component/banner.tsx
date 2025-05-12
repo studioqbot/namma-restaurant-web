@@ -57,7 +57,7 @@ function Banner() {
                         </div>
                     </div>
 
-
+                    
                     <ReviewCard />
 
                 </div>

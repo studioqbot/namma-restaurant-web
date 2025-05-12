@@ -76,15 +76,15 @@ const NammaSpecials = () => {
 
   return (
     <section className="container">
-       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
-       <div className="justify-center flex relative top-[40] z-[1]">
-          <Image
-            src="/assets/images/namma-special.svg"
-            width={167}
-            height={58}
-            alt="Namma Specials"
-          />
-        </div>
+      {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
+      <div className="justify-center flex relative top-[40] z-[1]">
+        <Image
+          src="/assets/images/namma-special.svg"
+          width={167}
+          height={58}
+          alt="Namma Specials"
+        />
+      </div>
       <div className="max-w-6xl mx-auto py-[40px] bg-white relative rounded-[22px] overflow-hidden">
 
         {/* Background pattern image with fill */}
@@ -98,7 +98,7 @@ const NammaSpecials = () => {
         </div>
 
         {/* Title image */}
-       
+
 
         {/* Content Section */}
         {loading || nammaSpecialItemsData.length === 0 ? (
@@ -129,7 +129,7 @@ const NammaSpecials = () => {
                     data={data}
                     lineItems={lineItems}
                     setLineItems={setLineItems}
-                    setIsItemAdded={() => {}}
+                    setIsItemAdded={() => { }}
                   />
                 </motion.div>
               ))}
@@ -138,13 +138,13 @@ const NammaSpecials = () => {
         )}
 
         <div className="text-center relative">
-  <button
-    className="w-full max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
-    onClick={() => router.push('/our-menu')}
-  >
-    Explore Full Menu
-  </button>
-</div>
+          <button
+            className="w-full max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
+            onClick={() => router.push('/our-menu')}
+          >
+            Explore Full Menu
+          </button>
+        </div>
 
       </div>
     </section>

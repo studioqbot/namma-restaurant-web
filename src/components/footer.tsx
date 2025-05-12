@@ -8,13 +8,14 @@ function Footer() {
   return (
     <>
       <footer className="w-full mt-[45px]">
-        <div className='container pb-[50px] bottom-[100px] relative'>
+        {/* <div className='container pb-[50px] bottom-[100px] relative'> */}
+        <div className='container pb-[50px] relative'>
           <div className='w-full items-center'>
             <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 text-center items-center justify-items-center">
               {/* other content of NM */}
               <div className="col-span-4 pt-[30px]  ">
-              <div className="block lg:hidden text-center">
+                <div className="block lg:hidden text-center">
                   <Link href="/" className="py-">Home</Link>
                   <span className="px-2">|</span>
                   <Link href="/menu" className="hover:text-gray-900">Our Menu</Link>
