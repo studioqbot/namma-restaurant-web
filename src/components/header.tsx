@@ -20,7 +20,7 @@ function Header() {
   const { setIsCartOpen } = useContext(GlobalContext);
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+// Recommit changes
   const operationalHours: OperationalHours = {
     Mon: [{ open: '11:30', close: '15:00' }, { open: '17:30', close: '21:30' }],
     Tue: [],
