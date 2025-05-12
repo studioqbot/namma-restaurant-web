@@ -13,15 +13,25 @@ function Footer() {
             <span className="absolute top-0 left-0 w-full h-[4px] border-t-[0.5px] border-b-[0.5px] border-[#222A4A]" />
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-1 text-center items-center justify-items-center">
               {/* other content of NM */}
-              <div className="col-span-4 pt-[30px]">
-                 <Link href="/" className="py-">Home</Link>
-                 <span className="px-2">|</span>
+              <div className="col-span-4 pt-[30px]  ">
+              <div className="block lg:hidden text-center">
+                  <Link href="/" className="py-">Home</Link>
+                  <span className="px-2">|</span>
                   <Link href="/menu" className="hover:text-gray-900">Our Menu</Link>
-                 <span className="px-2">|</span>
+                  <span className="px-2">|</span>
                   <Link href="/contact" className="hover:text-gray-900">Contact us</Link>
                   <span className="hidden md:block">|</span>
+                </div>
+
                 <div className="flex flex-col items-center md:flex-row md:justify-start flex-wrap gap-[3px] text-[14px] text-[#222A4A] font-normal text-center md:text-left">
-                 
+                  <div className="hidden lg:block">
+                    <Link href="/" className="py-">Home</Link>
+                    <span className="px-1">|</span>
+                    <Link href="/menu" className="hover:text-gray-900">Our Menu</Link>
+                    <span className="px-1">|</span>
+                    <Link href="/contact" className="hover:text-gray-900">Contact us</Link>
+                    <span className="px-1">|</span>
+                  </div>
                   <a
                     href="https://maps.google.com/?q=181+Ranch+Dr,+Milpitas+95035"
                     className="underline font-bold"
