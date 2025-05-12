@@ -101,7 +101,8 @@ function Header() {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu */} 
+      {/* For recommit changes */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex justify-end  md:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setIsMenuOpen(false)} />
