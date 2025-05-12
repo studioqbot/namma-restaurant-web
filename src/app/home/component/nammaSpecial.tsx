@@ -115,7 +115,7 @@ const NammaSpecials = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[40px] relative z-10 pt-[50px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-[60px] mb-[20px] relative z-10 pt-[50px]">
             <AnimatePresence mode="popLayout">
               {shuffledItems.map((data, index) => (
                 <motion.div
@@ -154,7 +154,7 @@ const NammaSpecials = () => {
 const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
   return (
     <div className="flex flex-col items-center rounded-lg text-center">
-      <div className="relative overflow-hidden mb-4">
+      <div className="relative overflow-hidden mb-3">
         {data.ecom_image_uris ? (
           <Image
             src={data.ecom_image_uris[0]}
@@ -173,7 +173,7 @@ const NammaSpecialCard = React.memo(({ data }: NammaSpecialCardProps) => {
           />
         )}
       </div>
-      <h3 className="text-[12px] text-[#222A4A] font-medium px-[28px]">{data.name}</h3>
+      <h3 className="text-[12px] text-[#222A4A] font-medium px-[26px]">{data.name}</h3>
       <div className="flex flex-col items-center justify-between mt-auto">
         <span className="text-[13px] text-[#222A4A] font-bold mt-[15px]">
           {data.amount}

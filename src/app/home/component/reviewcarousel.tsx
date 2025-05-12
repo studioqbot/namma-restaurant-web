@@ -22,7 +22,7 @@ export default function ReviewCard() {
   };
 
   return (
-   <div className="w-full mx-auto sm:grid sm:grid-cols-1 relative mt-0 lg:mt-[40px]">
+   <div className="hidden md:block w-full mx-auto sm:grid sm:grid-cols-1 relative mt-0 lg:mt-[40px]">
 
       <div className="relative">
         <div className=" hidden md:block">

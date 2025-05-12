@@ -18,7 +18,7 @@ export interface CatelogFilterBody {
 
 async function HomePage() {
   return (
-    <main>
+    <main className="container">
       <Image src="/assets/images/banner-bg.svg" width={'150'} height={'150'} alt="banner-bg" className="w-full absolute top-[170px] z-[-1]" />
       <div className="container flex flex-col lg:flex-row gap-6 px-4">
         {/* LEFT COLUMN - 40% */}
@@ -32,12 +32,12 @@ async function HomePage() {
         </div>
 
         {/* RIGHT COLUMN - 60% */}
-        <div className="w-full lg:w-[60%]">
+        <div className=" lg:w-[60%]">
           {/* For small device hidden */}
-          <div className="pl-[40] relative bottom-0 lg:bottom-[70px] h-[auto] hidden lg:block">
+          <div className="pr-[0px] relative bottom-0 lg:bottom-[70px] h-[auto] hidden lg:block">
             <ImageSlider />
           </div>
-          <div className="relative w-[800px] h-[100px] top=[200px] hidden lg:block">
+          <div className="relative  top=[200px] hidden lg:block">
             <FlavorJourney />
           </div>
         </div>
