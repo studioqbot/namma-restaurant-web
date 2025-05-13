@@ -139,7 +139,7 @@ const NammaSpecials = () => {
 
         <div className="text-center relative">
           <button
-            className="w-[100px] max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
+            className="w-[200px] max-w-xs sm:max-w-md py-[12px] sm:py-[15px] border border-[#A02621] rounded-[100px] mt-[11px] overflow-hidden text-[#A02621] text-[14px] sm:text-[15px] font-medium"
             onClick={() => router.push('/our-menu')}
           >
             Explore Full Menu
