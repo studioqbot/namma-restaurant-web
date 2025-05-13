@@ -27,7 +27,7 @@ async function HomePage() {
           <Banner />
           {/* Show ImageSlider only on small devices */}
  
-          <div className=" mb-10 md:mb-0">
+          <div className="relative md:bottom-[0px] bottom-[70px]">
           {/* <div className="relative mb-[0] md:mb-[100] relative md:bottom-0 bottom-[70px] "> */}
             <NammaSpecials />
           </div>
