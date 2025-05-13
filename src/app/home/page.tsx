@@ -18,15 +18,17 @@ export interface CatelogFilterBody {
 
 async function HomePage() {
   return (
-    <main className="container">
+    <main className="container relative">
       <Image src="/assets/images/banner-bg.svg" width={'150'} height={'150'} alt="banner-bg" className="w-full absolute top-[170px] z-[-1]" />
+      {/* <div className="container flex flex-col lg:flex-row gap-0 md:gap-6 px-4"> */}
       <div className="container flex flex-col lg:flex-row gap-0 md:gap-6 px-4">
         {/* LEFT COLUMN - 40% */}
         <div className="w-full lg:w-[40%] flex flex-col gap-0 md:gap-6">
           <Banner />
           {/* Show ImageSlider only on small devices */}
  
-          <div className="relative mb-[0] md:mb-[100] relative md:bottom-0 bottom-[70px] ">
+          <div className=" mb-10 md:mb-0">
+          {/* <div className="relative mb-[0] md:mb-[100] relative md:bottom-0 bottom-[70px] "> */}
             <NammaSpecials />
           </div>
         </div>
