@@ -73,7 +73,7 @@ function Header() {
             <Image
               src="/assets/images/Logo.svg"
               alt="Logo"
-              width={150}
+              width={200}
               height={55}
               className="pl-[10px] h-[50px] block md:hidden"
             />
@@ -95,7 +95,7 @@ function Header() {
           </div>
 
           {/* Mobile Hamburger */}
-          <button className="md:hidden text-[#222A4A] text-3xl mr-5" onClick={() => setIsMenuOpen(true)}>
+          <button className="md:hidden text-[#222A4A] text-5xl mr-5" onClick={() => setIsMenuOpen(true)}>
             ☰
           </button>
         </nav>

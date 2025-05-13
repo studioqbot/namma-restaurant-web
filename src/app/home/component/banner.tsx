@@ -33,7 +33,7 @@ function Banner() {
                         <div className="block lg:hidden p-0 sm:p-4 rounded-[100px]">
                             <ImageSlider />
                         </div>
-                        <div className="flex gap-[15px] relative bottom-[50px] md:bottom-0">
+                        <div className="flex gap-[15px] relative bottom-[80px] md:bottom-0">
                             <button
                                 className="w-full md:w-auto bg-[#FFC300] px-[32px] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative"
                                 onClick={() =>
