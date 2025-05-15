@@ -77,7 +77,7 @@ const NammaSpecials = () => {
   return (
     <section className="container">
       {/* <div className="text-center flex justify-center relative bottom-[0]" > */}
-      <div className="justify-center flex relative top-[40] z-[1]">
+      <div className="justify-center flex relative top-[40px] z-[1]">
         <Image
           src="/assets/images/namma-special.svg"
           width={167}
