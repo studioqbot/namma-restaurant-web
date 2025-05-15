@@ -12,6 +12,19 @@ function Banner() {
 
 
             <section className="grid grid-cols-1 lg:grid-cols-4 gap-[40px]">
+                <button
+                    className="block md:hidden w-full bg-[#FFC300] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative"
+                    onClick={() =>
+                        window.open(
+                            'https://order.nammarestaurant.com/',
+                            '_blank',
+                            'noopener,noreferrer'
+                        )
+                    }
+                >
+                    Order Online
+                </button>
+
                 <div className="col-span-1 lg:col-span-5">
                     {/* <div className="w-full py-[70px] pt-[30px] pb-[50px]"> */}
                     <div className="w-full">
@@ -35,7 +48,7 @@ function Banner() {
                         </div>
                         <div className="flex gap-[15px] relative bottom-[80px] md:bottom-0">
                             <button
-                                className="w-full md:w-auto bg-[#FFC300] px-[32px] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative"
+                                className="hidden md:block  w-full md:w-auto bg-[#FFC300] px-[32px] py-[11px] rounded-[100px] text-[17px] font-bold text-[#A02621] relative"
                                 onClick={() =>
                                     window.open(
                                         'https://order.nammarestaurant.com/',
@@ -57,7 +70,7 @@ function Banner() {
                         </div>
                     </div>
 
-                    
+
                     <ReviewCard />
 
                 </div>
