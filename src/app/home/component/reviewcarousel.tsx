@@ -42,7 +42,7 @@ export default function ReviewCard() {
               ></div>
               <div className="py-4 px-5 flex-1 ">
                 <p className="text-[#222A4A] text-[13px] leading-[21px] mb-3">
-                  The Vanjaram Fish Fry at Namma Restaurant is simply outstanding! Perfectly spiced, crisp on the outside, and tender inside—every bite is a burst of Karaikudi goodness. It's my absolute favorite!
+                The Vanjaram Fish Fry at Namma Restaurant is simply outstanding! Perfectly spiced, crisp on the outside, and tender inside—every bite is a burst of Karaikudi goodness. It's my absolute favorite!"
                 </p>
                 <div className="flex items-center space-x-2 w-full max-w-lg">
                   <Image src="/assets/images/google.svg" alt="Google logo" width={20} height={20} />
@@ -51,47 +51,67 @@ export default function ReviewCard() {
               </div>
             </div>
           </div>
+          
+
+
+
+
+
+
+
 
           {/* Slide 2 */}
           <div>
             <div className="mx-auto bg-white rounded-[15px] flex flex-col sm:flex-row overflow-hidden shadow-md">
               <div
                 className="w-full sm:w-[140px] min-h-[180px] sm:h-auto bg-cover bg-no-repeat bg-center"
-                style={{ backgroundImage: `url('/assets/images/review-card-img.svg')` }}
+                style={{ backgroundImage: `url('/assets/images/review-card-img-2.jpg')` }}
               ></div>
               <div className="py-4 px-5 flex-1">
                 <p className="text-[#222A4A] text-[13px] leading-[21px] mb-3">
-                  Amazing service and the Chettinad Chicken Curry was so flavorful. Definitely going back for more!
+                Our first time coming to the  restaurant and what better way to find out their best dishes than to  have a thali and sample some of their dishes. The place is huge and very inviting! Fast service as well.
                 </p>
                 <div className="flex items-center space-x-2">
-                  <Image src="/assets/images/google.svg" alt="Google logo" width={20} height={20} />
+                  <Image src="/assets/images/yelp_icon.svg" alt="Google logo" width={20} height={20} />
                   <span className="text-[#222A4A] text-[14px] font-semibold">Rajesh K</span>
                 </div>
               </div>
             </div>
           </div>
 
+
+
+
+
+
           {/* Slide 3 */}
           <div>
             <div className="mx-auto bg-white rounded-[15px] flex flex-col sm:flex-row overflow-hidden shadow-md">
               <div
                 className="w-full sm:w-[140px] min-h-[180px] sm:h-auto bg-cover bg-no-repeat bg-center"
-                style={{ backgroundImage: `url('/assets/images/review-card-img.svg')` }}
+                style={{ backgroundImage: `url('/assets/images/review-card-img-3.jpg')` }}
               ></div>
               <div className="py-4 px-5 flex-1">
                 <p className="text-[#222A4A] text-[13px] leading-[21px] mb-3">
-                  We loved the authentic taste and friendly ambiance. Namma Restaurant feels like home!
+                Gosh, the food here is simply fantastic!!! We tried a whole bunch of stuff and everything was perfect and just so delicious. We tried Pallipalayam Paneer for the first time - it was very spicy & tangy and I  loved it.
                 </p>
                 <div className="flex items-center space-x-2">
-                  <Image src="/assets/images/google.svg" alt="Google logo" width={20} height={20} />
+                  <Image src="/assets/images/yelp_icon.svg" alt="Google logo" width={20} height={20} />
                   <span className="text-[#222A4A] text-[14px] font-semibold">Divya M</span>
                 </div>
               </div>
             </div>
           </div>
 
+
+
+
+
+
+
+
           {/* Slide 4 */}
-          <div>
+          {/* <div>
             <div className="mx-auto bg-white rounded-[15px] flex flex-col sm:flex-row overflow-hidden shadow-md">
               <div
                 className="w-full sm:w-[140px] min-h-[180px] sm:h-auto bg-cover bg-no-repeat bg-center"
@@ -107,7 +127,7 @@ export default function ReviewCard() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </Slider>
       </div>
     </div>
