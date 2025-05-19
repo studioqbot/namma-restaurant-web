@@ -95,13 +95,14 @@ const OurMenu = () => {
                     <div className="col-span-12 md:col-span-6">
                         <div className="p-6 ">
                             {filteredList
+                                .filter(category => category.category_id !== 'uncategorized') // 👈 filter out uncategorized
                                 .slice(0, Math.ceil(filteredList.length / 2))
                                 .map((category, i) => (
                                     <div key={i} className="mb-8">
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] rounded text-amber-700">
                                             {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
-                                     <div className="space-y-2 w-[280px] sm:w-full ">
+                                        <div className="space-y-2 w-[280px] sm:w-full ">
                                             {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
@@ -109,23 +110,20 @@ const OurMenu = () => {
                                                         className="flex justify-between items-start py-2 relative overflow-x-hidden"
                                                     >
                                                         <span className="hidden md:block  absolute top-[16px] w-full border-b border-dotted border-[#222A4A] z-[-1]" />
-
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] pr-[25px] break-words whitespace-normal max-w-[80%] overflow-x-hidden">
                                                             {item.name}
                                                         </span>
-
                                                         <span className="bg-[#eee1d1] text-[14px] text-[#222A4A] font-medium whitespace-nowrap min-w-[80px] text-right">
                                                             {item.amount}
                                                         </span>
                                                     </div>
-
-
                                                 )
                                             ))}
                                         </div>
                                     </div>
                                 ))}
                         </div>
+
                     </div>
 
                     <div className="col-span-12 md:col-span-6">
@@ -137,7 +135,7 @@ const OurMenu = () => {
                                         <h2 className="text-2xl font-bold mb-4 bg-[#eee1d1] py-2 rounded text-amber-700">
                                             {categoryNameMap.get(category.category_id) || category.category_id}
                                         </h2>
-                                          <div className="space-y-2 w-[280px] sm:w-full">
+                                        <div className="space-y-2 w-[280px] sm:w-full">
                                             {category.items?.map((item: any, j: any) => (
                                                 !!item.amount && (
                                                     <div
